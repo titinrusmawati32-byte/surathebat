@@ -1,0 +1,3286 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Surat Aktif Lomba &amp; Surat Tugas — SD Negeri Sumberejo 04</title>
+
+  <!-- PWA Metadata & Theme Color -->
+  <meta name="theme-color" content="#4f46e5" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Surat SDN Sumberejo 04" />
+
+  <!-- Tailwind CSS CDN v3.4 -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- SheetJS (xlsx 0.20.3) untuk membaca & menulis Excel Dapodik -->
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+  <!-- JSZip 3.10.1 untuk ekstraksi otomatis aset gambar dari .docx -->
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <!-- QRCode.js untuk QR Code keaslian dokumen -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Konfigurasi Database Google Apps Script & Vercel Proxy -->
+  <script src="config.js"></script>
+
+  <!-- Google Fonts: Inter & Plus Jakarta Sans untuk UI, Times New Roman untuk Kertas A4 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif'],
+            serif: ['"Times New Roman"', 'Times', 'Georgia', 'serif'],
+          },
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+              900: '#312e81'
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Style Dinamis untuk @page A4 Margin Cetak (Diupdate otomatis oleh JavaScript) -->
+  <style id="dynamic-page-style">
+    @media print {
+      @page {
+        size: 210mm 297mm;
+        margin: 2.0cm 2.0cm 2.0cm 2.0cm;
+      }
+    }
+  </style>
+
+  <style>
+    /* Reset & Scrollbar */
+    *, ::before, ::after {
+      box-sizing: border-box;
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    /* =====================================================================
+       STYLING PREVIEW LEMBAR A4 RESMI (SDN SUMBEREJO 04)
+       Ukuran Fisik A4 96 DPI: Lebar 210mm (~793.7px), Tinggi 297mm (~1122.5px)
+       ===================================================================== */
+    .a4-paper {
+      width: 210mm;
+      min-height: 297mm;
+      background-color: #ffffff;
+      color: #000000;
+      font-family: "Times New Roman", Times, Georgia, serif;
+      font-size: 12pt;
+      line-height: 1.4;
+      box-sizing: border-box;
+      position: relative;
+      transform-origin: top center;
+    }
+
+    /* Garis panduan batas margin visual pada pratinjau layar */
+    .a4-paper.show-margin-guide .letter-inner-content {
+      outline: 1px dashed rgba(79, 70, 229, 0.45);
+      outline-offset: 3px;
+      position: relative;
+    }
+    .a4-paper.show-margin-guide .letter-inner-content::before {
+      content: "Batas Margin Aktif";
+      position: absolute;
+      top: -14px;
+      right: 0;
+      font-family: Inter, sans-serif;
+      font-size: 8px;
+      color: #6366f1;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Garis Ganda Resmi Kedinasan di Bawah Kop Surat */
+    .kop-divider-official {
+      border-top: 2.5pt solid #000000;
+      border-bottom: 0.75pt solid #000000;
+      height: 2pt;
+      margin-top: 5px;
+      margin-bottom: 12px;
+      width: 100%;
+    }
+
+    /* Tabel Kop Surat 3 Kolom Simetris */
+    .kop-table-official {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+    .kop-table-official td {
+      vertical-align: middle;
+      padding: 0;
+    }
+
+    /* Tabel Biodata Kepala Sekolah / Pegawai (Titik Dua 100% Sejajar) */
+    .biodata-table-official {
+      width: calc(100% - 20px);
+      margin-left: 20px;
+      margin-top: 4px;
+      margin-bottom: 8px;
+      border-collapse: collapse;
+      line-height: 1.38;
+    }
+    .biodata-table-official td {
+      vertical-align: top;
+      padding: 1.5px 2px;
+    }
+    .biodata-table-official .col-label {
+      width: 120px;
+      white-space: pre;
+    }
+    .biodata-table-official .col-colon {
+      width: 14px;
+      text-align: center;
+    }
+
+    /* Tabel Daftar Siswa Resmi (Border 1pt Solid Hitam Presisi) */
+    .siswa-table-official {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 6px;
+      margin-bottom: 10px;
+      line-height: 1.3;
+    }
+    .siswa-table-official thead {
+      display: table-header-group;
+    }
+    .siswa-table-official tr {
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+    .siswa-table-official th,
+    .siswa-table-official td {
+      border: 1pt solid #000000;
+      padding: 4px 6px;
+      vertical-align: middle;
+    }
+    .siswa-table-official th {
+      font-weight: 700;
+      text-align: center;
+      background-color: transparent;
+    }
+
+    /* Efek cap stempel dan tanda tangan alami di atas kertas putih */
+    .stamp-blend {
+      mix-blend-mode: multiply;
+    }
+
+    /* Animasi Toast */
+    @keyframes toastFadeIn {
+      from { opacity: 0; transform: translateY(12px) scale(0.96); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .animate-toast-in {
+      animation: toastFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* =====================================================================
+       ARSITEKTUR CETAK BEBAS KESALAHAN (#print-stage TERISOLASI)
+       ===================================================================== */
+    #print-stage {
+      display: none;
+    }
+
+    @media print {
+      html, body {
+        width: 100% !important;
+        height: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #ffffff !important;
+        overflow: visible !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      /* Sembunyikan seluruh UI antarmuka saat dialog print aktif */
+      #app-shell {
+        display: none !important;
+      }
+
+      /* Panggung cetak aktif 100% mengikuti batas @page */
+      #print-stage {
+        display: block !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #ffffff !important;
+        color: #000000 !important;
+        font-family: "Times New Roman", Times, Georgia, serif !important;
+      }
+
+      #print-stage .print-letter-root {
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-sizing: border-box !important;
+        color: #000000 !important;
+        background: #ffffff !important;
+      }
+
+      #print-stage .logo-placeholder-box {
+        display: none !important;
+      }
+
+      #print-stage thead {
+        display: table-header-group !important;
+      }
+
+      #print-stage tr,
+      #print-stage .ttd-block-official {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans antialiased selection:bg-indigo-100 selection:text-indigo-900 overflow-x-hidden">
+
+  <!-- =======================================================================
+       APP SHELL: WADAH APLIKASI UTAMA (DISEMBUNYIKAN SAAT PRINT)
+       ======================================================================= -->
+  <div id="app-shell" class="min-h-screen flex flex-col">
+
+    <!-- TOOLBAR HEADER APLIKASI -->
+    <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200/90 shadow-sm">
+      <div class="max-w-[1720px] mx-auto px-3.5 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-3">
+
+        <!-- Identitas Aplikasi & Status Cloud -->
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-700 to-indigo-500 text-white flex items-center justify-center shadow-md shadow-indigo-200 shrink-0">
+            <i data-lucide="file-badge-2" class="w-5 h-5"></i>
+          </div>
+          <div class="min-w-0">
+            <div class="flex items-center gap-2">
+              <h1 class="text-sm sm:text-base font-extrabold text-slate-900 tracking-tight truncate leading-tight">
+                Surat Aktif &amp; Surat Tugas Lomba
+              </h1>
+              <span id="cloud-status-pill" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                <span id="cloud-status-text">Mode Lokal</span>
+              </span>
+            </div>
+            <p class="text-[11px] sm:text-xs text-slate-500 truncate">
+              SD Negeri Sumberejo 04 • Cetak A4 Presisi &amp; Ekspor Word (.doc) Rapi
+            </p>
+          </div>
+        </div>
+
+        <!-- Tombol Aksi Utama (Toolbar Kanan) -->
+        <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
+
+          <!-- Dropdown Pilihan Dokumen: Surat Aktif Siswa vs Surat Tugas Pembina -->
+          <div class="relative">
+            <select id="select-doc-type"
+              class="px-2.5 py-2 rounded-lg text-xs font-bold text-indigo-900 bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 focus:ring-2 focus:ring-indigo-500/30 outline-none transition cursor-pointer">
+              <option value="aktif">📄 Surat Aktif Lomba (Siswa)</option>
+              <option value="tugas">📜 Surat Tugas Pembina / Guru</option>
+            </select>
+          </div>
+
+          <!-- Tombol Cepat: Mode Pas 1 Halaman (Auto-Fit) -->
+          <button id="btn-auto-fit-page" type="button" title="Otomatis sesuaikan margin &amp; font agar pas tepat 1 lembar A4"
+            class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-lg text-xs font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 active:scale-95 transition">
+            <i data-lucide="shrink" class="w-4 h-4 text-emerald-600"></i>
+            <span class="hidden md:inline">Pas 1 Halaman</span>
+            <span class="md:hidden">Auto-Fit</span>
+          </button>
+
+          <!-- Popover Pengaturan Margin A4 Presisi -->
+          <div class="relative">
+            <button id="btn-toggle-page-settings" type="button"
+              class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-lg text-xs font-medium text-slate-700 bg-slate-50 border border-slate-200 hover:bg-slate-100 active:scale-95 transition">
+              <i data-lucide="ruler" class="w-4 h-4 text-indigo-600"></i>
+              <span class="hidden md:inline">Margin A4</span>
+              <span id="toolbar-margin-badge" class="text-[11px] font-bold text-indigo-700 bg-indigo-100 px-1.5 py-0.5 rounded">2.0cm</span>
+            </button>
+
+            <!-- Panel Popover Margin -->
+            <div id="page-settings-popover"
+              class="hidden absolute right-0 mt-2 w-80 max-w-[92vw] bg-white rounded-2xl shadow-2xl border border-slate-200 p-4 z-50 space-y-3.5">
+              <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                <div class="flex items-center gap-1.5">
+                  <i data-lucide="sliders" class="w-4 h-4 text-indigo-600"></i>
+                  <h3 class="text-xs font-bold text-slate-900">Pengaturan Margin &amp; Kerapian A4</h3>
+                </div>
+                <button id="btn-close-page-popover" type="button" class="p-1 rounded-md text-slate-400 hover:bg-slate-100 hover:text-slate-700">
+                  <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+
+              <!-- Preset Margin Cepat -->
+              <div class="space-y-1.5">
+                <span class="block text-[11px] font-semibold text-slate-600">Preset Margin Cepat</span>
+                <div class="grid grid-cols-3 gap-1.5">
+                  <button type="button" data-margin-preset="standar"
+                    class="btn-margin-preset px-2 py-1.5 rounded-lg text-[11px] font-semibold border border-slate-200 hover:bg-indigo-50 transition text-center">
+                    Standar<br /><span class="text-[10px] font-normal text-slate-500">2.0 cm</span>
+                  </button>
+                  <button type="button" data-margin-preset="kedinasan"
+                    class="btn-margin-preset px-2 py-1.5 rounded-lg text-[11px] font-semibold border border-slate-200 hover:bg-indigo-50 transition text-center">
+                    Kedinasan<br /><span class="text-[10px] font-normal text-slate-500">2.5 cm (Kiri)</span>
+                  </button>
+                  <button type="button" data-margin-preset="rapat"
+                    class="btn-margin-preset px-2 py-1.5 rounded-lg text-[11px] font-semibold border border-slate-200 hover:bg-indigo-50 transition text-center">
+                    Rapat<br /><span class="text-[10px] font-normal text-slate-500">1.5 cm</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Input Angka Kustom (cm) -->
+              <div class="space-y-1.5">
+                <span class="block text-[11px] font-semibold text-slate-600">Margin Kustom (cm)</span>
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                  <div>
+                    <label class="block text-[10px] text-slate-500 mb-0.5">Atas (cm)</label>
+                    <input id="pop-margin-top" type="number" step="0.1" min="0.5" max="5" class="margin-input-sync w-full px-2.5 py-1.5 rounded-lg border border-slate-300 text-xs outline-none focus:border-indigo-500" data-side="top" />
+                  </div>
+                  <div>
+                    <label class="block text-[10px] text-slate-500 mb-0.5">Bawah (cm)</label>
+                    <input id="pop-margin-bottom" type="number" step="0.1" min="0.5" max="5" class="margin-input-sync w-full px-2.5 py-1.5 rounded-lg border border-slate-300 text-xs outline-none focus:border-indigo-500" data-side="bottom" />
+                  </div>
+                  <div>
+                    <label class="block text-[10px] text-slate-500 mb-0.5">Kiri (cm)</label>
+                    <input id="pop-margin-left" type="number" step="0.1" min="0.5" max="5" class="margin-input-sync w-full px-2.5 py-1.5 rounded-lg border border-slate-300 text-xs outline-none focus:border-indigo-500" data-side="left" />
+                  </div>
+                  <div>
+                    <label class="block text-[10px] text-slate-500 mb-0.5">Kanan (cm)</label>
+                    <input id="pop-margin-right" type="number" step="0.1" min="0.5" max="5" class="margin-input-sync w-full px-2.5 py-1.5 rounded-lg border border-slate-300 text-xs outline-none focus:border-indigo-500" data-side="right" />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Ukuran Font & Garis Panduan -->
+              <div class="grid grid-cols-2 gap-2 pt-1 border-t border-slate-100">
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Ukuran Font</label>
+                  <select id="pop-font-size" class="font-size-sync w-full px-2 py-1.5 rounded-lg border border-slate-300 bg-white text-xs outline-none focus:border-indigo-500">
+                    <option value="12">12 pt (Resmi)</option>
+                    <option value="11">11 pt (Kompak)</option>
+                    <option value="10.5">10.5 pt (Padat)</option>
+                  </select>
+                </div>
+                <div class="flex items-end pb-1">
+                  <label class="inline-flex items-center gap-1.5 text-[11px] font-medium text-slate-700 cursor-pointer select-none">
+                    <input id="toggle-margin-guide" type="checkbox" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" />
+                    <span>Garis Panduan</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tombol Menu Ekspor Word dengan Pilihan Siap Cetak vs TTD Basah -->
+          <div class="relative">
+            <button id="btn-word-dropdown-toggle" type="button"
+              class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold text-blue-800 bg-blue-50 border border-blue-200 hover:bg-blue-100 active:scale-95 transition">
+              <i data-lucide="file-text" class="w-4 h-4 text-blue-600"></i>
+              <span>Unduh Word (.doc)</span>
+              <i data-lucide="chevron-down" class="w-3.5 h-3.5 ml-0.5"></i>
+            </button>
+            <div id="word-dropdown-menu" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-slate-200 py-1.5 z-50">
+              <button id="btn-export-word-digital" type="button"
+                class="w-full text-left px-3.5 py-2 text-xs font-medium text-slate-700 hover:bg-blue-50 hover:text-blue-900 flex items-start gap-2">
+                <i data-lucide="stamp" class="w-4 h-4 text-blue-600 shrink-0 mt-0.5"></i>
+                <div>
+                  <div class="font-semibold">Word Siap Cetak (TTD Digital)</div>
+                  <div class="text-[10px] text-slate-500 leading-tight">Lengkap dengan stempel &amp; ttd digital rapi</div>
+                </div>
+              </button>
+              <button id="btn-export-word-blank" type="button"
+                class="w-full text-left px-3.5 py-2 text-xs font-medium text-slate-700 hover:bg-blue-50 hover:text-blue-900 flex items-start gap-2 border-t border-slate-100">
+                <i data-lucide="pen-tool" class="w-4 h-4 text-slate-500 shrink-0 mt-0.5"></i>
+                <div>
+                  <div class="font-semibold">Word Tanda Tangan Basah</div>
+                  <div class="text-[10px] text-slate-500 leading-tight">Ruang kosong untuk tanda tangan pena &amp; cap asli</div>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <!-- Tombol Cetak / Simpan PDF Presisi -->
+          <button id="btn-print-pdf" type="button"
+            class="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-md shadow-indigo-200 active:scale-95 transition">
+            <i data-lucide="printer" class="w-4 h-4"></i>
+            <span>Cetak / PDF A4</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Tab Switcher Khusus Mobile / Layar Kecil -->
+      <div class="lg:hidden border-t border-slate-200 bg-slate-50 px-3 py-1.5 flex gap-2">
+        <button id="mobile-tab-form" type="button"
+          class="flex-1 py-1.5 rounded-lg text-xs font-semibold bg-white text-indigo-700 shadow-sm border border-slate-200 flex items-center justify-center gap-1.5">
+          <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5"></i>
+          <span>Pengaturan &amp; Data</span>
+        </button>
+        <button id="mobile-tab-preview" type="button"
+          class="flex-1 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5">
+          <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+          <span>Pratinjau Kertas A4</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- =====================================================================
+         MAIN AREA SPLIT-SCREEN (KIRI: KONTROL 4 TAB, KANAN: PREVIEW A4)
+         ===================================================================== -->
+    <main id="app-main" class="max-w-[1720px] mx-auto w-full flex-1 flex flex-col lg:flex-row lg:h-[calc(100vh-65px)]">
+
+      <!-- PANEL KIRI (PENGATURAN, SISWA, DETAIL, KOP, RIWAYAT) -->
+      <section id="form-pane" class="w-full lg:w-[460px] xl:w-[480px] shrink-0 bg-white border-r border-slate-200 flex flex-col lg:h-full">
+
+        <!-- Navigasi 4 Tab -->
+        <nav class="border-b border-slate-200 bg-slate-50/90 px-2 pt-2 flex gap-1 shrink-0" role="tablist">
+          <button type="button" data-tab="siswa"
+            class="main-tab-btn flex-1 px-2 py-2 text-[11px] sm:text-xs font-bold rounded-t-lg border-b-2 border-indigo-600 text-indigo-700 bg-white flex items-center justify-center gap-1 transition">
+            <i data-lucide="users" class="w-3.5 h-3.5"></i>
+            <span class="truncate">Siswa / Peserta</span>
+          </button>
+          <button type="button" data-tab="detail"
+            class="main-tab-btn flex-1 px-2 py-2 text-[11px] sm:text-xs font-semibold rounded-t-lg border-b-2 border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-100 flex items-center justify-center gap-1 transition">
+            <i data-lucide="file-signature" class="w-3.5 h-3.5"></i>
+            <span class="truncate">Redaksi &amp; KS</span>
+          </button>
+          <button type="button" data-tab="kop"
+            class="main-tab-btn flex-1 px-2 py-2 text-[11px] sm:text-xs font-semibold rounded-t-lg border-b-2 border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-100 flex items-center justify-center gap-1 transition">
+            <i data-lucide="image" class="w-3.5 h-3.5"></i>
+            <span class="truncate">Kop &amp; Aset</span>
+          </button>
+          <button type="button" data-tab="riwayat"
+            class="main-tab-btn flex-1 px-2 py-2 text-[11px] sm:text-xs font-semibold rounded-t-lg border-b-2 border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-100 flex items-center justify-center gap-1 transition">
+            <i data-lucide="history" class="w-3.5 h-3.5"></i>
+            <span class="truncate">Riwayat</span>
+            <span id="history-badge" class="min-w-[18px] h-[18px] px-1 text-[10px] font-bold rounded-full bg-indigo-100 text-indigo-700 inline-flex items-center justify-center">0</span>
+          </button>
+        </nav>
+
+        <!-- Area Tab Content (Scrollable) -->
+        <div class="p-4 overflow-y-auto flex-1 space-y-4">
+
+          <!-- =============================================================
+               TAB 1: PILIH SISWA & PENGATURAN TABEL
+               ============================================================= -->
+          <div id="tab-panel-siswa" class="tab-panel space-y-4">
+
+            <!-- Kotak Upload Excel Dapodik & Sinkronisasi Cloud -->
+            <div class="rounded-xl border border-indigo-200 bg-indigo-50/60 p-3 space-y-2">
+              <div class="flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2 min-w-0">
+                  <div class="w-8 h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+                    <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+                  </div>
+                  <div class="min-w-0">
+                    <h2 class="text-xs font-bold text-slate-900 truncate">Database Siswa (Excel Dapodik)</h2>
+                    <p id="excel-status-text" class="text-[11px] text-emerald-800 font-semibold truncate">8 Siswa Sampel Siap Pakai</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-1.5 shrink-0">
+                  <label for="input-excel-file"
+                    class="cursor-pointer inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm transition">
+                    <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+                    <span>Unggah</span>
+                  </label>
+                  <input id="input-excel-file" type="file" accept=".xlsx,.xls,.csv" class="hidden" />
+                </div>
+              </div>
+              <p class="text-[11px] text-slate-600 leading-relaxed">
+                Otomatis membaca nama, NISN, tempat/tanggal lahir, &amp; rombel dari file ekspor Dapodik atau format Excel sekolah.
+              </p>
+            </div>
+
+            <!-- Form Pencarian & Pilihan Cabang Lomba Default -->
+            <div class="space-y-2">
+              <div class="grid grid-cols-1 sm:grid-cols-12 gap-2">
+                <div class="sm:col-span-7 relative">
+                  <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                  <input id="search-siswa" type="text" placeholder="Cari Nama atau NISN..."
+                    class="w-full pl-8 pr-3 py-2 text-xs rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 outline-none" />
+                </div>
+                <div class="sm:col-span-5">
+                  <select id="filter-kelas"
+                    class="w-full px-2.5 py-2 text-xs rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 outline-none">
+                    <option value="">Semua Kelas</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <label for="default-cabang-lomba" class="text-xs font-semibold text-slate-700 whitespace-nowrap">Cabang Lomba:</label>
+                <input id="default-cabang-lomba" type="text" list="cabang-lomba-list" value="IPA" placeholder="Misal: OSN IPA, FLS2N, O2SN"
+                  class="flex-1 px-2.5 py-1.5 text-xs rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 outline-none" />
+                <datalist id="cabang-lomba-list">
+                  <option value="IPA (OSN)"></option>
+                  <option value="Matematika (OSN)"></option>
+                  <option value="IPS"></option>
+                  <option value="Menyanyi Solo (FLS2N)"></option>
+                  <option value="Gambar Bercerita (FLS2N)"></option>
+                  <option value="Kriya (FLS2N)"></option>
+                  <option value="Seni Tari (FLS2N)"></option>
+                  <option value="Atletik (O2SN)"></option>
+                  <option value="Bulu Tangkis (O2SN)"></option>
+                  <option value="Renang (O2SN)"></option>
+                  <option value="Pramuka"></option>
+                  <option value="MTQ / PAI"></option>
+                </datalist>
+              </div>
+            </div>
+
+            <!-- Daftar Siswa Klik-Langsung (Picker) -->
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between text-[11px] text-slate-500">
+                <span class="font-semibold text-slate-700">Klik nama untuk tambah / hapus dari surat:</span>
+                <span id="siswa-count-shown" class="font-medium">0 siswa</span>
+              </div>
+
+              <div id="student-picker-list"
+                class="max-h-[220px] overflow-y-auto rounded-xl border border-slate-200 divide-y divide-slate-100 bg-white shadow-inner">
+              </div>
+
+              <div class="flex items-center justify-between gap-2 pt-1">
+                <button id="btn-add-manual-student" type="button"
+                  class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 transition">
+                  <i data-lucide="user-plus" class="w-3.5 h-3.5"></i>
+                  <span>+ Tambah Manual</span>
+                </button>
+                <button id="btn-clear-selected" type="button"
+                  class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-rose-600 bg-rose-50 hover:bg-rose-100 border border-rose-200 transition">
+                  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                  <span>Kosongkan Pilihan</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Opsi Format Otomatis Tabel Surat -->
+            <div class="rounded-xl border border-slate-200 bg-slate-50/80 p-3 space-y-2.5">
+              <h3 class="text-[11px] font-bold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
+                <i data-lucide="wand-2" class="w-3.5 h-3.5 text-indigo-600"></i>
+                <span>Format Otomatis Cetak Surat</span>
+              </h3>
+
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label for="opt-format-kelas" class="block text-[11px] font-semibold text-slate-700 mb-1">Format Kelas</label>
+                  <select id="opt-format-kelas"
+                    class="w-full px-2 py-1.5 text-xs rounded-lg border border-slate-300 bg-white outline-none focus:border-indigo-500">
+                    <option value="romawi">Romawi — IV (Empat)</option>
+                    <option value="rombel">Rombel — 4 A</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="opt-format-ttl" class="block text-[11px] font-semibold text-slate-700 mb-1">Format TTL</label>
+                  <select id="opt-format-ttl"
+                    class="w-full px-2 py-1.5 text-xs rounded-lg border border-slate-300 bg-white outline-none focus:border-indigo-500">
+                    <option value="iso">JEMBER, 2016-11-08</option>
+                    <option value="id">Jember, 08 November 2016</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-2 items-center">
+                <div>
+                  <label for="opt-format-nama" class="block text-[11px] font-semibold text-slate-700 mb-1">Huruf Nama</label>
+                  <select id="opt-format-nama"
+                    class="w-full px-2 py-1.5 text-xs rounded-lg border border-slate-300 bg-white outline-none focus:border-indigo-500">
+                    <option value="title">Title Case (Albian Rezky)</option>
+                    <option value="upper">KAPITAL (ALBIAN REZKY)</option>
+                  </select>
+                </div>
+                <label class="flex items-start gap-2 pt-4 cursor-pointer select-none">
+                  <input id="opt-naik-kelas" type="checkbox" class="mt-0.5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" />
+                  <span class="text-xs font-semibold text-slate-700 leading-tight">
+                    Naikkan Kelas +1
+                    <span class="block text-[10px] text-slate-500 font-normal">Jika pakai data semester lalu</span>
+                  </span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Daftar Siswa yang Masuk ke Surat Saat Ini -->
+            <div class="space-y-2">
+              <div class="flex items-center justify-between border-b border-slate-200 pb-1">
+                <h3 class="text-xs font-bold text-slate-800">
+                  Peserta di Surat (<span id="selected-count">0</span> siswa)
+                </h3>
+                <span class="text-[11px] text-slate-500">Atur urutan &amp; cabang per siswa</span>
+              </div>
+              <div id="selected-students-container" class="space-y-2"></div>
+            </div>
+          </div>
+
+          <!-- =============================================================
+               TAB 2: DETAIL SURAT, REDAKSI & KEPALA SEKOLAH
+               ============================================================= -->
+          <div id="tab-panel-detail" class="tab-panel hidden space-y-4">
+
+            <!-- Identitas & Nomor Surat -->
+            <div class="space-y-3">
+              <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200 pb-1">Nomor &amp; Tanggal Surat</h2>
+
+              <div>
+                <label for="input-judul-surat" class="block text-xs font-semibold text-slate-700 mb-1">Judul Surat</label>
+                <input id="input-judul-surat" type="text"
+                  class="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 outline-none" />
+              </div>
+
+              <div>
+                <label for="input-nomor-surat" class="block text-xs font-semibold text-slate-700 mb-1">Nomor Surat</label>
+                <div class="flex gap-1.5">
+                  <input id="input-nomor-surat" type="text"
+                    class="flex-1 px-3 py-2 text-xs font-mono rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 outline-none" />
+                  <button id="btn-inc-nomor" type="button" title="Naikkan nomor urut (+1)"
+                    class="shrink-0 px-3 py-2 rounded-lg text-xs font-semibold text-indigo-700 bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 transition">
+                    +1 No
+                  </button>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-2.5">
+                <div>
+                  <label for="input-kota-surat" class="block text-xs font-semibold text-slate-700 mb-1">Titimangsa / Kota</label>
+                  <input id="input-kota-surat" type="text"
+                    class="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 outline-none" />
+                </div>
+                <div>
+                  <label for="input-tanggal-surat" class="block text-xs font-semibold text-slate-700 mb-1">Tanggal Surat</label>
+                  <input id="input-tanggal-surat" type="date"
+                    class="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 outline-none" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Redaksi Kalimat Surat -->
+            <div class="space-y-3">
+              <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200 pb-1">Redaksi Kalimat Surat</h2>
+
+              <div>
+                <label for="input-pembuka" class="block text-xs font-semibold text-slate-700 mb-1">Kalimat Pembuka</label>
+                <textarea id="input-pembuka" rows="2"
+                  class="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 outline-none"></textarea>
+              </div>
+
+              <div>
+                <label for="input-penghubung" class="block text-xs font-semibold text-slate-700 mb-1">Kalimat Pengantar Tabel</label>
+                <input id="input-penghubung" type="text"
+                  class="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 outline-none" />
+              </div>
+
+              <div>
+                <label for="input-penutup-1" class="block text-xs font-semibold text-slate-700 mb-1">Kalimat Penutup 1</label>
+                <textarea id="input-penutup-1" rows="2"
+                  class="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 outline-none"></textarea>
+              </div>
+
+              <div>
+                <label for="input-penutup-2" class="block text-xs font-semibold text-slate-700 mb-1">Kalimat Penutup 2</label>
+                <textarea id="input-penutup-2" rows="2"
+                  class="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 outline-none"></textarea>
+              </div>
+            </div>
+
+            <!-- Biodata Kepala Sekolah -->
+            <div class="space-y-3">
+              <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200 pb-1">Biodata Kepala Sekolah</h2>
+
+              <div>
+                <label for="input-ks-nama" class="block text-xs font-semibold text-slate-700 mb-1">Nama Lengkap &amp; Gelar</label>
+                <input id="input-ks-nama" type="text"
+                  class="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 outline-none" />
+              </div>
+
+              <div class="grid grid-cols-2 gap-2.5">
+                <div>
+                  <label for="input-ks-nip" class="block text-xs font-semibold text-slate-700 mb-1">NIP</label>
+                  <input id="input-ks-nip" type="text"
+                    class="w-full px-3 py-2 text-xs font-mono rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 outline-none" />
+                </div>
+                <div>
+                  <label for="input-ks-pangkat" class="block text-xs font-semibold text-slate-700 mb-1">Pangkat/Gol.</label>
+                  <input id="input-ks-pangkat" type="text"
+                    class="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 outline-none" />
+                </div>
+              </div>
+
+              <div>
+                <label for="input-ks-jabatan" class="block text-xs font-semibold text-slate-700 mb-1">Jabatan</label>
+                <input id="input-ks-jabatan" type="text"
+                  class="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 outline-none" />
+              </div>
+
+              <!-- Toggle Mode Pengesahan & QR Code Verifikasi -->
+              <div class="rounded-xl border border-slate-200 bg-slate-50 p-3 space-y-2">
+                <p class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Elemen Pengesahan Surat</p>
+                <div class="grid grid-cols-2 gap-2 text-xs font-medium text-slate-700">
+                  <label class="inline-flex items-center gap-2 cursor-pointer">
+                    <input id="toggle-show-stempel" type="checkbox" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" checked />
+                    <span>Tampilkan Stempel</span>
+                  </label>
+                  <label class="inline-flex items-center gap-2 cursor-pointer">
+                    <input id="toggle-show-ttd" type="checkbox" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" checked />
+                    <span>Tampilkan TTD Digital</span>
+                  </label>
+                  <label class="inline-flex items-center gap-2 cursor-pointer col-span-2 pt-1 border-t border-slate-200/80">
+                    <input id="toggle-show-qr" type="checkbox" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" checked />
+                    <span>Tampilkan QR Code Verifikasi Kedinasan</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Opsi Khusus Surat Tugas (Jika mode Surat Tugas aktif) -->
+            <div id="section-guru-tugas" class="space-y-3 hidden">
+              <h2 class="text-xs font-bold uppercase tracking-wider text-indigo-700 border-b border-indigo-200 pb-1">Biodata Guru Pembina / Pendamping</h2>
+              <div>
+                <label for="input-guru-nama" class="block text-xs font-semibold text-slate-700 mb-1">Nama Guru Pembina</label>
+                <input id="input-guru-nama" type="text" value="Ahmad Fauzi, S.Pd"
+                  class="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 outline-none" />
+              </div>
+              <div class="grid grid-cols-2 gap-2.5">
+                <div>
+                  <label for="input-guru-nip" class="block text-xs font-semibold text-slate-700 mb-1">NIP Guru</label>
+                  <input id="input-guru-nip" type="text" value="198504122010011015"
+                    class="w-full px-3 py-2 text-xs font-mono rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 outline-none" />
+                </div>
+                <div>
+                  <label for="input-guru-pangkat" class="block text-xs font-semibold text-slate-700 mb-1">Pangkat/Golongan</label>
+                  <input id="input-guru-pangkat" type="text" value="Penata Muda, III/a"
+                    class="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 outline-none" />
+                </div>
+              </div>
+              <div>
+                <label for="input-guru-jabatan" class="block text-xs font-semibold text-slate-700 mb-1">Jabatan Guru</label>
+                <input id="input-guru-jabatan" type="text" value="Guru Kelas IV / Pembina OSN IPA"
+                  class="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 outline-none" />
+              </div>
+            </div>
+
+          </div>
+
+          <!-- =============================================================
+               TAB 3: KOP SURAT, LOGO & EKSTRAKSI DARI .DOCX
+               ============================================================= -->
+          <div id="tab-panel-kop" class="tab-panel hidden space-y-4">
+
+            <!-- Ekstrak 4 Gambar Otomatis dari file .docx -->
+            <div class="rounded-xl border-2 border-dashed border-indigo-300 bg-indigo-50/70 p-3.5 space-y-2">
+              <div class="flex items-start gap-2.5">
+                <div class="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center shrink-0">
+                  <i data-lucide="sparkles" class="w-4 h-4"></i>
+                </div>
+                <div class="min-w-0 flex-1">
+                  <h2 class="text-xs font-bold text-indigo-950">Ekstrak 4 Gambar Otomatis dari .docx</h2>
+                  <p class="text-[11px] text-indigo-900/80 leading-relaxed">
+                    Ambil Logo Jember, Logo Sekolah, Stempel, &amp; TTD langsung dari file <strong>SURAT AKTIF .docx</strong> lama Anda.
+                  </p>
+                </div>
+              </div>
+
+              <label for="input-docx-extract"
+                class="w-full cursor-pointer inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-sm transition">
+                <i data-lucide="file-archive" class="w-4 h-4"></i>
+                <span>Pilih Berkas SURAT AKTIF .docx</span>
+              </label>
+              <input id="input-docx-extract" type="file" accept=".docx" class="hidden" />
+            </div>
+
+            <!-- Upload Manual & Thumbnail 4 Aset -->
+            <div class="space-y-3">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200 pb-1">Aset Gambar Sekolah</h3>
+
+              <div class="grid grid-cols-2 gap-2.5">
+                <!-- Logo Kiri -->
+                <div class="p-2.5 rounded-xl border border-slate-200 bg-slate-50/60 space-y-2">
+                  <span class="block text-[11px] font-bold text-slate-700">1. Logo Pemkab Jember</span>
+                  <div class="h-14 rounded-lg bg-white border border-slate-200 flex items-center justify-center overflow-hidden p-1">
+                    <img id="thumb-logo-kiri" src="" alt="Logo Kiri" class="hidden max-h-full max-w-full object-contain" />
+                    <span id="empty-logo-kiri" class="text-[10px] text-slate-400">Belum ada</span>
+                  </div>
+                  <div class="flex gap-1">
+                    <label for="file-logo-kiri" class="flex-1 cursor-pointer text-center py-1 rounded-md text-[11px] font-semibold bg-white border border-slate-300 hover:bg-slate-100">Unggah</label>
+                    <input id="file-logo-kiri" type="file" accept="image/*" class="hidden" />
+                    <button type="button" data-remove-asset="logoKiri" class="btn-remove-asset px-2 py-1 rounded-md text-[11px] font-medium text-rose-600 bg-rose-50 hover:bg-rose-100">Hapus</button>
+                  </div>
+                </div>
+
+                <!-- Logo Kanan -->
+                <div class="p-2.5 rounded-xl border border-slate-200 bg-slate-50/60 space-y-2">
+                  <span class="block text-[11px] font-bold text-slate-700">2. Logo SDN Sumberejo 04</span>
+                  <div class="h-14 rounded-lg bg-white border border-slate-200 flex items-center justify-center overflow-hidden p-1">
+                    <img id="thumb-logo-kanan" src="" alt="Logo Kanan" class="hidden max-h-full max-w-full object-contain" />
+                    <span id="empty-logo-kanan" class="text-[10px] text-slate-400">Belum ada</span>
+                  </div>
+                  <div class="flex gap-1">
+                    <label for="file-logo-kanan" class="flex-1 cursor-pointer text-center py-1 rounded-md text-[11px] font-semibold bg-white border border-slate-300 hover:bg-slate-100">Unggah</label>
+                    <input id="file-logo-kanan" type="file" accept="image/*" class="hidden" />
+                    <button type="button" data-remove-asset="logoKanan" class="btn-remove-asset px-2 py-1 rounded-md text-[11px] font-medium text-rose-600 bg-rose-50 hover:bg-rose-100">Hapus</button>
+                  </div>
+                </div>
+
+                <!-- Stempel -->
+                <div class="p-2.5 rounded-xl border border-slate-200 bg-slate-50/60 space-y-2">
+                  <span class="block text-[11px] font-bold text-slate-700">3. Stempel Sekolah</span>
+                  <div class="h-14 rounded-lg bg-white border border-slate-200 flex items-center justify-center overflow-hidden p-1">
+                    <img id="thumb-stempel" src="" alt="Stempel" class="hidden max-h-full max-w-full object-contain" />
+                    <span id="empty-stempel" class="text-[10px] text-slate-400">Belum ada</span>
+                  </div>
+                  <div class="flex gap-1">
+                    <label for="file-stempel" class="flex-1 cursor-pointer text-center py-1 rounded-md text-[11px] font-semibold bg-white border border-slate-300 hover:bg-slate-100">Unggah</label>
+                    <input id="file-stempel" type="file" accept="image/*" class="hidden" />
+                    <button type="button" data-remove-asset="stempel" class="btn-remove-asset px-2 py-1 rounded-md text-[11px] font-medium text-rose-600 bg-rose-50 hover:bg-rose-100">Hapus</button>
+                  </div>
+                </div>
+
+                <!-- Tanda Tangan -->
+                <div class="p-2.5 rounded-xl border border-slate-200 bg-slate-50/60 space-y-2">
+                  <span class="block text-[11px] font-bold text-slate-700">4. Tanda Tangan Kepala Sekolah</span>
+                  <div class="h-14 rounded-lg bg-white border border-slate-200 flex items-center justify-center overflow-hidden p-1">
+                    <img id="thumb-ttd" src="" alt="TTD" class="hidden max-h-full max-w-full object-contain" />
+                    <span id="empty-ttd" class="text-[10px] text-slate-400">Belum ada</span>
+                  </div>
+                  <div class="flex gap-1">
+                    <label for="file-ttd" class="flex-1 cursor-pointer text-center py-1 rounded-md text-[11px] font-semibold bg-white border border-slate-300 hover:bg-slate-100">Unggah</label>
+                    <input id="file-ttd" type="file" accept="image/*" class="hidden" />
+                    <button type="button" data-remove-asset="ttd" class="btn-remove-asset px-2 py-1 rounded-md text-[11px] font-medium text-rose-600 bg-rose-50 hover:bg-rose-100">Hapus</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Posisi Presisi Stempel & TTD -->
+              <div class="rounded-xl border border-slate-200 bg-slate-50 p-3 space-y-2.5">
+                <p class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Posisi &amp; Skala Stempel / TTD (Sinkron ke PDF &amp; Word)</p>
+                <div class="grid grid-cols-2 gap-3 text-[11px]">
+                  <div>
+                    <div class="flex justify-between text-slate-600 mb-0.5">
+                      <span>Ukuran Stempel</span>
+                      <span id="lbl-stempel-size" class="font-bold">105px</span>
+                    </div>
+                    <input id="slider-stempel-size" type="range" min="60" max="150" value="105" class="w-full accent-indigo-600" />
+                  </div>
+                  <div>
+                    <div class="flex justify-between text-slate-600 mb-0.5">
+                      <span>Ukuran TTD</span>
+                      <span id="lbl-ttd-size" class="font-bold">82px</span>
+                    </div>
+                    <input id="slider-ttd-size" type="range" min="45" max="135" value="82" class="w-full accent-indigo-600" />
+                  </div>
+                  <div>
+                    <div class="flex justify-between text-slate-600 mb-0.5">
+                      <span>Geser Stempel (X)</span>
+                      <span id="lbl-stempel-x" class="font-bold">-38px</span>
+                    </div>
+                    <input id="slider-stempel-x" type="range" min="-85" max="60" value="-38" class="w-full accent-indigo-600" />
+                  </div>
+                  <div>
+                    <div class="flex justify-between text-slate-600 mb-0.5">
+                      <span>Geser Stempel (Y)</span>
+                      <span id="lbl-stempel-y" class="font-bold">-8px</span>
+                    </div>
+                    <input id="slider-stempel-y" type="range" min="-40" max="40" value="-8" class="w-full accent-indigo-600" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Teks 5 Baris Kop Surat Resmi -->
+            <div class="space-y-2">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200 pb-1">Teks Kop Surat (5 Baris Resmi)</h3>
+              <div>
+                <label for="kop-baris-1" class="block text-[11px] font-semibold text-slate-700 mb-0.5">Baris 1 (Bold 14pt)</label>
+                <input id="kop-baris-1" type="text" class="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-300 outline-none focus:border-indigo-500" />
+              </div>
+              <div>
+                <label for="kop-baris-2" class="block text-[11px] font-semibold text-slate-700 mb-0.5">Baris 2 — Nama Sekolah (Bold 16pt)</label>
+                <input id="kop-baris-2" type="text" class="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-300 outline-none focus:border-indigo-500 font-bold" />
+              </div>
+              <div>
+                <label for="kop-baris-3" class="block text-[11px] font-semibold text-slate-700 mb-0.5">Baris 3 — Jalan &amp; Desa (10.5pt)</label>
+                <input id="kop-baris-3" type="text" class="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-300 outline-none focus:border-indigo-500" />
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label for="kop-baris-4" class="block text-[11px] font-semibold text-slate-700 mb-0.5">Baris 4 — Kota &amp; Pos</label>
+                  <input id="kop-baris-4" type="text" class="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-300 outline-none focus:border-indigo-500" />
+                </div>
+                <div>
+                  <label for="kop-baris-5" class="block text-[11px] font-semibold text-slate-700 mb-0.5">Baris 5 — Email (Italic)</label>
+                  <input id="kop-baris-5" type="text" class="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-300 outline-none focus:border-indigo-500" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- =============================================================
+               TAB 4: RIWAYAT SURAT TERSIMPAN
+               ============================================================= -->
+          <div id="tab-panel-riwayat" class="tab-panel hidden space-y-3">
+            <div class="flex items-center justify-between border-b border-slate-200 pb-2">
+              <div>
+                <h2 class="text-xs font-bold text-slate-900">Riwayat Surat Tersimpan</h2>
+                <p class="text-[11px] text-slate-500">Klik "Muat" untuk membuka kembali surat lama.</p>
+              </div>
+              <button id="btn-clear-all-history" type="button"
+                class="hidden px-2.5 py-1 rounded-lg text-[11px] font-semibold text-rose-600 bg-rose-50 hover:bg-rose-100 border border-rose-200 transition">
+                Hapus Semua
+              </button>
+            </div>
+            <div id="history-list-container" class="space-y-2.5"></div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           PANEL KANAN: LIVE PREVIEW KERTAS A4 & FIT-TO-PAGE GAUGE
+           =================================================================== -->
+      <section id="preview-pane" class="hidden lg:flex flex-col flex-1 bg-slate-200/90 lg:h-full overflow-hidden">
+
+        <!-- Toolbar Kontrol Zoom & Meteran Keterisian Kertas A4 -->
+        <div class="flex flex-wrap items-center justify-between gap-2 px-4 py-2 bg-slate-100 border-b border-slate-300/80 text-xs text-slate-700 shrink-0">
+          <div class="flex flex-wrap items-center gap-2.5">
+            <span class="font-bold flex items-center gap-1.5">
+              <i data-lucide="file" class="w-3.5 h-3.5 text-indigo-600"></i>
+              <span>Kertas A4 (210 × 297 mm)</span>
+            </span>
+
+            <!-- Badge Status Keterisian Halaman A4 -->
+            <span id="page-fit-badge"
+              class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+              <span id="page-fit-text">Muat 1 Halaman A4 (100% Rapi)</span>
+            </span>
+          </div>
+
+          <!-- Kontrol Zoom Layar -->
+          <div class="flex items-center gap-1.5">
+            <button id="btn-zoom-out" type="button" title="Perkecil (-)"
+              class="w-7 h-7 rounded-md bg-white border border-slate-300 hover:bg-slate-50 font-bold text-slate-700 flex items-center justify-center">-</button>
+            <span id="zoom-percent" class="min-w-[46px] text-center font-bold text-slate-700 text-xs">Auto</span>
+            <button id="btn-zoom-in" type="button" title="Perbesar (+)"
+              class="w-7 h-7 rounded-md bg-white border border-slate-300 hover:bg-slate-50 font-bold text-slate-700 flex items-center justify-center">+</button>
+            <button id="btn-zoom-fit" type="button"
+              class="px-2.5 h-7 rounded-md bg-white border border-slate-300 hover:bg-slate-50 font-semibold text-slate-700 text-xs">Pas Layar</button>
+          </div>
+        </div>
+
+        <!-- Wadah Scroll Pratinjau Kertas A4 -->
+        <div id="preview-scroll-container" class="flex-1 overflow-auto p-4 sm:p-6 flex justify-center items-start">
+          <div id="preview-scale-wrapper" class="flex justify-center">
+
+            <!-- LEMBAR A4 PRATINJAU -->
+            <article id="a4-document" class="a4-paper shadow-2xl ring-1 ring-slate-900/15" style="padding: 2cm 2cm 2cm 2cm;">
+              <div id="preview-letter-mount" class="letter-inner-content">
+                <!-- Konten surat diisi oleh buildLetterMarkup() -->
+              </div>
+            </article>
+
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- =====================================================================
+         MODAL TAMBAH SISWA MANUAL
+         ===================================================================== -->
+    <div id="manual-student-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+      <div id="manual-modal-backdrop" class="absolute inset-0 bg-slate-900/50 backdrop-blur-[1px]"></div>
+      <div class="relative bg-white rounded-2xl shadow-2xl max-w-md w-full p-5 space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+          <h3 class="text-sm font-bold text-slate-900">Tambah Peserta Manual</h3>
+          <button id="btn-close-manual" type="button" class="p-1 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+        <div class="space-y-3 text-xs">
+          <div>
+            <label for="manual-nama" class="block font-semibold text-slate-700 mb-1">Nama Lengkap Siswa</label>
+            <input id="manual-nama" type="text" placeholder="Contoh: Siti Aisyah Putri"
+              class="w-full px-3 py-2 rounded-lg border border-slate-300 outline-none focus:border-indigo-500" />
+          </div>
+          <div class="grid grid-cols-2 gap-2.5">
+            <div>
+              <label for="manual-cabang" class="block font-semibold text-slate-700 mb-1">Cabang Lomba</label>
+              <input id="manual-cabang" type="text" placeholder="IPA"
+                class="w-full px-3 py-2 rounded-lg border border-slate-300 outline-none focus:border-indigo-500" />
+            </div>
+            <div>
+              <label for="manual-kelas" class="block font-semibold text-slate-700 mb-1">Kelas / Rombel</label>
+              <input id="manual-kelas" type="text" placeholder="Contoh: 4 A atau IV (Empat)"
+                class="w-full px-3 py-2 rounded-lg border border-slate-300 outline-none focus:border-indigo-500" />
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-2.5">
+            <div>
+              <label for="manual-nisn" class="block font-semibold text-slate-700 mb-1">NISN (10 Digit)</label>
+              <input id="manual-nisn" type="text" placeholder="3160123456"
+                class="w-full px-3 py-2 rounded-lg border border-slate-300 outline-none focus:border-indigo-500" />
+            </div>
+            <div>
+              <label for="manual-tempat-lahir" class="block font-semibold text-slate-700 mb-1">Tempat Lahir</label>
+              <input id="manual-tempat-lahir" type="text" value="JEMBER"
+                class="w-full px-3 py-2 rounded-lg border border-slate-300 outline-none focus:border-indigo-500" />
+            </div>
+          </div>
+          <div>
+            <label for="manual-tgl-lahir" class="block font-semibold text-slate-700 mb-1">Tanggal Lahir</label>
+            <input id="manual-tgl-lahir" type="date"
+              class="w-full px-3 py-2 rounded-lg border border-slate-300 outline-none focus:border-indigo-500" />
+          </div>
+        </div>
+        <div class="flex justify-end gap-2 pt-2">
+          <button id="btn-cancel-manual" type="button" class="px-3.5 py-2 rounded-lg text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200">Batal</button>
+          <button id="btn-submit-manual" type="button" class="px-4 py-2 rounded-lg text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-sm">Tambahkan</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- DIALOG KONFIRMASI KUSTOM -->
+    <div id="confirm-modal" class="fixed inset-0 z-[60] hidden items-center justify-center p-4">
+      <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-[1px]"></div>
+      <div class="relative bg-white rounded-2xl shadow-2xl max-w-sm w-full p-5 space-y-4">
+        <div class="space-y-1.5">
+          <h3 id="confirm-title" class="text-sm font-bold text-slate-900">Konfirmasi</h3>
+          <p id="confirm-message" class="text-xs text-slate-600 leading-relaxed"></p>
+        </div>
+        <div class="flex justify-end gap-2 pt-1">
+          <button id="confirm-cancel-btn" type="button" class="px-3.5 py-2 rounded-lg text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200">Batal</button>
+          <button id="confirm-ok-btn" type="button" class="px-3.5 py-2 rounded-lg text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 shadow-sm">Lanjutkan</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- WADAH TOAST NOTIFIKASI -->
+    <div id="toast-container" class="fixed bottom-4 right-4 z-[70] flex flex-col gap-2 max-w-sm w-full pointer-events-none"></div>
+
+  </div>
+
+  <!-- =======================================================================
+       PANGGUNG CETAK KHUSUS (#print-stage) — HANYA AKTIF SAAT @media print
+       ======================================================================= -->
+  <div id="print-stage" aria-hidden="true"></div>
+
+  <!-- Hidden Container untuk Generator QR Code DataURL -->
+  <div id="hidden-qr-mount" style="position: absolute; left: -9999px; top: -9999px;"></div>
+
+  <!-- =======================================================================
+       JAVASCRIPT APPLICATION ENGINE
+       ======================================================================= -->
+  <script>
+    (function () {
+      'use strict';
+
+      const KEY_DB_SISWA = 'sdns04_db_siswa_v3';
+      const KEY_KOP_ASET = 'sdns04_kop_aset_v3';
+      const KEY_RIWAYAT  = 'sdns04_riwayat_surat_v3';
+
+      const BULAN_ID = [
+        'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+      ];
+
+      const ROMAWI_KELAS = {
+        1: 'I (Satu)',
+        2: 'II (Dua)',
+        3: 'III (Tiga)',
+        4: 'IV (Empat)',
+        5: 'V (Lima)',
+        6: 'VI (Enam)'
+      };
+
+      const MARGIN_PRESETS = {
+        standar:   { top: 2.0, bottom: 2.0, left: 2.0, right: 2.0 },
+        kedinasan: { top: 2.0, bottom: 2.0, left: 2.5, right: 2.0 },
+        rapat:     { top: 1.5, bottom: 1.5, left: 1.5, right: 1.5 }
+      };
+
+      // Sampel Siswa SDN Sumberejo 04
+      const SAMPLE_STUDENTS = [
+        { id: 's1', nama: 'Albian Rezky Chanakya', nisn: '3160127992', tempatLahir: 'JEMBER', tanggalLahir: '2016-11-08', rombel: '4 A' },
+        { id: 's2', nama: 'Mohamad Ali Fatan', nisn: '3161358649', tempatLahir: 'JEMBER', tanggalLahir: '2016-03-13', rombel: '4 A' },
+        { id: 's3', nama: 'Muhammad Arkan Leander Rafassya', nisn: '3161465081', tempatLahir: 'JEMBER', tanggalLahir: '2016-08-31', rombel: '4 A' },
+        { id: 's4', nama: 'Aisyah Putri Ramadhani', nisn: '3150241890', tempatLahir: 'JEMBER', tanggalLahir: '2015-07-19', rombel: '5 A' },
+        { id: 's5', nama: 'Bima Sakti Pratama', nisn: '3150983214', tempatLahir: 'JEMBER', tanggalLahir: '2015-05-04', rombel: '5 B' },
+        { id: 's6', nama: 'Cinta Kirana Dewi', nisn: '3140562178', tempatLahir: 'JEMBER', tanggalLahir: '2014-12-22', rombel: '6 A' },
+        { id: 's7', nama: 'Daffa Maulana Ibrahim', nisn: '3170198432', tempatLahir: 'JEMBER', tanggalLahir: '2017-02-14', rombel: '3 A' },
+        { id: 's8', nama: 'Naila Zahra Salsabila', nisn: '3160874512', tempatLahir: 'JEMBER', tanggalLahir: '2016-06-27', rombel: '4 B' }
+      ];
+
+      function getTodayISO() {
+        const d = new Date();
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const dd = String(d.getDate()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}`;
+      }
+
+      // STATE UTAMA APLIKASI
+      let studentDatabase = JSON.parse(JSON.stringify(SAMPLE_STUDENTS));
+      let dbSourceLabel = '8 Siswa Sampel Siap Pakai';
+      let isGasEnvironment = typeof google !== 'undefined' && google.script && google.script.run;
+      let cachedQrDataUrl = '';
+
+      let state = {
+        docType: 'aktif', // 'aktif' | 'tugas'
+        page: {
+          marginTop: 2.0,
+          marginBottom: 2.0,
+          marginLeft: 2.0,
+          marginRight: 2.0,
+          fontSize: 12,
+          showMarginGuide: false
+        },
+        kop: {
+          baris1: 'PEMERINTAH KABUPATEN JEMBER',
+          baris2: 'SD NEGERI SUMBEREJO 04',
+          baris3: 'Jalan Lapangan No. 88 Krajan Kidul Desa Sumberejo Kec. Ambulu',
+          baris4: 'Jember 68172',
+          baris5: 'E mail : sumbersdn04@gmail.com'
+        },
+        assets: {
+          logoKiri: '',
+          logoKanan: '',
+          stempel: '',
+          ttd: '',
+          stempelSize: 105,
+          ttdSize: 82,
+          stempelX: -38,
+          stempelY: -8
+        },
+        surat: {
+          judul: 'S U R A T   A K T I F',
+          nomor: '421.2/ 101 /335.09.310.02.20524058/2026',
+          kota: 'Kec. Ambulu',
+          tanggal: getTodayISO(),
+          pembuka: 'Yang bertanda tangan di bawah ini Kepala SD Negeri Sumberejo 04 Kec. Ambulu Kab. Jember :',
+          penghubung: 'Dengan ini menerangkan dengan sebenarnya bahwa :',
+          penutup1: 'Adalah benar-benar siswa SD Negeri Sumberejo 04 yang masih aktif belajar sampai dengan saat ini.',
+          penutup2: 'Demikian Surat aktif ini dibuat dengan sebenarnya dan dapat digunakan sebagaimana mestinya.'
+        },
+        ks: {
+          nama: 'Samsul Arifin, S.Pd',
+          nip: '197108252003121001',
+          pangkat: 'Penata Tk. I, III/d',
+          jabatan: 'Kepala SD Negeri Sumberejo 04'
+        },
+        guruTugas: {
+          nama: 'Ahmad Fauzi, S.Pd',
+          nip: '198504122010011015',
+          pangkat: 'Penata Muda, III/a',
+          jabatan: 'Guru Kelas IV / Pembina OSN'
+        },
+        toggles: {
+          showStempel: true,
+          showTtd: true,
+          showQr: true
+        },
+        formatOptions: {
+          kelasMode: 'romawi',  // 'romawi' | 'rombel'
+          naikKelas: false,
+          ttlMode: 'iso',       // 'iso' | 'id'
+          namaMode: 'title',    // 'title' | 'upper'
+          defaultCabang: 'IPA'
+        },
+        selectedStudents: [
+          { uid: 's1', nama: 'Albian Rezky Chanakya', cabang: 'IPA', rombel: '4 A', customKelas: '', nisn: '3160127992', tempatLahir: 'JEMBER', tanggalLahir: '2016-11-08' },
+          { uid: 's2', nama: 'Mohamad Ali Fatan', cabang: 'IPA', rombel: '4 A', customKelas: '', nisn: '3161358649', tempatLahir: 'JEMBER', tanggalLahir: '2016-03-13' },
+          { uid: 's3', nama: 'Muhammad Arkan Leander Rafassya', cabang: 'IPA', rombel: '4 A', customKelas: '', nisn: '3161465081', tempatLahir: 'JEMBER', tanggalLahir: '2016-08-31' }
+        ]
+      };
+
+      let currentZoomMode = 'auto';
+      let confirmCallback = null;
+
+      const $ = (id) => document.getElementById(id);
+
+      // =====================================================================
+      // UTILITAS TEXT & TANGGAL
+      // =====================================================================
+      function escapeHtml(str) {
+        return String(str == null ? '' : str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function toTitleCase(str) {
+        return String(str || '')
+          .toLowerCase()
+          .replace(/\b\w/g, (ch) => ch.toUpperCase());
+      }
+
+      function formatTanggalIndo(iso) {
+        if (!iso) return '-';
+        const parts = String(iso).split('-');
+        if (parts.length !== 3) return iso;
+        const y = parts[0];
+        const m = parseInt(parts[1], 10) - 1;
+        const d = String(parseInt(parts[2], 10)).padStart(2, '0');
+        if (m < 0 || m > 11) return iso;
+        return `${d} ${BULAN_ID[m]} ${y}`;
+      }
+
+      function formatNamaSiswa(rawNama) {
+        if (!rawNama) return '-';
+        return state.formatOptions.namaMode === 'upper'
+          ? String(rawNama).toUpperCase()
+          : toTitleCase(rawNama);
+      }
+
+      function extractGradeNumber(rombelStr) {
+        const str = String(rombelStr || '').trim().toUpperCase();
+        const digitMatch = str.match(/\b([1-6])\b/) || str.match(/([1-6])/);
+        if (digitMatch) return parseInt(digitMatch[1], 10);
+        if (/\bVI\b/.test(str)) return 6;
+        if (/\bV\b/.test(str)) return 5;
+        if (/\bIV\b/.test(str)) return 4;
+        if (/\bIII\b/.test(str)) return 3;
+        if (/\bII\b/.test(str)) return 2;
+        if (/\bI\b/.test(str)) return 1;
+        return null;
+      }
+
+      function formatKelasSiswa(student) {
+        if (student.customKelas && student.customKelas.trim() !== '') {
+          return student.customKelas.trim();
+        }
+        const rawRombel = String(student.rombel || '').trim();
+        let grade = extractGradeNumber(rawRombel);
+        if (grade !== null && state.formatOptions.naikKelas) {
+          grade = Math.min(6, grade + 1);
+        }
+
+        if (state.formatOptions.kelasMode === 'romawi') {
+          if (grade !== null && ROMAWI_KELAS[grade]) {
+            return ROMAWI_KELAS[grade];
+          }
+          return rawRombel || '-';
+        } else {
+          if (state.formatOptions.naikKelas && grade !== null && rawRombel) {
+            return rawRombel.replace(/[1-6]/, String(grade));
+          }
+          return rawRombel || (grade ? String(grade) : '-');
+        }
+      }
+
+      function formatTTLSiswa(student) {
+        const tempat = String(student.tempatLahir || '').trim();
+        const tgl = String(student.tanggalLahir || '').trim();
+        if (!tempat && !tgl) return '-';
+
+        if (state.formatOptions.ttlMode === 'iso') {
+          const tUpper = tempat.toUpperCase();
+          return tUpper && tgl ? `${tUpper}, ${tgl}` : (tUpper || tgl);
+        } else {
+          const tTitle = toTitleCase(tempat);
+          const tglId = formatTanggalIndo(tgl);
+          return tTitle && tgl ? `${tTitle}, ${tglId}` : (tTitle || tglId);
+        }
+      }
+
+      function normalizeExcelDate(val) {
+        if (val == null || val === '') return '';
+        if (typeof val === 'number') {
+          try {
+            const parsed = XLSX.SSF.parse_date_code(val);
+            if (parsed && parsed.y && parsed.m && parsed.d) {
+              return `${parsed.y}-${String(parsed.m).padStart(2, '0')}-${String(parsed.d).padStart(2, '0')}`;
+            }
+          } catch (e) { /* fallback */ }
+        }
+        if (val instanceof Date && !isNaN(val.getTime())) {
+          return `${val.getFullYear()}-${String(val.getMonth() + 1).padStart(2, '0')}-${String(val.getDate()).padStart(2, '0')}`;
+        }
+        const s = String(val).trim();
+        if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+        const dmy = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+        if (dmy) {
+          return `${dmy[3]}-${dmy[2].padStart(2, '0')}-${dmy[1].padStart(2, '0')}`;
+        }
+        return s;
+      }
+
+      function clampMargin(val, fallback) {
+        const num = parseFloat(val);
+        if (isNaN(num)) return fallback;
+        return Math.min(5, Math.max(0.5, Math.round(num * 100) / 100));
+      }
+
+      // =====================================================================
+      // TOAST NOTIFIKASI & DIALOG
+      // =====================================================================
+      function showToast(msg, type = 'success', duration = 3800) {
+        const container = $('toast-container');
+        const el = document.createElement('div');
+        const styles = {
+          success: 'bg-slate-900 text-white border-slate-700',
+          info: 'bg-indigo-700 text-white border-indigo-600',
+          error: 'bg-rose-600 text-white border-rose-500'
+        };
+        el.className = `pointer-events-auto animate-toast-in px-3.5 py-2.5 rounded-xl shadow-xl border text-xs font-semibold leading-relaxed ${styles[type] || styles.success}`;
+        el.textContent = msg;
+        container.appendChild(el);
+        setTimeout(() => {
+          el.style.opacity = '0';
+          el.style.transform = 'translateY(10px)';
+          el.style.transition = 'all 0.25s ease';
+          setTimeout(() => el.remove(), 260);
+        }, duration);
+      }
+
+      function openConfirm(title, message, onOk) {
+        $('confirm-title').textContent = title;
+        $('confirm-message').textContent = message;
+        confirmCallback = onOk;
+        $('confirm-modal').classList.remove('hidden');
+        $('confirm-modal').classList.add('flex');
+      }
+
+      function closeConfirm() {
+        $('confirm-modal').classList.add('hidden');
+        $('confirm-modal').classList.remove('flex');
+        confirmCallback = null;
+      }
+
+      // =====================================================================
+      // QR CODE VERIFIKASI KEABSAHAN DOKUMEN (STANDAR KEDINASAN)
+      // =====================================================================
+      function generateQrDataUrl(text) {
+        return new Promise((resolve) => {
+          const mount = $('hidden-qr-mount');
+          mount.innerHTML = '';
+          try {
+            new QRCode(mount, {
+              text: text,
+              width: 90,
+              height: 90,
+              colorDark: '#000000',
+              colorLight: '#ffffff',
+              correctLevel: QRCode.CorrectLevel.M
+            });
+            setTimeout(() => {
+              const img = mount.querySelector('img');
+              const canvas = mount.querySelector('canvas');
+              if (img && img.src) resolve(img.src);
+              else if (canvas) resolve(canvas.toDataURL('image/png'));
+              else resolve('');
+            }, 50);
+          } catch (e) {
+            resolve('');
+          }
+        });
+      }
+
+      async function refreshDocQrCode() {
+        if (!state.toggles.showQr) {
+          cachedQrDataUrl = '';
+          return;
+        }
+        const verifyPayload = [
+          'DOKUMEN RESMI ' + state.kop.baris2,
+          'Judul: ' + state.surat.judul,
+          'No: ' + (state.surat.nomor || '-'),
+          'Tgl: ' + (state.surat.tanggal || '-'),
+          'KS: ' + (state.ks.nama || '-'),
+          'Jml Siswa: ' + state.selectedStudents.length + ' Peserta'
+        ].join('\n');
+
+        cachedQrDataUrl = await generateQrDataUrl(verifyPayload);
+      }
+
+      // =====================================================================
+      // JEMBATAN HYBRID CLOUD: VERCEL EDGE PROXY & GOOGLE APPS SCRIPT
+      // =====================================================================
+      async function callGasApi(action, payload = {}) {
+        // 1. Jika berjalan di dalam Google Apps Script Web App (native iframe)
+        if (typeof google !== 'undefined' && google.script && google.script.run) {
+          return new Promise((resolve) => {
+            google.script.run
+              .withSuccessHandler((res) => resolve(res))
+              .withFailureHandler((err) => resolve({ success: false, message: err ? err.message : 'Error GAS' }))
+              [action](payload);
+          });
+        }
+
+        // 2. Baca URL dari config.js
+        const configUrl = (typeof APP_CONFIG !== 'undefined' && APP_CONFIG.GAS_WEBAPP_URL)
+          ? APP_CONFIG.GAS_WEBAPP_URL
+          : '';
+
+        if (!configUrl || configUrl.includes('GANTI_DENGAN_URL_WEB_APP')) {
+          return { success: false, offline: true, message: 'URL Web App GAS belum diatur di config.js' };
+        }
+
+        // 3. Gunakan Proxy Vercel (/api/gas) jika ada di Vercel, atau panggil langsung
+        const isVercel = window.location.hostname.includes('vercel.app') || window.location.hostname === 'localhost';
+        const targetEndpoint = (isVercel && (APP_CONFIG.USE_VERCEL_PROXY !== false)) ? '/api/gas' : configUrl;
+
+        try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), (APP_CONFIG.TIMEOUT_MS || 15000));
+
+          const res = await fetch(targetEndpoint, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'x-gas-url': configUrl
+            },
+            body: JSON.stringify({
+              action: action,
+              payload: payload,
+              gasUrl: configUrl
+            }),
+            signal: controller.signal
+          });
+
+          clearTimeout(timeoutId);
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          return await res.json();
+        } catch (err) {
+          console.warn('Gagal memanggil API GAS:', err);
+          return { success: false, message: err.message };
+        }
+      }
+
+      async function syncDataFromCloud() {
+        const pill = $('cloud-status-pill');
+        const text = $('cloud-status-text');
+
+        const configUrl = (typeof APP_CONFIG !== 'undefined' && APP_CONFIG.GAS_WEBAPP_URL) ? APP_CONFIG.GAS_WEBAPP_URL : '';
+        const hasValidUrl = configUrl && !configUrl.includes('GANTI_DENGAN_URL_WEB_APP');
+
+        if (!hasValidUrl && !isGasEnvironment) {
+          pill.className = 'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200 cursor-pointer';
+          text.textContent = 'Mode Lokal (config.js)';
+          return;
+        }
+
+        pill.className = 'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-800 border border-indigo-200 cursor-pointer';
+        text.textContent = 'Sinkronisasi...';
+
+        const res = await callGasApi('getInitialData');
+        if (res && res.success) {
+          pill.className = 'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 cursor-pointer';
+          text.textContent = 'Google Sheets Aktif';
+
+          // Sinkron kop & KS dari cloud jika ada
+          if (res.pengaturan) {
+            if (res.pengaturan.instansi_induk) state.kop.baris1 = res.pengaturan.instansi_induk;
+            if (res.pengaturan.nama_sekolah) state.kop.baris2 = res.pengaturan.nama_sekolah;
+            if (res.pengaturan.alamat_baris1) state.kop.baris3 = res.pengaturan.alamat_baris1;
+            if (res.pengaturan.alamat_baris2) state.kop.baris4 = res.pengaturan.alamat_baris2;
+            if (res.pengaturan.email_sekolah) state.kop.baris5 = 'E mail : ' + res.pengaturan.email_sekolah;
+            if (res.pengaturan.kepala_sekolah) state.ks.nama = res.pengaturan.kepala_sekolah;
+            if (res.pengaturan.nip_kepsek) state.ks.nip = res.pengaturan.nip_kepsek;
+            if (res.pengaturan.pangkat_gol) state.ks.pangkat = res.pengaturan.pangkat_gol;
+            if (res.pengaturan.jabatan_kepsek) state.ks.jabatan = res.pengaturan.jabatan_kepsek;
+            if (res.pengaturan.tempat_ttd) state.surat.kota = res.pengaturan.tempat_ttd;
+          }
+
+          // Sinkron data siswa dari cloud jika ada
+          if (Array.isArray(res.siswa) && res.siswa.length > 0) {
+            studentDatabase = res.siswa.map((s) => ({
+              id: s.id_siswa,
+              nama: s.nama_lengkap,
+              nisn: s.nisn,
+              tempatLahir: s.tempat_lahir,
+              tanggalLahir: s.tanggal_lahir,
+              rombel: s.rombel
+            }));
+            dbSourceLabel = `${studentDatabase.length} Siswa (Google Sheets)`;
+            $('excel-status-text').textContent = dbSourceLabel;
+            populateKelasFilter();
+            renderStudentPicker();
+          }
+
+          // Sinkron aset gambar dari cloud jika ada
+          if (res.aset) {
+            if (res.aset.logoKiri) state.assets.logoKiri = res.aset.logoKiri;
+            if (res.aset.logoKanan) state.assets.logoKanan = res.aset.logoKanan;
+            if (res.aset.stempel) state.assets.stempel = res.aset.stempel;
+            if (res.aset.ttd) state.assets.ttd = res.aset.ttd;
+            updateAssetThumbsUI();
+          }
+
+          syncStateToForm();
+          renderPreview();
+          showToast('Data berhasil disinkronkan dengan Google Sheets!');
+        } else {
+          pill.className = 'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200 cursor-pointer';
+          text.textContent = 'Mode Lokal';
+        }
+      }
+
+      // =====================================================================
+      // PENYIMPANAN LOCALSTORAGE & DUAL-MODE GOOGLE SHEETS
+      // =====================================================================
+      function saveKopAssetsToStorage() {
+        try {
+          localStorage.setItem(KEY_KOP_ASET, JSON.stringify({
+            kop: state.kop,
+            assets: state.assets,
+            ks: state.ks,
+            guruTugas: state.guruTugas,
+            page: state.page,
+            docType: state.docType
+          }));
+        } catch (err) {
+          console.warn('localStorage penuh:', err);
+        }
+      }
+
+      function loadKopAssetsFromStorage() {
+        try {
+          const raw = localStorage.getItem(KEY_KOP_ASET) || localStorage.getItem('sdns04_kop_aset_v2');
+          if (!raw) return;
+          const parsed = JSON.parse(raw);
+          if (parsed.kop) state.kop = { ...state.kop, ...parsed.kop };
+          if (parsed.assets) state.assets = { ...state.assets, ...parsed.assets };
+          if (parsed.ks) state.ks = { ...state.ks, ...parsed.ks };
+          if (parsed.guruTugas) state.guruTugas = { ...state.guruTugas, ...parsed.guruTugas };
+          if (parsed.page) state.page = { ...state.page, ...parsed.page };
+          if (parsed.docType) state.docType = parsed.docType;
+        } catch (err) {
+          console.warn('Gagal memuat kop/aset:', err);
+        }
+      }
+
+      function saveDbSiswaToStorage(label) {
+        try {
+          localStorage.setItem(KEY_DB_SISWA, JSON.stringify({
+            label: label || `${studentDatabase.length} Siswa Tersimpan`,
+            students: studentDatabase
+          }));
+          dbSourceLabel = label || `${studentDatabase.length} Siswa Tersimpan`;
+          $('excel-status-text').textContent = dbSourceLabel;
+        } catch (err) {
+          console.warn('Gagal simpan database siswa:', err);
+        }
+      }
+
+      function loadDbSiswaFromStorage() {
+        try {
+          const raw = localStorage.getItem(KEY_DB_SISWA) || localStorage.getItem('sdns04_db_siswa_v2');
+          if (!raw) return;
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed.students) && parsed.students.length > 0) {
+            studentDatabase = parsed.students;
+            dbSourceLabel = parsed.label || `${studentDatabase.length} Siswa Tersimpan`;
+          }
+        } catch (err) {
+          console.warn('Gagal memuat db siswa:', err);
+        }
+      }
+
+      function getHistoryList() {
+        try {
+          const raw = localStorage.getItem(KEY_RIWAYAT) || localStorage.getItem('sdns04_riwayat_surat_v2');
+          return raw ? JSON.parse(raw) : [];
+        } catch (e) {
+          return [];
+        }
+      }
+
+      function setHistoryList(list) {
+        try {
+          localStorage.setItem(KEY_RIWAYAT, JSON.stringify(list));
+          $('history-badge').textContent = list.length;
+        } catch (e) {
+          showToast('Penyimpanan riwayat penuh.', 'error');
+        }
+      }
+
+      function saveCurrentToHistory() {
+        const list = getHistoryList();
+        const names = state.selectedStudents.map((s) => formatNamaSiswa(s.nama)).slice(0, 2).join(', ');
+        const more = state.selectedStudents.length > 2 ? ` +${state.selectedStudents.length - 2} lainnya` : '';
+        const entry = {
+          id: 'hist_' + Date.now(),
+          docType: state.docType,
+          savedAt: new Date().toISOString(),
+          summary: {
+            tipe: state.docType === 'tugas' ? 'Surat Tugas' : 'Surat Aktif',
+            nomor: state.surat.nomor || '-',
+            tanggal: formatTanggalIndo(state.surat.tanggal),
+            jumlah: state.selectedStudents.length,
+            siswaPreview: (names || 'Belum ada siswa') + more
+          },
+          snapshot: {
+            docType: state.docType,
+            surat: JSON.parse(JSON.stringify(state.surat)),
+            ks: JSON.parse(JSON.stringify(state.ks)),
+            guruTugas: JSON.parse(JSON.stringify(state.guruTugas)),
+            page: JSON.parse(JSON.stringify(state.page)),
+            toggles: JSON.parse(JSON.stringify(state.toggles)),
+            formatOptions: JSON.parse(JSON.stringify(state.formatOptions)),
+            selectedStudents: JSON.parse(JSON.stringify(state.selectedStudents))
+          }
+        };
+        list.unshift(entry);
+        setHistoryList(list);
+        renderHistoryList();
+        showToast('Dokumen tersimpan ke Riwayat!');
+
+        // Sinkronisasi otomatis ke Google Sheets jika cloud aktif
+        callGasApi('saveSurat', {
+          id_surat: entry.id,
+          tipe_surat: entry.summary.tipe,
+          nomor_surat: state.surat.nomor,
+          tanggal_surat: state.surat.tanggal,
+          cabang_lomba: state.selectedStudents[0] ? state.selectedStudents[0].cabang : 'Lomba',
+          nama_kegiatan: state.surat.judul,
+          catatan: entry.summary.siswaPreview,
+          peserta: state.selectedStudents.map((s, idx) => ({
+            id_siswa: s.uid,
+            nama_siswa: s.nama,
+            cabang_lomba: s.cabang,
+            kelas_saat_surat: formatKelasSiswa(s),
+            nisn: s.nisn,
+            ttl: formatTTLSiswa(s)
+          }))
+        }).then((res) => {
+          if (res && res.success) {
+            showToast('Surat juga berhasil disimpan ke Google Sheets!');
+          }
+        });
+      }
+
+      // =====================================================================
+      // AUTO-FIT ENGINE: FIT TEPAT 1 HALAMAN A4 OTOMATIS
+      // =====================================================================
+      function applyAutoFitOnePage() {
+        const studentCount = state.selectedStudents.length;
+
+        if (studentCount <= 4) {
+          // 1 - 4 Siswa: Standar Resmi Longgar
+          state.page.fontSize = 12;
+          state.page.marginTop = 2.0;
+          state.page.marginBottom = 2.0;
+          state.page.marginLeft = 2.0;
+          state.page.marginRight = 2.0;
+          showToast('Mode 1 Halaman: Standar Resmi (Font 12pt, Margin 2.0cm)', 'info');
+        } else if (studentCount <= 7) {
+          // 5 - 7 Siswa: Mode Kompak
+          state.page.fontSize = 11;
+          state.page.marginTop = 1.7;
+          state.page.marginBottom = 1.6;
+          state.page.marginLeft = 1.8;
+          state.page.marginRight = 1.8;
+          showToast('Mode 1 Halaman: Kompak Presisi (Font 11pt, Margin 1.7cm)', 'info');
+        } else {
+          // 8 - 12 Siswa: Mode Padat
+          state.page.fontSize = 10.5;
+          state.page.marginTop = 1.4;
+          state.page.marginBottom = 1.4;
+          state.page.marginLeft = 1.5;
+          state.page.marginRight = 1.5;
+          showToast('Mode 1 Halaman: Super Padat (Font 10.5pt, Margin 1.4cm)', 'info');
+        }
+
+        syncMarginInputsUI();
+        saveKopAssetsToStorage();
+        renderPreview();
+      }
+
+      // =====================================================================
+      // SINKRONISASI MARGIN & ATURAN @PAGE DINAMIS
+      // =====================================================================
+      function updateDynamicPageStyle() {
+        const { marginTop, marginRight, marginBottom, marginLeft, fontSize, showMarginGuide } = state.page;
+        const styleEl = $('dynamic-page-style');
+        if (styleEl) {
+          styleEl.textContent = `
+            @media print {
+              @page {
+                size: 210mm 297mm;
+                margin: ${marginTop}cm ${marginRight}cm ${marginBottom}cm ${marginLeft}cm;
+              }
+            }
+          `;
+        }
+
+        const doc = $('a4-document');
+        if (doc) {
+          doc.style.padding = `${marginTop}cm ${marginRight}cm ${marginBottom}cm ${marginLeft}cm`;
+          doc.style.fontSize = `${fontSize}pt`;
+          doc.classList.toggle('show-margin-guide', Boolean(showMarginGuide));
+        }
+
+        const isUniform = marginTop === marginBottom && marginTop === marginLeft && marginTop === marginRight;
+        $('toolbar-margin-badge').textContent = isUniform ? `${marginTop}cm` : 'Kustom';
+
+        document.querySelectorAll('.btn-margin-preset').forEach((btn) => {
+          const p = MARGIN_PRESETS[btn.dataset.marginPreset];
+          const match = p &&
+            Math.abs(p.top - marginTop) < 0.01 &&
+            Math.abs(p.bottom - marginBottom) < 0.01 &&
+            Math.abs(p.left - marginLeft) < 0.01 &&
+            Math.abs(p.right - marginRight) < 0.01;
+          btn.classList.toggle('border-indigo-600', match);
+          btn.classList.toggle('bg-indigo-50', match);
+          btn.classList.toggle('text-indigo-700', match);
+        });
+      }
+
+      function syncMarginInputsUI() {
+        document.querySelectorAll('.margin-input-sync').forEach((inp) => {
+          const side = inp.dataset.side;
+          if (side === 'top') inp.value = state.page.marginTop;
+          if (side === 'bottom') inp.value = state.page.marginBottom;
+          if (side === 'left') inp.value = state.page.marginLeft;
+          if (side === 'right') inp.value = state.page.marginRight;
+        });
+        document.querySelectorAll('.font-size-sync').forEach((sel) => {
+          sel.value = String(state.page.fontSize);
+        });
+        $('toggle-margin-guide').checked = Boolean(state.page.showMarginGuide);
+      }
+
+      // =====================================================================
+      // ENGINE PEMBANGUN MARKUP SURAT RESMI (DIGUNAKAN OLEH PREVIEW & PRINT)
+      // =====================================================================
+      function buildLetterMarkup() {
+        const bodyFontPt = state.page.fontSize || 12;
+        const tableFontPt = bodyFontPt <= 10.5 ? 9.5 : (bodyFontPt === 11 ? 10 : 11);
+        const cellPadding = bodyFontPt <= 10.5 ? '3px 5px' : '4px 6px';
+
+        const hasKiri = Boolean(state.assets.logoKiri);
+        const hasKanan = Boolean(state.assets.logoKanan);
+        const showStempel = state.toggles.showStempel && Boolean(state.assets.stempel);
+        const showTtd = state.toggles.showTtd && Boolean(state.assets.ttd);
+        const showQr = state.toggles.showQr && Boolean(cachedQrDataUrl);
+
+        const isTugas = state.docType === 'tugas';
+
+        // Baris Tabel Siswa
+        const siswaRowsHtml = state.selectedStudents.length === 0
+          ? `<tr><td colspan="6" style="text-align: center; color: #64748b; padding: 12px; font-style: italic;">Belum ada peserta dipilih. Klik nama siswa di panel kiri.</td></tr>`
+          : state.selectedStudents.map((s, idx) => `
+            <tr>
+              <td style="text-align: center; padding: ${cellPadding};">${idx + 1}</td>
+              <td style="text-align: left; padding: ${cellPadding};">${escapeHtml(formatNamaSiswa(s.nama))}</td>
+              <td style="text-align: center; padding: ${cellPadding};">${escapeHtml(s.cabang || '-')}</td>
+              <td style="text-align: center; padding: ${cellPadding};">${escapeHtml(formatKelasSiswa(s))}</td>
+              <td style="text-align: center; padding: ${cellPadding}; font-family: monospace;">${escapeHtml(s.nisn || '-')}</td>
+              <td style="text-align: left; padding: ${cellPadding};">${escapeHtml(formatTTLSiswa(s))}</td>
+            </tr>
+          `).join('');
+
+        // Konten Khusus Surat Tugas vs Surat Aktif
+        const middleContentHtml = isTugas
+          ? `
+            <!-- BIODATA GURU PEMBINA / YANG DIBERI TUGAS -->
+            <p style="text-align: justify; margin: 0 0 4px 0;">Kepala SD Negeri Sumberejo 04 Kecamatan Ambulu Kabupaten Jember memberikan tugas kepada :</p>
+            <table class="biodata-table-official" style="font-size: ${bodyFontPt}pt;">
+              <tr><td class="col-label">N a m a</td><td class="col-colon">:</td><td style="font-weight: 700;">${escapeHtml(state.guruTugas.nama)}</td></tr>
+              <tr><td class="col-label">NIP</td><td class="col-colon">:</td><td>${escapeHtml(state.guruTugas.nip)}</td></tr>
+              <tr><td class="col-label">Pangkat / Gol.</td><td class="col-colon">:</td><td>${escapeHtml(state.guruTugas.pangkat)}</td></tr>
+              <tr><td class="col-label">Jabatan</td><td class="col-colon">:</td><td>${escapeHtml(state.guruTugas.jabatan)}</td></tr>
+            </table>
+
+            <p style="margin: 6px 0 5px 0;">Untuk mendampingi dan membina peserta didik SD Negeri Sumberejo 04 dalam kegiatan lomba, dengan rincian peserta sebagai berikut :</p>
+          `
+          : `
+            <!-- BIODATA KEPALA SEKOLAH (SURAT AKTIF) -->
+            <p style="text-align: justify; margin: 0 0 4px 0;">${escapeHtml(state.surat.pembuka)}</p>
+            <table class="biodata-table-official" style="font-size: ${bodyFontPt}pt;">
+              <tr><td class="col-label">N a m a</td><td class="col-colon">:</td><td style="font-weight: 700;">${escapeHtml(state.ks.nama)}</td></tr>
+              <tr><td class="col-label">NIP</td><td class="col-colon">:</td><td>${escapeHtml(state.ks.nip)}</td></tr>
+              <tr><td class="col-label">Pangkat/Gol.</td><td class="col-colon">:</td><td>${escapeHtml(state.ks.pangkat)}</td></tr>
+              <tr><td class="col-label">Jabatan</td><td class="col-colon">:</td><td>${escapeHtml(state.ks.jabatan)}</td></tr>
+            </table>
+
+            <p style="margin: 6px 0 5px 0;">${escapeHtml(state.surat.penghubung)}</p>
+          `;
+
+        const closingHtml = isTugas
+          ? `
+            <div style="margin-top: 8px; line-height: 1.4;">
+              <p style="text-align: justify; margin: 0 0 4px 0;">Demikian Surat Tugas ini dibuat dengan sebenarnya agar dapat dilaksanakan dengan penuh tanggung jawab dan dedikasi.</p>
+            </div>
+          `
+          : `
+            <div style="margin-top: 8px; line-height: 1.4;">
+              <p style="text-align: justify; margin: 0 0 4px 0;">${escapeHtml(state.surat.penutup1)}</p>
+              <p style="text-align: justify; margin: 0;">${escapeHtml(state.surat.penutup2)}</p>
+            </div>
+          `;
+
+        return `
+          <div class="print-letter-root" style="font-family: 'Times New Roman', Times, Georgia, serif; color: #000000; font-size: ${bodyFontPt}pt; line-height: 1.38;">
+
+            <!-- 1. KOP SURAT 3 KOLOM RESMI KEDINASAN -->
+            <table class="kop-table-official">
+              <tr>
+                <td style="width: 78px; text-align: center; vertical-align: middle;">
+                  ${hasKiri
+                    ? `<img src="${state.assets.logoKiri}" alt="Logo Jember" style="max-height: 76px; max-width: 76px; object-fit: contain; display: block; margin: 0 auto;" />`
+                    : `<div class="logo-placeholder-box" style="width: 66px; height: 72px; margin: 0 auto; border: 1px dashed #cbd5e1; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 8pt; color: #94a3b8; font-family: Inter, sans-serif; text-align: center; line-height: 1.15;">Logo<br/>Jember</div>`
+                  }
+                </td>
+                <td style="text-align: center; line-height: 1.18; padding: 0 6px;">
+                  <div style="font-size: 13.5pt; font-weight: 700;">${escapeHtml(state.kop.baris1)}</div>
+                  <div style="font-size: 15.5pt; font-weight: 700;">${escapeHtml(state.kop.baris2)}</div>
+                  <div style="font-size: 10pt;">${escapeHtml(state.kop.baris3)}</div>
+                  <div style="font-size: 10pt;">${escapeHtml(state.kop.baris4)}</div>
+                  <div style="font-size: 9.5pt; font-style: italic;">${escapeHtml(state.kop.baris5)}</div>
+                </td>
+                <td style="width: 78px; text-align: center; vertical-align: middle;">
+                  ${hasKanan
+                    ? `<img src="${state.assets.logoKanan}" alt="Logo Sekolah" style="max-height: 76px; max-width: 76px; object-fit: contain; display: block; margin: 0 auto;" />`
+                    : `<div class="logo-placeholder-box" style="width: 66px; height: 72px; margin: 0 auto; border: 1px dashed #cbd5e1; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 8pt; color: #94a3b8; font-family: Inter, sans-serif; text-align: center; line-height: 1.15;">Logo<br/>Sekolah</div>`
+                  }
+                </td>
+              </tr>
+            </table>
+
+            <!-- Garis Ganda Resmi Kedinasan -->
+            <div class="kop-divider-official"></div>
+
+            <!-- 2. JUDUL & NOMOR SURAT -->
+            <div style="text-align: center; margin-top: 8px; margin-bottom: 10px;">
+              <div style="font-size: 13pt; font-weight: 700; text-decoration: underline; letter-spacing: 0.5px;">${escapeHtml(state.surat.judul)}</div>
+              <div style="font-size: ${bodyFontPt}pt; margin-top: 1.5px;">Nomor : ${escapeHtml(state.surat.nomor)}</div>
+            </div>
+
+            <!-- 3. PEMBUKA & BIODATA -->
+            ${middleContentHtml}
+
+            <!-- 4. TABEL DAFTAR SISWA PESERTA -->
+            <table class="siswa-table-official" style="font-size: ${tableFontPt}pt;">
+              <thead>
+                <tr>
+                  <th style="width: 6%;">No</th>
+                  <th style="width: 28%;">Nama</th>
+                  <th style="width: 15%;">Cabang Lomba</th>
+                  <th style="width: 14%;">Kelas</th>
+                  <th style="width: 15%;">NISN</th>
+                  <th style="width: 22%;">Tempat Tanggal Lahir</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${siswaRowsHtml}
+              </tbody>
+            </table>
+
+            <!-- 5. PENUTUP -->
+            ${closingHtml}
+
+            <!-- 6. BLOK TANDA TANGAN + QR CODE VERIFIKASI (ANTI-TERPOTONG) -->
+            <div class="ttd-block-official" style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 18px; font-size: ${bodyFontPt}pt; line-height: 1.32; page-break-inside: avoid; break-inside: avoid;">
+
+              <!-- QR Code Verifikasi Kedinasan di Sisi Kiri Bawah -->
+              <div style="width: 160px; text-align: left;">
+                ${showQr
+                  ? `
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                      <img src="${cachedQrDataUrl}" alt="QR Verifikasi" style="width: 64px; height: 64px; object-fit: contain; border: 1px solid #000; padding: 2px;" />
+                      <div style="font-size: 7.5pt; font-family: Inter, sans-serif; line-height: 1.15; color: #334155;">
+                        <span style="font-weight: 700; color: #000; display: block;">VERIFIKASI RESMI</span>
+                        Dokumen digital sah terdaftar di pangkalan data SDN Sumberejo 04
+                      </div>
+                    </div>
+                  `
+                  : ''
+                }
+              </div>
+
+              <!-- Tanda Tangan & Stempel di Sisi Kanan -->
+              <div style="width: 245px; text-align: left;">
+                <div>${escapeHtml(state.surat.kota)}, ${escapeHtml(formatTanggalIndo(state.surat.tanggal))}</div>
+                <div>${escapeHtml(state.ks.jabatan)}</div>
+
+                <!-- Wadah Komposit Stempel & Tanda Tangan Digital -->
+                <div style="position: relative; height: 76px; margin: 2px 0;">
+                  ${showStempel
+                    ? `<img src="${state.assets.stempel}" alt="Stempel Sekolah" class="stamp-blend" style="position: absolute; left: ${state.assets.stempelX}px; top: ${state.assets.stempelY}px; height: ${state.assets.stempelSize}px; width: auto; object-fit: contain; z-index: 2; pointer-events: none;" />`
+                    : ''
+                  }
+                  ${showTtd
+                    ? `<img src="${state.assets.ttd}" alt="Tanda Tangan Kepala Sekolah" class="stamp-blend" style="position: absolute; left: 16px; top: -2px; height: ${state.assets.ttdSize}px; width: auto; object-fit: contain; z-index: 1; pointer-events: none;" />`
+                    : ''
+                  }
+                </div>
+
+                <div style="font-weight: 700; text-decoration: underline;">${escapeHtml(state.ks.nama)}</div>
+                <div>${state.ks.nip ? 'NIP. ' + escapeHtml(state.ks.nip) : ''}</div>
+              </div>
+            </div>
+
+          </div>
+        `;
+      }
+
+      // =====================================================================
+      // METERAN KETERISIAN HALAMAN A4 (FIT-TO-PAGE GAUGE)
+      // =====================================================================
+      function updatePageFitIndicator() {
+        const inner = $('preview-letter-mount');
+        const badge = $('page-fit-badge');
+        const text = $('page-fit-text');
+        if (!inner || !badge || !text) return;
+
+        // 1 cm = 37.7953 px (96 DPI CSS). Tinggi A4 = 29.7cm (~1122.5px)
+        const pxPerCm = 37.7952756;
+        const availHeightPx = (29.7 - state.page.marginTop - state.page.marginBottom) * pxPerCm;
+        const actualHeightPx = inner.scrollHeight;
+        const ratio = actualHeightPx / availHeightPx;
+        const percent = Math.round(ratio * 100);
+
+        if (ratio <= 1.0) {
+          badge.className = 'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200';
+          badge.querySelector('span:first-child').className = 'w-2 h-2 rounded-full bg-emerald-500';
+          text.textContent = `Muat Tepat 1 Halaman (${percent}% terisi)`;
+        } else {
+          const estPages = Math.ceil(ratio);
+          badge.className = 'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800 border border-amber-300';
+          badge.querySelector('span:first-child').className = 'w-2 h-2 rounded-full bg-amber-500 animate-pulse';
+          text.textContent = `Tumpah ${percent}% (Estimasi ${estPages} Hal) — Klik "Pas 1 Halaman"`;
+        }
+      }
+
+      async function renderPreview() {
+        updateDynamicPageStyle();
+        await refreshDocQrCode();
+        $('preview-letter-mount').innerHTML = buildLetterMarkup();
+        requestAnimationFrame(() => {
+          applyPreviewScale();
+          updatePageFitIndicator();
+        });
+      }
+
+      // =====================================================================
+      // CETAK / SIMPAN PDF A4 PRESISI TINGGI
+      // =====================================================================
+      async function triggerPrintPdf() {
+        try {
+          updateDynamicPageStyle();
+          await refreshDocQrCode();
+
+          const printStage = $('print-stage');
+          printStage.innerHTML = buildLetterMarkup();
+
+          const origTitle = document.title;
+          const noUrutMatch = (state.surat.nomor || '').match(/\/\s*(\d+)\s*\//);
+          const noUrut = noUrutMatch ? noUrutMatch[1] : 'Surat';
+          const tglClean = (state.surat.tanggal || getTodayISO()).replace(/[^0-9-]/g, '');
+          const prefix = state.docType === 'tugas' ? 'Surat_Tugas_Pembina' : 'Surat_Aktif_Lomba';
+          document.title = `${prefix}_SDN_Sumberejo_04_${noUrut}_${tglClean}`;
+
+          showToast('Membuka dialog cetak A4. Pastikan margin printer diatur ke "Default" & matikan "Header/Footer".', 'info', 4500);
+
+          setTimeout(() => {
+            window.print();
+            setTimeout(() => {
+              document.title = origTitle;
+            }, 600);
+          }, 150);
+        } catch (err) {
+          console.error(err);
+          showToast('Terjadi kendala saat membuka dialog cetak.', 'error');
+        }
+      }
+
+      // =====================================================================
+      // GENERATOR WORD (.DOC) PRESTISI TINGGI DENGAN KOMPOSIT CANVAS 2D
+      // =====================================================================
+      function loadImageAsync(src) {
+        return new Promise((resolve) => {
+          if (!src) return resolve(null);
+          const img = new Image();
+          img.onload = () => resolve(img);
+          img.onerror = () => resolve(null);
+          img.src = src;
+        });
+      }
+
+      async function prepareLogoForWord(dataUrl, maxBoxPx) {
+        if (!dataUrl) return null;
+        const img = await loadImageAsync(dataUrl);
+        if (!img || !img.naturalWidth || !img.naturalHeight) return null;
+
+        const ratio = Math.min(maxBoxPx / img.naturalWidth, maxBoxPx / img.naturalHeight);
+        const displayW = Math.max(1, Math.round(img.naturalWidth * ratio));
+        const displayH = Math.max(1, Math.round(img.naturalHeight * ratio));
+
+        const scale = 2; // Resolusi ganda agar tajam di Word
+        const canvas = document.createElement('canvas');
+        canvas.width = displayW * scale;
+        canvas.height = displayH * scale;
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+        return {
+          dataUrl: canvas.toDataURL('image/png'),
+          width: displayW,
+          height: displayH
+        };
+      }
+
+      async function buildCompositeSignaturePng() {
+        const wantStempel = state.toggles.showStempel && Boolean(state.assets.stempel);
+        const wantTtd = state.toggles.showTtd && Boolean(state.assets.ttd);
+        if (!wantStempel && !wantTtd) return null;
+
+        const [imgStempel, imgTtd] = await Promise.all([
+          wantStempel ? loadImageAsync(state.assets.stempel) : Promise.resolve(null),
+          wantTtd ? loadImageAsync(state.assets.ttd) : Promise.resolve(null)
+        ]);
+
+        if (!imgStempel && !imgTtd) return null;
+
+        const padLeft = 60;
+        const padTop = 15;
+        const logicalW = 280;
+        const logicalH = 105;
+        const dpiScale = 2;
+
+        const canvas = document.createElement('canvas');
+        canvas.width = logicalW * dpiScale;
+        canvas.height = logicalH * dpiScale;
+        const ctx = canvas.getContext('2d');
+
+        // Latar putih bersih untuk efek multiply tinta stempel di Word
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.scale(dpiScale, dpiScale);
+
+        // 1. Tanda Tangan
+        if (imgTtd && imgTtd.naturalHeight > 0) {
+          const h = state.assets.ttdSize;
+          const w = (imgTtd.naturalWidth / imgTtd.naturalHeight) * h;
+          ctx.save();
+          ctx.globalCompositeOperation = 'multiply';
+          ctx.drawImage(imgTtd, padLeft + 16, padTop - 2, w, h);
+          ctx.restore();
+        }
+
+        // 2. Stempel Menumpuk di atas TTD
+        if (imgStempel && imgStempel.naturalHeight > 0) {
+          const h = state.assets.stempelSize;
+          const w = (imgStempel.naturalWidth / imgStempel.naturalHeight) * h;
+          ctx.save();
+          ctx.globalCompositeOperation = 'multiply';
+          ctx.drawImage(imgStempel, padLeft + state.assets.stempelX, padTop + state.assets.stempelY, w, h);
+          ctx.restore();
+        }
+
+        return {
+          dataUrl: canvas.toDataURL('image/png'),
+          width: 210,
+          height: Math.round((logicalH / logicalW) * 210)
+        };
+      }
+
+      async function exportToWordDoc(mode = 'digital') {
+        const isDigital = mode === 'digital';
+        try {
+          const { marginTop, marginRight, marginBottom, marginLeft, fontSize } = state.page;
+          const tableFontPt = fontSize <= 10.5 ? 9.5 : (fontSize === 11 ? 10 : 11);
+
+          await refreshDocQrCode();
+
+          const [logoKiriObj, logoKananObj, sigComposite] = await Promise.all([
+            prepareLogoForWord(state.assets.logoKiri, 68),
+            prepareLogoForWord(state.assets.logoKanan, 68),
+            isDigital ? buildCompositeSignaturePng() : Promise.resolve(null)
+          ]);
+
+          const logoKiriHtml = logoKiriObj
+            ? `<img src="${logoKiriObj.dataUrl}" width="${logoKiriObj.width}" height="${logoKiriObj.height}" style="width:${logoKiriObj.width}px; height:${logoKiriObj.height}px;" />`
+            : '&nbsp;';
+
+          const logoKananHtml = logoKananObj
+            ? `<img src="${logoKananObj.dataUrl}" width="${logoKananObj.width}" height="${logoKananObj.height}" style="width:${logoKananObj.width}px; height:${logoKananObj.height}px;" />`
+            : '&nbsp;';
+
+          const sigAreaHtml = (isDigital && sigComposite)
+            ? `<p style="margin:2pt 0;"><img src="${sigComposite.dataUrl}" width="${sigComposite.width}" height="${sigComposite.height}" style="width:${sigComposite.width}px; height:${sigComposite.height}px; margin-left:-32pt;" /></p>`
+            : `<p style="line-height:48pt; font-size:48pt;">&nbsp;</p>`;
+
+          const qrWordHtml = (state.toggles.showQr && cachedQrDataUrl)
+            ? `<table cellpadding="0" cellspacing="0" border="0"><tr>
+                <td width="55" valign="middle"><img src="${cachedQrDataUrl}" width="50" height="50" style="width:50px;height:50px;border:1px solid #000;" /></td>
+                <td valign="middle" style="font-size:7.5pt; font-family:'Times New Roman', serif; line-height:1.1; color:#333;">
+                  <b>VERIFIKASI RESMI</b><br/>SDN Sumberejo 04
+                </td>
+               </tr></table>`
+            : '&nbsp;';
+
+          const isTugas = state.docType === 'tugas';
+
+          const middleWordHtml = isTugas
+            ? `
+              <p style="text-align:justify; font-size:${fontSize}pt; margin-bottom:4pt;">
+                Kepala SD Negeri Sumberejo 04 Kecamatan Ambulu Kabupaten Jember memberikan tugas kepada :
+              </p>
+              <table width="100%" cellpadding="1" cellspacing="0" border="0" style="width:100%; margin-left:16pt; margin-bottom:6pt; font-size:${fontSize}pt;">
+                <tr><td width="115pt" valign="top">N&nbsp;a&nbsp;m&nbsp;a</td><td width="12pt" align="center" valign="top">:</td><td valign="top"><b>${escapeHtml(state.guruTugas.nama)}</b></td></tr>
+                <tr><td width="115pt" valign="top">NIP</td><td width="12pt" align="center" valign="top">:</td><td valign="top">${escapeHtml(state.guruTugas.nip)}</td></tr>
+                <tr><td width="115pt" valign="top">Pangkat / Gol.</td><td width="12pt" align="center" valign="top">:</td><td valign="top">${escapeHtml(state.guruTugas.pangkat)}</td></tr>
+                <tr><td width="115pt" valign="top">Jabatan</td><td width="12pt" align="center" valign="top">:</td><td valign="top">${escapeHtml(state.guruTugas.jabatan)}</td></tr>
+              </table>
+              <p style="font-size:${fontSize}pt; margin-top:5pt; margin-bottom:5pt;">
+                Untuk mendampingi dan membina peserta didik SD Negeri Sumberejo 04 dalam kegiatan lomba, dengan rincian peserta sebagai berikut :
+              </p>
+            `
+            : `
+              <p style="text-align:justify; font-size:${fontSize}pt; margin-bottom:4pt;">
+                ${escapeHtml(state.surat.pembuka)}
+              </p>
+              <table width="100%" cellpadding="1" cellspacing="0" border="0" style="width:100%; margin-left:16pt; margin-bottom:6pt; font-size:${fontSize}pt;">
+                <tr><td width="115pt" valign="top">N&nbsp;a&nbsp;m&nbsp;a</td><td width="12pt" align="center" valign="top">:</td><td valign="top"><b>${escapeHtml(state.ks.nama)}</b></td></tr>
+                <tr><td width="115pt" valign="top">NIP</td><td width="12pt" align="center" valign="top">:</td><td valign="top">${escapeHtml(state.ks.nip)}</td></tr>
+                <tr><td width="115pt" valign="top">Pangkat/Gol.</td><td width="12pt" align="center" valign="top">:</td><td valign="top">${escapeHtml(state.ks.pangkat)}</td></tr>
+                <tr><td width="115pt" valign="top">Jabatan</td><td width="12pt" align="center" valign="top">:</td><td valign="top">${escapeHtml(state.ks.jabatan)}</td></tr>
+              </table>
+              <p style="font-size:${fontSize}pt; margin-top:5pt; margin-bottom:5pt;">
+                ${escapeHtml(state.surat.penghubung)}
+              </p>
+            `;
+
+          const closingWordHtml = isTugas
+            ? `
+              <p style="text-align:justify; font-size:${fontSize}pt; margin-top:6pt; margin-bottom:12pt;">
+                Demikian Surat Tugas ini dibuat dengan sebenarnya agar dapat dilaksanakan dengan penuh tanggung jawab dan dedikasi.
+              </p>
+            `
+            : `
+              <p style="text-align:justify; font-size:${fontSize}pt; margin-top:6pt; margin-bottom:4pt;">
+                ${escapeHtml(state.surat.penutup1)}
+              </p>
+              <p style="text-align:justify; font-size:${fontSize}pt; margin-bottom:12pt;">
+                ${escapeHtml(state.surat.penutup2)}
+              </p>
+            `;
+
+          const rowsWordHtml = state.selectedStudents.length === 0
+            ? `<tr><td colspan="6" style="border:1pt solid #000000; padding:6pt; text-align:center; font-style:italic;">Belum ada data peserta</td></tr>`
+            : state.selectedStudents.map((s, idx) => `
+              <tr>
+                <td style="border:1pt solid #000000; padding:3.5pt 4.5pt; text-align:center; vertical-align:middle;">${idx + 1}</td>
+                <td style="border:1pt solid #000000; padding:3.5pt 4.5pt; text-align:left; vertical-align:middle;">${escapeHtml(formatNamaSiswa(s.nama))}</td>
+                <td style="border:1pt solid #000000; padding:3.5pt 4.5pt; text-align:center; vertical-align:middle;">${escapeHtml(s.cabang || '-')}</td>
+                <td style="border:1pt solid #000000; padding:3.5pt 4.5pt; text-align:center; vertical-align:middle;">${escapeHtml(formatKelasSiswa(s))}</td>
+                <td style="border:1pt solid #000000; padding:3.5pt 4.5pt; text-align:center; vertical-align:middle;">${escapeHtml(s.nisn || '-')}</td>
+                <td style="border:1pt solid #000000; padding:3.5pt 4.5pt; text-align:left; vertical-align:middle;">${escapeHtml(formatTTLSiswa(s))}</td>
+              </tr>
+            `).join('');
+
+          const docWordXml = `
+<html xmlns:o="urn:schemas-microsoft-com:office:office"
+      xmlns:w="urn:schemas-microsoft-com:office:word"
+      xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+  <meta charset="utf-8" />
+  <title>${escapeHtml(state.surat.judul)} - SD Negeri Sumberejo 04</title>
+  <!--[if gte mso 9]>
+  <xml>
+    <w:WordDocument>
+      <w:View>Print</w:View>
+      <w:Zoom>100</w:Zoom>
+      <w:DoNotOptimizeForBrowser/>
+    </w:WordDocument>
+  </xml>
+  <![endif]-->
+  <style>
+    @page WordSection1 {
+      size: 21.0cm 29.7cm;
+      mso-page-orientation: portrait;
+      margin: ${marginTop}cm ${marginRight}cm ${marginBottom}cm ${marginLeft}cm;
+      mso-header-margin: 1.0cm;
+      mso-footer-margin: 1.0cm;
+      mso-paper-source: 0;
+    }
+    div.WordSection1 {
+      page: WordSection1;
+    }
+    body, p, div, td {
+      font-family: "Times New Roman", Times, serif;
+      font-size: ${fontSize}pt;
+      color: #000000;
+      line-height: 1.35;
+      margin: 0;
+      padding: 0;
+      mso-line-height-rule: exactly;
+    }
+    p.MsoNormal, li.MsoNormal, div.MsoNormal {
+      mso-style-priority: 99;
+      margin: 0pt;
+      margin-bottom: 0.0001pt;
+      font-family: "Times New Roman", Times, serif;
+    }
+    table {
+      border-collapse: collapse;
+      mso-table-lspace: 0pt;
+      mso-table-rspace: 0pt;
+      font-family: "Times New Roman", Times, serif;
+    }
+  </style>
+</head>
+<body>
+  <div class="WordSection1">
+
+    <!-- 1. KOP SURAT 3 KOLOM SIMETRIS -->
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%; border-collapse:collapse;">
+      <tr>
+        <td width="14%" align="center" valign="middle" style="padding:0;">${logoKiriHtml}</td>
+        <td width="72%" align="center" valign="middle" style="padding:0 4pt; line-height:1.15;">
+          <p style="font-size:13.5pt; font-weight:bold; text-align:center;">${escapeHtml(state.kop.baris1)}</p>
+          <p style="font-size:15.5pt; font-weight:bold; text-align:center;">${escapeHtml(state.kop.baris2)}</p>
+          <p style="font-size:10pt; text-align:center;">${escapeHtml(state.kop.baris3)}</p>
+          <p style="font-size:10pt; text-align:center;">${escapeHtml(state.kop.baris4)}</p>
+          <p style="font-size:9.5pt; font-style:italic; text-align:center;">${escapeHtml(state.kop.baris5)}</p>
+        </td>
+        <td width="14%" align="center" valign="middle" style="padding:0;">${logoKananHtml}</td>
+      </tr>
+    </table>
+
+    <!-- Garis Ganda Resmi Tanpa Celah Kosong di Word -->
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%; margin-top:3pt; margin-bottom:10pt;">
+      <tr><td style="border-top:2.5pt solid #000000; border-bottom:0.75pt solid #000000; height:2pt; font-size:1pt; line-height:1pt;">&nbsp;</td></tr>
+    </table>
+
+    <!-- 2. JUDUL & NOMOR SURAT -->
+    <p style="text-align:center; font-size:13pt; font-weight:bold; text-decoration:underline; margin-top:2pt; margin-bottom:2pt;">
+      ${escapeHtml(state.surat.judul).replace(/ /g, '&nbsp;')}
+    </p>
+    <p style="text-align:center; font-size:${fontSize}pt; margin-bottom:10pt;">
+      Nomor : ${escapeHtml(state.surat.nomor)}
+    </p>
+
+    <!-- 3. PEMBUKA & BIODATA -->
+    ${middleWordHtml}
+
+    <!-- 4. TABEL DAFTAR PESERTA -->
+    <table width="100%" cellpadding="0" cellspacing="0" border="1"
+      style="width:100%; border-collapse:collapse; border:1pt solid #000000; font-size:${tableFontPt}pt; margin-bottom:8pt;">
+      <thead>
+        <tr>
+          <th width="6%" style="border:1pt solid #000000; padding:3.5pt 4pt; text-align:center; font-weight:bold;">No</th>
+          <th width="28%" style="border:1pt solid #000000; padding:3.5pt 4pt; text-align:center; font-weight:bold;">Nama</th>
+          <th width="15%" style="border:1pt solid #000000; padding:3.5pt 4pt; text-align:center; font-weight:bold;">Cabang Lomba</th>
+          <th width="14%" style="border:1pt solid #000000; padding:3.5pt 4pt; text-align:center; font-weight:bold;">Kelas</th>
+          <th width="15%" style="border:1pt solid #000000; padding:3.5pt 4pt; text-align:center; font-weight:bold;">NISN</th>
+          <th width="22%" style="border:1pt solid #000000; padding:3.5pt 4pt; text-align:center; font-weight:bold;">Tempat Tanggal Lahir</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rowsWordHtml}
+      </tbody>
+    </table>
+
+    <!-- 5. PENUTUP -->
+    ${closingWordHtml}
+
+    <!-- 6. BLOK TANDA TANGAN & QR VERIFIKASI (TETAP RAPI DI WORD) -->
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%; margin-top:8pt; page-break-inside:avoid;">
+      <tr>
+        <td width="48%" valign="bottom" style="padding-bottom:2pt;">
+          ${qrWordHtml}
+        </td>
+        <td width="52%" valign="top" style="font-size:${fontSize}pt; line-height:1.32;">
+          <p>${escapeHtml(state.surat.kota)}, ${escapeHtml(formatTanggalIndo(state.surat.tanggal))}</p>
+          <p>${escapeHtml(state.ks.jabatan)}</p>
+          ${sigAreaHtml}
+          <p style="font-weight:bold; text-decoration:underline;">${escapeHtml(state.ks.nama)}</p>
+          <p>${state.ks.nip ? 'NIP. ' + escapeHtml(state.ks.nip) : ''}</p>
+        </td>
+      </tr>
+    </table>
+
+  </div>
+</body>
+</html>`;
+
+          const blob = new Blob(['\ufeff', docWordXml], { type: 'application/msword;charset=utf-8' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+
+          const noUrutMatch = (state.surat.nomor || '').match(/\/\s*(\d+)\s*\//);
+          const noUrut = noUrutMatch ? noUrutMatch[1] : 'Surat';
+          const tglClean = (state.surat.tanggal || getTodayISO()).replace(/[^0-9-]/g, '');
+          const prefix = isTugas ? 'Surat_Tugas_Pembina' : 'Surat_Aktif_Lomba';
+          const suffix = isDigital ? 'Digital' : 'Basah';
+          a.download = `${prefix}_SDN_Sumberejo_04_${noUrut}_${tglClean}_${suffix}.doc`;
+
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+
+          showToast(`File Microsoft Word (.doc) ${isDigital ? 'Siap Cetak' : 'TTD Basah'} berhasil diunduh!`);
+        } catch (err) {
+          console.error(err);
+          showToast('Gagal mengekspor file Word.', 'error');
+        }
+      }
+
+      // =====================================================================
+      // PARSER FILE EXCEL DAPODIK (.XLSX / .XLS / .CSV)
+      // =====================================================================
+      function handleExcelUpload(file) {
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          try {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            const firstSheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[firstSheetName];
+            const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: '' });
+
+            if (!rows || rows.length === 0) {
+              showToast('File Excel kosong.', 'error');
+              return;
+            }
+
+            let headerRowIdx = -1;
+            let colMap = { nama: -1, nisn: -1, tempat: -1, tgl: -1, rombel: -1 };
+
+            const scanLimit = Math.min(rows.length, 15);
+            for (let r = 0; r < scanLimit; r++) {
+              const row = rows[r].map((cell) => String(cell || '').trim().toLowerCase());
+              const namaIdx = row.findIndex((c) => c === 'nama' || c === 'nama lengkap' || c === 'nama peserta didik' || c === 'nama siswa');
+              const nisnIdx = row.findIndex((c) => c === 'nisn');
+
+              if (namaIdx !== -1 && (nisnIdx !== -1 || row.some((c) => c.includes('rombel') || c.includes('kelas') || c.includes('lahir')))) {
+                headerRowIdx = r;
+                colMap.nama = namaIdx;
+                colMap.nisn = nisnIdx;
+                colMap.tempat = row.findIndex((c) => c.includes('tempat lahir') || c === 'tmp lahir');
+                colMap.tgl = row.findIndex((c) => c.includes('tanggal lahir') || c === 'tgl lahir');
+                colMap.rombel = row.findIndex((c) => c.includes('rombel') || c === 'kelas' || c === 'tingkat');
+
+                if (colMap.rombel === -1 && rows[r].length >= 43) {
+                  colMap.rombel = 42;
+                }
+                break;
+              }
+            }
+
+            if (headerRowIdx === -1 || colMap.nama === -1) {
+              showToast('Kolom "Nama" tidak ditemukan di file Excel.', 'error');
+              return;
+            }
+
+            const parsedStudents = [];
+            for (let r = headerRowIdx + 1; r < rows.length; r++) {
+              const row = rows[r];
+              if (!row) continue;
+              const rawNama = String(row[colMap.nama] || '').trim();
+              if (!rawNama) continue;
+              if (rawNama.toLowerCase() === 'nama' || rawNama.toLowerCase() === 'nama peserta didik') continue;
+
+              const nisn = colMap.nisn !== -1 ? String(row[colMap.nisn] || '').trim().replace(/\.0$/, '') : '';
+              const tempatLahir = colMap.tempat !== -1 ? String(row[colMap.tempat] || '').trim() : '';
+              const tanggalLahir = colMap.tgl !== -1 ? normalizeExcelDate(row[colMap.tgl]) : '';
+              const rombel = colMap.rombel !== -1 ? String(row[colMap.rombel] || '').trim() : '';
+
+              parsedStudents.push({
+                id: 'db_' + r + '_' + (nisn || rawNama.slice(0, 8)),
+                nama: rawNama,
+                nisn,
+                tempatLahir,
+                tanggalLahir,
+                rombel
+              });
+            }
+
+            if (parsedStudents.length === 0) {
+              showToast('Tidak ada data siswa terbaca.', 'error');
+              return;
+            }
+
+            studentDatabase = parsedStudents;
+            saveDbSiswaToStorage(`${parsedStudents.length} Siswa (${file.name})`);
+            populateKelasFilter();
+            renderStudentPicker();
+            showToast(`Berhasil memuat ${parsedStudents.length} siswa dari Excel!`);
+          } catch (err) {
+            console.error(err);
+            showToast('Gagal membaca file Excel.', 'error');
+          }
+        };
+        reader.readAsArrayBuffer(file);
+      }
+
+      // =====================================================================
+      // EKSTRAKSI OTOMATIS GAMBAR DARI .DOCX MENGGUNAKAN JSZIP
+      // =====================================================================
+      async function handleDocxImageExtract(file) {
+        if (!file) return;
+        try {
+          const zip = await JSZip.loadAsync(file);
+          const mediaFiles = [];
+
+          zip.forEach((relativePath, zipEntry) => {
+            if (!zipEntry.dir && /^word\/media\/image\d+\.(png|jpe?g|webp|gif)$/i.test(relativePath)) {
+              const numMatch = relativePath.match(/image(\d+)\./i);
+              const num = numMatch ? parseInt(numMatch[1], 10) : 999;
+              mediaFiles.push({ path: relativePath, num, entry: zipEntry });
+            }
+          });
+
+          if (mediaFiles.length === 0) {
+            showToast('Tidak ditemukan gambar di dalam file .docx tersebut.', 'error');
+            return;
+          }
+
+          mediaFiles.sort((a, b) => a.num - b.num);
+
+          const toDataUrl = async (item) => {
+            if (!item) return '';
+            const ext = item.path.split('.').pop().toLowerCase();
+            const mime = ext === 'jpg' || ext === 'jpeg' ? 'image/jpeg' : (ext === 'webp' ? 'image/webp' : 'image/png');
+            const base64 = await item.entry.async('base64');
+            return `data:${mime};base64,${base64}`;
+          };
+
+          const [img1, img2, img3, img4] = await Promise.all([
+            toDataUrl(mediaFiles[0]),
+            toDataUrl(mediaFiles[1]),
+            toDataUrl(mediaFiles[2]),
+            toDataUrl(mediaFiles[3])
+          ]);
+
+          if (img1) state.assets.logoKiri = img1;
+          if (img2) state.assets.logoKanan = img2;
+          if (img3) state.assets.stempel = img3;
+          if (img4) state.assets.ttd = img4;
+
+          saveKopAssetsToStorage();
+          updateAssetThumbsUI();
+          renderPreview();
+          showToast(`Berhasil mengekstrak ${Math.min(mediaFiles.length, 4)} gambar dari .docx!`);
+        } catch (err) {
+          console.error(err);
+          showToast('Gagal membaca file .docx.', 'error');
+        }
+      }
+
+      function readManualImageFile(file, maxDim, callback) {
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          const img = new Image();
+          img.onload = () => {
+            try {
+              const canvas = document.createElement('canvas');
+              let { width, height } = img;
+              if (width > maxDim || height > maxDim) {
+                const ratio = Math.min(maxDim / width, maxDim / height);
+                width = Math.round(width * ratio);
+                height = Math.round(height * ratio);
+              }
+              canvas.width = width;
+              canvas.height = height;
+              const ctx = canvas.getContext('2d');
+              ctx.clearRect(0, 0, width, height);
+              ctx.drawImage(img, 0, 0, width, height);
+              callback(canvas.toDataURL('image/png'));
+            } catch (e) {
+              callback(ev.target.result);
+            }
+          };
+          img.src = ev.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+
+      // =====================================================================
+      // RENDER UI DAFTAR SISWA & KONTROL
+      // =====================================================================
+      function populateKelasFilter() {
+        const select = $('filter-kelas');
+        const currentVal = select.value;
+        const rombels = [...new Set(studentDatabase.map((s) => s.rombel).filter(Boolean))].sort((a, b) =>
+          a.localeCompare(b, 'id', { numeric: true })
+        );
+
+        select.innerHTML = '<option value="">Semua Kelas</option>' +
+          rombels.map((r) => `<option value="${escapeHtml(r)}">Kelas ${escapeHtml(r)}</option>`).join('');
+
+        if (rombels.includes(currentVal)) {
+          select.value = currentVal;
+        }
+      }
+
+      function renderStudentPicker() {
+        const query = ($('search-siswa').value || '').trim().toLowerCase();
+        const kelasFilter = $('filter-kelas').value;
+        const container = $('student-picker-list');
+
+        const filtered = studentDatabase.filter((s) => {
+          const matchKelas = !kelasFilter || s.rombel === kelasFilter;
+          if (!matchKelas) return false;
+          if (!query) return true;
+          return (
+            String(s.nama || '').toLowerCase().includes(query) ||
+            String(s.nisn || '').toLowerCase().includes(query)
+          );
+        });
+
+        $('siswa-count-shown').textContent = `${filtered.length} dari ${studentDatabase.length} siswa`;
+
+        if (filtered.length === 0) {
+          container.innerHTML = `<div class="p-4 text-center text-xs text-slate-400">Siswa tidak ditemukan.</div>`;
+          return;
+        }
+
+        const selectedIds = new Set(state.selectedStudents.map((x) => x.uid));
+        const displayList = filtered.slice(0, 150);
+
+        container.innerHTML = displayList.map((s) => {
+          const isSelected = selectedIds.has(s.id);
+          return `
+            <button type="button" data-student-id="${escapeHtml(s.id)}"
+              class="btn-pick-student w-full text-left px-3 py-2 flex items-center justify-between gap-2 hover:bg-indigo-50/70 transition ${isSelected ? 'bg-emerald-50/80' : 'bg-white'}">
+              <div class="min-w-0 flex-1">
+                <div class="text-xs font-semibold ${isSelected ? 'text-emerald-900' : 'text-slate-800'} truncate">
+                  ${escapeHtml(formatNamaSiswa(s.nama))}
+                </div>
+                <div class="text-[11px] text-slate-500 flex items-center gap-2 mt-0.5">
+                  <span class="px-1.5 py-0.2 rounded bg-slate-100 text-slate-700 font-medium">${escapeHtml(s.rombel || '-')}</span>
+                  <span class="font-mono">${escapeHtml(s.nisn || 'Tanpa NISN')}</span>
+                </div>
+              </div>
+              <div class="shrink-0">
+                ${isSelected
+                  ? `<span class="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center"><i data-lucide="check" class="w-3.5 h-3.5"></i></span>`
+                  : `<span class="w-5 h-5 rounded-full border border-slate-300 text-slate-400 flex items-center justify-center"><i data-lucide="plus" class="w-3 h-3"></i></span>`
+                }
+              </div>
+            </button>
+          `;
+        }).join('');
+
+        container.querySelectorAll('.btn-pick-student').forEach((btn) => {
+          btn.addEventListener('click', () => toggleStudentInLetter(btn.dataset.studentId));
+        });
+
+        lucide.createIcons({ nodes: [container] });
+      }
+
+      function toggleStudentInLetter(studentId) {
+        const idx = state.selectedStudents.findIndex((s) => s.uid === studentId);
+        if (idx !== -1) {
+          state.selectedStudents.splice(idx, 1);
+        } else {
+          const found = studentDatabase.find((s) => s.id === studentId);
+          if (!found) return;
+          state.selectedStudents.push({
+            uid: found.id,
+            nama: found.nama,
+            cabang: state.formatOptions.defaultCabang || 'IPA',
+            rombel: found.rombel,
+            customKelas: '',
+            nisn: found.nisn,
+            tempatLahir: found.tempatLahir,
+            tanggalLahir: found.tanggalLahir
+          });
+        }
+        renderStudentPicker();
+        renderSelectedStudentsList();
+        renderPreview();
+      }
+
+      function renderSelectedStudentsList() {
+        const container = $('selected-students-container');
+        $('selected-count').textContent = state.selectedStudents.length;
+
+        if (state.selectedStudents.length === 0) {
+          container.innerHTML = `
+            <div class="p-4 rounded-xl border border-dashed border-slate-300 text-center text-xs text-slate-400">
+              Belum ada siswa dipilih. Klik nama siswa di daftar atas untuk memasukkannya ke surat.
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = state.selectedStudents.map((s, idx) => `
+          <div class="p-2.5 rounded-xl border border-slate-200 bg-white shadow-sm space-y-2">
+            <div class="flex items-center justify-between gap-2">
+              <div class="flex items-center gap-2 min-w-0">
+                <span class="w-5 h-5 rounded-md bg-indigo-100 text-indigo-700 text-[11px] font-bold flex items-center justify-center shrink-0">${idx + 1}</span>
+                <span class="text-xs font-bold text-slate-800 truncate">${escapeHtml(formatNamaSiswa(s.nama))}</span>
+              </div>
+              <div class="flex items-center gap-1 shrink-0">
+                <button type="button" data-move-up="${idx}" ${idx === 0 ? 'disabled' : ''} title="Pindah ke atas"
+                  class="btn-move-up p-1 rounded hover:bg-slate-100 text-slate-500 disabled:opacity-30">
+                  <i data-lucide="chevron-up" class="w-3.5 h-3.5"></i>
+                </button>
+                <button type="button" data-move-down="${idx}" ${idx === state.selectedStudents.length - 1 ? 'disabled' : ''} title="Pindah ke bawah"
+                  class="btn-move-down p-1 rounded hover:bg-slate-100 text-slate-500 disabled:opacity-30">
+                  <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
+                </button>
+                <button type="button" data-del-idx="${idx}" title="Hapus dari surat"
+                  class="btn-del-selected p-1 rounded hover:bg-rose-50 text-rose-500">
+                  <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Cabang Lomba</label>
+                <input type="text" data-idx="${idx}" value="${escapeHtml(s.cabang)}"
+                  class="inline-cabang-input w-full px-2 py-1 text-xs rounded-md border border-slate-300 focus:border-indigo-500 outline-none" />
+              </div>
+              <div>
+                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Kelas (Opsional)</label>
+                <input type="text" data-idx="${idx}" value="${escapeHtml(s.customKelas)}" placeholder="${escapeHtml(formatKelasSiswa({ ...s, customKelas: '' }))}"
+                  class="inline-kelas-input w-full px-2 py-1 text-xs rounded-md border border-slate-300 focus:border-indigo-500 outline-none" />
+              </div>
+            </div>
+          </div>
+        `).join('');
+
+        container.querySelectorAll('.inline-cabang-input').forEach((inp) => {
+          inp.addEventListener('input', (e) => {
+            const i = parseInt(e.target.dataset.idx, 10);
+            if (state.selectedStudents[i]) {
+              state.selectedStudents[i].cabang = e.target.value;
+              renderPreview();
+            }
+          });
+        });
+
+        container.querySelectorAll('.inline-kelas-input').forEach((inp) => {
+          inp.addEventListener('input', (e) => {
+            const i = parseInt(e.target.dataset.idx, 10);
+            if (state.selectedStudents[i]) {
+              state.selectedStudents[i].customKelas = e.target.value;
+              renderPreview();
+            }
+          });
+        });
+
+        container.querySelectorAll('.btn-move-up').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const i = parseInt(btn.dataset.moveUp, 10);
+            if (i > 0) {
+              [state.selectedStudents[i - 1], state.selectedStudents[i]] = [state.selectedStudents[i], state.selectedStudents[i - 1]];
+              renderSelectedStudentsList();
+              renderPreview();
+            }
+          });
+        });
+
+        container.querySelectorAll('.btn-move-down').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const i = parseInt(btn.dataset.moveDown, 10);
+            if (i < state.selectedStudents.length - 1) {
+              [state.selectedStudents[i + 1], state.selectedStudents[i]] = [state.selectedStudents[i], state.selectedStudents[i + 1]];
+              renderSelectedStudentsList();
+              renderPreview();
+            }
+          });
+        });
+
+        container.querySelectorAll('.btn-del-selected').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const i = parseInt(btn.dataset.delIdx, 10);
+            state.selectedStudents.splice(i, 1);
+            renderStudentPicker();
+            renderSelectedStudentsList();
+            renderPreview();
+          });
+        });
+
+        lucide.createIcons({ nodes: [container] });
+      }
+
+      function renderHistoryList() {
+        const list = getHistoryList();
+        const container = $('history-list-container');
+        $('history-badge').textContent = list.length;
+        $('btn-clear-all-history').classList.toggle('hidden', list.length === 0);
+
+        if (list.length === 0) {
+          container.innerHTML = `
+            <div class="flex flex-col items-center justify-center text-center py-10 px-4 text-slate-400">
+              <i data-lucide="archive" class="w-9 h-9 mb-2 text-slate-300"></i>
+              <p class="text-xs font-semibold text-slate-600">Belum ada riwayat surat</p>
+            </div>
+          `;
+          lucide.createIcons({ nodes: [container] });
+          return;
+        }
+
+        container.innerHTML = list.map((item) => `
+          <div class="bg-white rounded-xl border border-slate-200 p-3 shadow-sm space-y-2">
+            <div class="flex items-start justify-between gap-2">
+              <div class="min-w-0">
+                <span class="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-700">${item.summary.tipe || 'Surat'} (${item.summary.jumlah} Siswa)</span>
+                <div class="text-[11px] font-mono text-slate-500 mt-1 truncate">${escapeHtml(item.summary.nomor)}</div>
+              </div>
+              <span class="text-[11px] text-slate-500 shrink-0">${escapeHtml(item.summary.tanggal)}</span>
+            </div>
+            <p class="text-xs font-semibold text-slate-800">${escapeHtml(item.summary.siswaPreview)}</p>
+            <div class="pt-1.5 border-t border-slate-100 flex justify-end gap-2">
+              <button type="button" data-del-hist="${item.id}" class="btn-hist-del px-2.5 py-1 rounded-lg text-xs font-medium text-rose-600 hover:bg-rose-50">Hapus</button>
+              <button type="button" data-load-hist="${item.id}" class="btn-hist-load px-3 py-1 rounded-lg text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-sm">Muat</button>
+            </div>
+          </div>
+        `).join('');
+
+        container.querySelectorAll('.btn-hist-load').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const found = getHistoryList().find((x) => x.id === btn.dataset.loadHist);
+            if (found && found.snapshot) {
+              state.docType = found.snapshot.docType || 'aktif';
+              state.surat = JSON.parse(JSON.stringify(found.snapshot.surat));
+              state.ks = JSON.parse(JSON.stringify(found.snapshot.ks));
+              if (found.snapshot.guruTugas) state.guruTugas = JSON.parse(JSON.stringify(found.snapshot.guruTugas));
+              if (found.snapshot.page) state.page = { ...state.page, ...found.snapshot.page };
+              state.toggles = JSON.parse(JSON.stringify(found.snapshot.toggles));
+              state.formatOptions = JSON.parse(JSON.stringify(found.snapshot.formatOptions));
+              state.selectedStudents = JSON.parse(JSON.stringify(found.snapshot.selectedStudents));
+
+              syncStateToForm();
+              renderStudentPicker();
+              renderSelectedStudentsList();
+              renderPreview();
+              showToast('Surat dimuat dari riwayat.', 'info');
+            }
+          });
+        });
+
+        container.querySelectorAll('.btn-hist-del').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            openConfirm('Hapus Riwayat?', 'Surat ini akan dihapus dari riwayat.', () => {
+              setHistoryList(getHistoryList().filter((x) => x.id !== btn.dataset.delHist));
+              renderHistoryList();
+              showToast('Riwayat dihapus.');
+            });
+          });
+        });
+
+        lucide.createIcons({ nodes: [container] });
+      }
+
+      function updateAssetThumbsUI() {
+        const map = [
+          ['logoKiri', 'thumb-logo-kiri', 'empty-logo-kiri'],
+          ['logoKanan', 'thumb-logo-kanan', 'empty-logo-kanan'],
+          ['stempel', 'thumb-stempel', 'empty-stempel'],
+          ['ttd', 'thumb-ttd', 'empty-ttd']
+        ];
+        map.forEach(([key, imgId, emptyId]) => {
+          const val = state.assets[key];
+          const has = Boolean(val);
+          $(imgId).src = val || '';
+          $(imgId).classList.toggle('hidden', !has);
+          $(emptyId).classList.toggle('hidden', has);
+        });
+
+        $('slider-stempel-size').value = state.assets.stempelSize;
+        $('lbl-stempel-size').textContent = `${state.assets.stempelSize}px`;
+        $('slider-ttd-size').value = state.assets.ttdSize;
+        $('lbl-ttd-size').textContent = `${state.assets.ttdSize}px`;
+        $('slider-stempel-x').value = state.assets.stempelX;
+        $('lbl-stempel-x').textContent = `${state.assets.stempelX}px`;
+        $('slider-stempel-y').value = state.assets.stempelY;
+        $('lbl-stempel-y').textContent = `${state.assets.stempelY}px`;
+      }
+
+      function syncStateToForm() {
+        $('select-doc-type').value = state.docType;
+        const isTugas = state.docType === 'tugas';
+        $('section-guru-tugas').classList.toggle('hidden', !isTugas);
+
+        $('excel-status-text').textContent = dbSourceLabel;
+        syncMarginInputsUI();
+
+        $('default-cabang-lomba').value = state.formatOptions.defaultCabang;
+        $('opt-format-kelas').value = state.formatOptions.kelasMode;
+        $('opt-naik-kelas').checked = state.formatOptions.naikKelas;
+        $('opt-format-ttl').value = state.formatOptions.ttlMode;
+        $('opt-format-nama').value = state.formatOptions.namaMode;
+
+        $('input-judul-surat').value = state.surat.judul;
+        $('input-nomor-surat').value = state.surat.nomor;
+        $('input-kota-surat').value = state.surat.kota;
+        $('input-tanggal-surat').value = state.surat.tanggal;
+        $('input-pembuka').value = state.surat.pembuka;
+        $('input-penghubung').value = state.surat.penghubung;
+        $('input-penutup-1').value = state.surat.penutup1;
+        $('input-penutup-2').value = state.surat.penutup2;
+
+        $('input-ks-nama').value = state.ks.nama;
+        $('input-ks-nip').value = state.ks.nip;
+        $('input-ks-pangkat').value = state.ks.pangkat;
+        $('input-ks-jabatan').value = state.ks.jabatan;
+
+        $('input-guru-nama').value = state.guruTugas.nama;
+        $('input-guru-nip').value = state.guruTugas.nip;
+        $('input-guru-pangkat').value = state.guruTugas.pangkat;
+        $('input-guru-jabatan').value = state.guruTugas.jabatan;
+
+        $('toggle-show-stempel').checked = state.toggles.showStempel;
+        $('toggle-show-ttd').checked = state.toggles.showTtd;
+        $('toggle-show-qr').checked = state.toggles.showQr;
+
+        $('kop-baris-1').value = state.kop.baris1;
+        $('kop-baris-2').value = state.kop.baris2;
+        $('kop-baris-3').value = state.kop.baris3;
+        $('kop-baris-4').value = state.kop.baris4;
+        $('kop-baris-5').value = state.kop.baris5;
+        updateAssetThumbsUI();
+      }
+
+      // =====================================================================
+      // SKALA PRATINJAU LAYAR & NAVIGASI
+      // =====================================================================
+      function applyPreviewScale() {
+        const container = $('preview-scroll-container');
+        const doc = $('a4-document');
+        const wrapper = $('preview-scale-wrapper');
+        if (!container || !doc || !wrapper || container.clientWidth === 0) return;
+
+        const a4W = doc.offsetWidth || 794;
+        const a4H = doc.offsetHeight || 1123;
+        const availW = Math.max(container.clientWidth - 36, 260);
+
+        const scale = currentZoomMode === 'auto' ? Math.min(1, availW / a4W) : currentZoomMode;
+        $('zoom-percent').textContent = `${Math.round(scale * 100)}%`;
+
+        doc.style.transform = `scale(${scale})`;
+        wrapper.style.width = `${a4W * scale}px`;
+        wrapper.style.height = `${a4H * scale}px`;
+      }
+
+      function switchMainTab(tabName) {
+        document.querySelectorAll('.tab-panel').forEach((p) => {
+          p.classList.toggle('hidden', p.id !== `tab-panel-${tabName}`);
+        });
+        document.querySelectorAll('.main-tab-btn').forEach((btn) => {
+          const active = btn.dataset.tab === tabName;
+          btn.className = active
+            ? 'main-tab-btn flex-1 px-2 py-2 text-[11px] sm:text-xs font-bold rounded-t-lg border-b-2 border-indigo-600 text-indigo-700 bg-white flex items-center justify-center gap-1 transition'
+            : 'main-tab-btn flex-1 px-2 py-2 text-[11px] sm:text-xs font-semibold rounded-t-lg border-b-2 border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-100 flex items-center justify-center gap-1 transition';
+        });
+        if (tabName === 'riwayat') renderHistoryList();
+      }
+
+      function switchMobileView(view) {
+        const formPane = $('form-pane');
+        const previewPane = $('preview-pane');
+        const btnForm = $('mobile-tab-form');
+        const btnPreview = $('mobile-tab-preview');
+
+        if (view === 'preview') {
+          formPane.classList.add('hidden', 'lg:flex');
+          previewPane.classList.remove('hidden');
+          previewPane.classList.add('flex');
+          btnPreview.className = 'flex-1 py-1.5 rounded-lg text-xs font-bold bg-white text-indigo-700 shadow-sm border border-slate-200 flex items-center justify-center gap-1.5';
+          btnForm.className = 'flex-1 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5';
+          requestAnimationFrame(applyPreviewScale);
+        } else {
+          formPane.classList.remove('hidden');
+          previewPane.classList.add('hidden', 'lg:flex');
+          previewPane.classList.remove('flex');
+          btnForm.className = 'flex-1 py-1.5 rounded-lg text-xs font-bold bg-white text-indigo-700 shadow-sm border border-slate-200 flex items-center justify-center gap-1.5';
+          btnPreview.className = 'flex-1 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5';
+        }
+      }
+
+      // =====================================================================
+      // EVENT BINDINGS
+      // =====================================================================
+      function bindEvents() {
+        // Switcher Surat Aktif vs Surat Tugas
+        $('select-doc-type').addEventListener('change', (e) => {
+          state.docType = e.target.value;
+          if (state.docType === 'tugas') {
+            state.surat.judul = 'S U R A T   T U G A S';
+            $('input-judul-surat').value = state.surat.judul;
+            $('section-guru-tugas').classList.remove('hidden');
+          } else {
+            state.surat.judul = 'S U R A T   A K T I F';
+            $('input-judul-surat').value = state.surat.judul;
+            $('section-guru-tugas').classList.add('hidden');
+          }
+          saveKopAssetsToStorage();
+          renderPreview();
+        });
+
+        // Tab Navigasi
+        document.querySelectorAll('.main-tab-btn').forEach((btn) => {
+          btn.addEventListener('click', () => switchMainTab(btn.dataset.tab));
+        });
+        $('mobile-tab-form').addEventListener('click', () => switchMobileView('form'));
+        $('mobile-tab-preview').addEventListener('click', () => switchMobileView('preview'));
+
+        // Tombol Pas 1 Halaman (Auto-Fit)
+        $('btn-auto-fit-page').addEventListener('click', applyAutoFitOnePage);
+
+        // Popover Margin A4
+        const popover = $('page-settings-popover');
+        $('btn-toggle-page-settings').addEventListener('click', (e) => {
+          e.stopPropagation();
+          popover.classList.toggle('hidden');
+        });
+        $('btn-close-page-popover').addEventListener('click', () => popover.classList.add('hidden'));
+        document.addEventListener('click', (e) => {
+          if (!popover.classList.contains('hidden') && !popover.contains(e.target) && !$('btn-toggle-page-settings').contains(e.target)) {
+            popover.classList.add('hidden');
+          }
+          if (!$('word-dropdown-menu').classList.contains('hidden') && !$('word-dropdown-menu').contains(e.target) && !$('btn-word-dropdown-toggle').contains(e.target)) {
+            $('word-dropdown-menu').classList.add('hidden');
+          }
+        });
+
+        // Dropdown Menu Word Export
+        $('btn-word-dropdown-toggle').addEventListener('click', (e) => {
+          e.stopPropagation();
+          $('word-dropdown-menu').classList.toggle('hidden');
+        });
+        $('btn-export-word-digital').addEventListener('click', () => {
+          $('word-dropdown-menu').classList.add('hidden');
+          exportToWordDoc('digital');
+        });
+        $('btn-export-word-blank').addEventListener('click', () => {
+          $('word-dropdown-menu').classList.add('hidden');
+          exportToWordDoc('blank');
+        });
+
+        // Preset Margin Cepat
+        document.querySelectorAll('.btn-margin-preset').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const p = MARGIN_PRESETS[btn.dataset.marginPreset];
+            if (!p) return;
+            state.page.marginTop = p.top;
+            state.page.marginBottom = p.bottom;
+            state.page.marginLeft = p.left;
+            state.page.marginRight = p.right;
+            syncMarginInputsUI();
+            renderPreview();
+            saveKopAssetsToStorage();
+            showToast(`Margin diatur ke ${p.top}cm (${btn.dataset.marginPreset}).`);
+          });
+        });
+
+        // Input Kustom Margin
+        document.querySelectorAll('.margin-input-sync').forEach((inp) => {
+          inp.addEventListener('input', (e) => {
+            const side = e.target.dataset.side;
+            const val = clampMargin(e.target.value, 2.0);
+            if (side === 'top') state.page.marginTop = val;
+            if (side === 'bottom') state.page.marginBottom = val;
+            if (side === 'left') state.page.marginLeft = val;
+            if (side === 'right') state.page.marginRight = val;
+
+            document.querySelectorAll(`.margin-input-sync[data-side="${side}"]`).forEach((other) => {
+              if (other !== e.target) other.value = val;
+            });
+            renderPreview();
+            saveKopAssetsToStorage();
+          });
+        });
+
+        // Font Size Sync
+        document.querySelectorAll('.font-size-sync').forEach((sel) => {
+          sel.addEventListener('change', (e) => {
+            state.page.fontSize = parseFloat(e.target.value) || 12;
+            renderPreview();
+            saveKopAssetsToStorage();
+          });
+        });
+
+        // Toggle Garis Panduan
+        $('toggle-margin-guide').addEventListener('change', (e) => {
+          state.page.showMarginGuide = e.target.checked;
+          updateDynamicPageStyle();
+          saveKopAssetsToStorage();
+        });
+
+        // Tab 1: Upload Excel & Pencarian
+        $('input-excel-file').addEventListener('change', (e) => {
+          handleExcelUpload(e.target.files[0]);
+          e.target.value = '';
+        });
+        $('search-siswa').addEventListener('input', renderStudentPicker);
+        $('filter-kelas').addEventListener('change', renderStudentPicker);
+        $('default-cabang-lomba').addEventListener('input', (e) => {
+          state.formatOptions.defaultCabang = e.target.value;
+        });
+
+        // Opsi Format
+        $('opt-format-kelas').addEventListener('change', (e) => {
+          state.formatOptions.kelasMode = e.target.value;
+          renderSelectedStudentsList();
+          renderPreview();
+        });
+        $('opt-naik-kelas').addEventListener('change', (e) => {
+          state.formatOptions.naikKelas = e.target.checked;
+          renderSelectedStudentsList();
+          renderPreview();
+        });
+        $('opt-format-ttl').addEventListener('change', (e) => {
+          state.formatOptions.ttlMode = e.target.value;
+          renderPreview();
+        });
+        $('opt-format-nama').addEventListener('change', (e) => {
+          state.formatOptions.namaMode = e.target.value;
+          renderStudentPicker();
+          renderSelectedStudentsList();
+          renderPreview();
+        });
+
+        // Hapus Semua Pilihan Siswa
+        $('btn-clear-selected').addEventListener('click', () => {
+          if (state.selectedStudents.length === 0) return;
+          openConfirm('Kosongkan Peserta?', 'Seluruh siswa akan dihapus dari daftar surat.', () => {
+            state.selectedStudents = [];
+            renderStudentPicker();
+            renderSelectedStudentsList();
+            renderPreview();
+            showToast('Daftar peserta dikosongkan.', 'info');
+          });
+        });
+
+        // Modal Tambah Manual
+        const closeManual = () => {
+          $('manual-student-modal').classList.add('hidden');
+          $('manual-student-modal').classList.remove('flex');
+        };
+        $('btn-add-manual-student').addEventListener('click', () => {
+          $('manual-nama').value = '';
+          $('manual-cabang').value = state.formatOptions.defaultCabang || 'IPA';
+          $('manual-kelas').value = '';
+          $('manual-nisn').value = '';
+          $('manual-tempat-lahir').value = 'JEMBER';
+          $('manual-tgl-lahir').value = '';
+          $('manual-student-modal').classList.remove('hidden');
+          $('manual-student-modal').classList.add('flex');
+          $('manual-nama').focus();
+        });
+        $('btn-close-manual').addEventListener('click', closeManual);
+        $('btn-cancel-manual').addEventListener('click', closeManual);
+        $('manual-modal-backdrop').addEventListener('click', closeManual);
+        $('btn-submit-manual').addEventListener('click', () => {
+          const nama = $('manual-nama').value.trim();
+          if (!nama) {
+            showToast('Nama lengkap wajib diisi.', 'error');
+            return;
+          }
+          state.selectedStudents.push({
+            uid: 'manual_' + Date.now(),
+            nama,
+            cabang: $('manual-cabang').value.trim() || state.formatOptions.defaultCabang || 'IPA',
+            rombel: $('manual-kelas').value.trim(),
+            customKelas: '',
+            nisn: $('manual-nisn').value.trim(),
+            tempatLahir: $('manual-tempat-lahir').value.trim() || 'JEMBER',
+            tanggalLahir: $('manual-tgl-lahir').value
+          });
+          renderSelectedStudentsList();
+          renderPreview();
+          closeManual();
+          showToast('Peserta berhasil ditambahkan.');
+        });
+
+        // Detail Surat & KS
+        $('input-judul-surat').addEventListener('input', (e) => { state.surat.judul = e.target.value; renderPreview(); });
+        $('input-nomor-surat').addEventListener('input', (e) => { state.surat.nomor = e.target.value; renderPreview(); });
+        $('input-kota-surat').addEventListener('input', (e) => { state.surat.kota = e.target.value; renderPreview(); });
+        $('input-tanggal-surat').addEventListener('input', (e) => { state.surat.tanggal = e.target.value; renderPreview(); });
+        $('input-pembuka').addEventListener('input', (e) => { state.surat.pembuka = e.target.value; renderPreview(); });
+        $('input-penghubung').addEventListener('input', (e) => { state.surat.penghubung = e.target.value; renderPreview(); });
+        $('input-penutup-1').addEventListener('input', (e) => { state.surat.penutup1 = e.target.value; renderPreview(); });
+        $('input-penutup-2').addEventListener('input', (e) => { state.surat.penutup2 = e.target.value; renderPreview(); });
+
+        $('btn-inc-nomor').addEventListener('click', () => {
+          const cur = state.surat.nomor || '';
+          const updated = cur.replace(/(\/\s*)(\d+)(\s*\/)/, (_, p1, num, p3) => {
+            const next = String(parseInt(num, 10) + 1).padStart(num.length, '0');
+            return `${p1}${next}${p3}`;
+          });
+          if (updated !== cur) {
+            state.surat.nomor = updated;
+            $('input-nomor-surat').value = updated;
+            renderPreview();
+            showToast(`Nomor surat: ${updated}`, 'info');
+          }
+        });
+
+        const bindKs = (id, key) => {
+          $(id).addEventListener('input', (e) => {
+            state.ks[key] = e.target.value;
+            renderPreview();
+            saveKopAssetsToStorage();
+          });
+        };
+        bindKs('input-ks-nama', 'nama');
+        bindKs('input-ks-nip', 'nip');
+        bindKs('input-ks-pangkat', 'pangkat');
+        bindKs('input-ks-jabatan', 'jabatan');
+
+        const bindGuru = (id, key) => {
+          $(id).addEventListener('input', (e) => {
+            state.guruTugas[key] = e.target.value;
+            renderPreview();
+            saveKopAssetsToStorage();
+          });
+        };
+        bindGuru('input-guru-nama', 'nama');
+        bindGuru('input-guru-nip', 'nip');
+        bindGuru('input-guru-pangkat', 'pangkat');
+        bindGuru('input-guru-jabatan', 'jabatan');
+
+        $('toggle-show-stempel').addEventListener('change', (e) => { state.toggles.showStempel = e.target.checked; renderPreview(); });
+        $('toggle-show-ttd').addEventListener('change', (e) => { state.toggles.showTtd = e.target.checked; renderPreview(); });
+        $('toggle-show-qr').addEventListener('change', (e) => { state.toggles.showQr = e.target.checked; renderPreview(); });
+
+        // Tab Kop & Aset
+        $('input-docx-extract').addEventListener('change', (e) => {
+          handleDocxImageExtract(e.target.files[0]);
+          e.target.value = '';
+        });
+
+        const bindManualAsset = (inputId, assetKey, maxDim) => {
+          $(inputId).addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            readManualImageFile(file, maxDim, (dataUrl) => {
+              state.assets[assetKey] = dataUrl;
+              updateAssetThumbsUI();
+              renderPreview();
+              saveKopAssetsToStorage();
+              showToast('Gambar berhasil disimpan.');
+            });
+            e.target.value = '';
+          });
+        };
+        bindManualAsset('file-logo-kiri', 'logoKiri', 360);
+        bindManualAsset('file-logo-kanan', 'logoKanan', 360);
+        bindManualAsset('file-stempel', 'stempel', 420);
+        bindManualAsset('file-ttd', 'ttd', 420);
+
+        document.querySelectorAll('.btn-remove-asset').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const key = btn.dataset.removeAsset;
+            state.assets[key] = '';
+            updateAssetThumbsUI();
+            renderPreview();
+            saveKopAssetsToStorage();
+            showToast('Gambar dihapus.', 'info');
+          });
+        });
+
+        const bindSlider = (sliderId, labelId, key) => {
+          $(sliderId).addEventListener('input', (e) => {
+            const val = parseInt(e.target.value, 10);
+            state.assets[key] = val;
+            $(labelId).textContent = `${val}px`;
+            renderPreview();
+            saveKopAssetsToStorage();
+          });
+        };
+        bindSlider('slider-stempel-size', 'lbl-stempel-size', 'stempelSize');
+        bindSlider('slider-ttd-size', 'lbl-ttd-size', 'ttdSize');
+        bindSlider('slider-stempel-x', 'lbl-stempel-x', 'stempelX');
+        bindSlider('slider-stempel-y', 'lbl-stempel-y', 'stempelY');
+
+        [1, 2, 3, 4, 5].forEach((n) => {
+          $(`kop-baris-${n}`).addEventListener('input', (e) => {
+            state.kop[`baris${n}`] = e.target.value;
+            renderPreview();
+            saveKopAssetsToStorage();
+          });
+        });
+
+        // Riwayat & Cetak
+        $('btn-clear-all-history').addEventListener('click', () => {
+          openConfirm('Hapus Semua Riwayat?', 'Seluruh riwayat surat akan dihapus permanen.', () => {
+            setHistoryList([]);
+            renderHistoryList();
+            showToast('Riwayat dikosongkan.');
+          });
+        });
+
+        $('btn-print-pdf').addEventListener('click', triggerPrintPdf);
+
+        // Zoom Controls
+        $('btn-zoom-in').addEventListener('click', () => {
+          const cur = currentZoomMode === 'auto' ? (parseInt($('zoom-percent').textContent, 10) / 100 || 0.8) : currentZoomMode;
+          currentZoomMode = Math.min(1.3, +(cur + 0.1).toFixed(2));
+          applyPreviewScale();
+        });
+        $('btn-zoom-out').addEventListener('click', () => {
+          const cur = currentZoomMode === 'auto' ? (parseInt($('zoom-percent').textContent, 10) / 100 || 0.8) : currentZoomMode;
+          currentZoomMode = Math.max(0.4, +(cur - 0.1).toFixed(2));
+          applyPreviewScale();
+        });
+        $('btn-zoom-fit').addEventListener('click', () => {
+          currentZoomMode = 'auto';
+          applyPreviewScale();
+        });
+
+        // Konfirmasi Modal
+        $('confirm-cancel-btn').addEventListener('click', closeConfirm);
+        $('confirm-ok-btn').addEventListener('click', () => {
+          if (typeof confirmCallback === 'function') confirmCallback();
+          closeConfirm();
+        });
+
+        $('cloud-status-pill').addEventListener('click', () => {
+          showToast('Menghubungkan ke Google Sheets...', 'info');
+          syncDataFromCloud();
+        });
+
+        window.addEventListener('resize', applyPreviewScale);
+      }
+
+      // =====================================================================
+      // INISIALISASI
+      // =====================================================================
+      document.addEventListener('DOMContentLoaded', () => {
+        loadKopAssetsFromStorage();
+        loadDbSiswaFromStorage();
+        syncStateToForm();
+        populateKelasFilter();
+        renderStudentPicker();
+        renderSelectedStudentsList();
+        renderHistoryList();
+        bindEvents();
+        renderPreview();
+        lucide.createIcons();
+
+        // Coba sinkronisasi awal dengan Google Sheets via config.js / GAS Web App
+        syncDataFromCloud();
+      });
+    })();
+  </script>
+</body>
+</html>

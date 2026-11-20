@@ -1,0 +1,20 @@
+{
+  "name": "surat-aktif-lomba-sdn04",
+  "version": "3.0.0",
+  "description": "Generator Surat Aktif Lomba & Surat Tugas Presisi A4 — SD Negeri Sumberejo 04",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve .",
+    "build": "echo 'Static production assets ready for Vercel'"
+  },
+  "keywords": [
+    "education",
+    "surat-aktif",
+    "sdn-sumberejo-04",
+    "a4-precision",
+    "google-apps-script",
+    "vercel"
+  ],
+  "author": "SD Negeri Sumberejo 04",
+  "license": "MIT"
+}
