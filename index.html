@@ -52,12 +52,12 @@
     };
   </script>
 
-  <!-- Style Dinamis untuk @page A4 Margin Cetak (Diupdate otomatis oleh JavaScript) -->
+  <!-- Style Dinamis untuk @page A4 Margin Cetak (Otomatis Hilangkan Header/Footer URL Browser) -->
   <style id="dynamic-page-style">
     @media print {
       @page {
         size: 210mm 297mm;
-        margin: 2.0cm 2.0cm 2.0cm 2.0cm;
+        margin: 0 !important; /* HILANGKAN URL & TANGGAL BROWSER */
       }
     }
   </style>
@@ -1721,7 +1721,22 @@
             @media print {
               @page {
                 size: 210mm 297mm;
-                margin: ${marginTop}cm ${marginRight}cm ${marginBottom}cm ${marginLeft}cm;
+                margin: 0 !important; /* MENGHILANGKAN URL DAN TANGGAL HEADER/FOOTER BROWSER SECARA OTOMATIS */
+              }
+              #print-stage {
+                display: block !important;
+                width: 210mm !important;
+                margin: 0 auto !important;
+                padding: 0 !important;
+                background: #ffffff !important;
+              }
+              #print-stage .print-letter-root {
+                box-sizing: border-box !important;
+                width: 210mm !important;
+                min-height: 297mm !important;
+                padding: ${marginTop}cm ${marginRight}cm ${marginBottom}cm ${marginLeft}cm !important;
+                margin: 0 !important;
+                background: #ffffff !important;
               }
             }
           `;
@@ -1995,7 +2010,7 @@
           const prefix = state.docType === 'tugas' ? 'Surat_Tugas_Pembina' : 'Surat_Aktif_Lomba';
           document.title = `${prefix}_SDN_Sumberejo_04_${noUrut}_${tglClean}`;
 
-          showToast('Membuka dialog cetak A4. Pastikan margin printer diatur ke "Default" & matikan "Header/Footer".', 'info', 4500);
+          showToast('Tips: Pada jendela cetak, hilangkan centang "Header dan footer" agar bersih tanpa tulisan URL/tanggal.', 'info', 6000);
 
           setTimeout(() => {
             window.print();
