@@ -1,4 +1,4 @@
-﻿const DEFAULT_BPU_DATA = [
+const DEFAULT_BPU_DATA = [
     {
         "id":  "bpu_1",
         "no":  "1",
@@ -421,3 +421,11 @@
     }
 ]
 ;
+
+
+if (typeof window !== 'undefined') {
+  window.DEFAULT_BPU_DATA = typeof DEFAULT_BPU_DATA !== 'undefined' ? DEFAULT_BPU_DATA : [];
+}
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { DEFAULT_BPU_DATA };
+}

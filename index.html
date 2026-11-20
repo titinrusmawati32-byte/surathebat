@@ -1575,6 +1575,21 @@
       // =====================================================================
       // UTILITAS TEXT & TANGGAL
       // =====================================================================
+      
+      function safeRefreshIcons(container) {
+        if (typeof lucide !== 'undefined' && lucide && typeof lucide.createIcons === 'function') {
+          try {
+            if (container) {
+              lucide.createIcons({ nodes: [container] });
+            } else {
+              lucide.createIcons();
+            }
+          } catch (e) {
+            console.warn('Lucide icons error:', e);
+          }
+        }
+      }
+
       function escapeHtml(str) {
         return String(str == null ? '' : str)
           .replace(/&/g, '&amp;')
@@ -2624,18 +2639,19 @@
         const text = $('page-fit-text');
         if (!badge || !text) return;
 
+        const dot = badge.querySelector('span:first-child');
+
         if (state.docType === 'bosp_honor') {
-          const selectedBpu = bpuDatabase.filter(b => state.selectedBpuIds.includes(b.id));
-          const count = selectedBpu.length > 0 ? selectedBpu.length : 1;
+          const count = state.selectedBpuIds.length || 1;
           badge.className = 'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200';
-          badge.querySelector('span:first-child').className = 'w-2 h-2 rounded-full bg-emerald-500';
-          text.textContent = count > 1 ? `Multi-Halaman: ${count} Lembar Lampiran BPU BOSP` : `Lampiran BPU BOSP (1 Lembar Presisi A4)`;
+          if (dot) dot.className = 'w-2 h-2 rounded-full bg-emerald-500';
+          text.textContent = `Lampiran BPU LPJ BOS (${count} Lembar Dipilih)`;
           return;
         }
 
         if (state.docType === 'gtk_tugas') {
           badge.className = 'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-100 text-blue-800 border border-blue-200';
-          badge.querySelector('span:first-child').className = 'w-2 h-2 rounded-full bg-blue-500';
+          if (dot) dot.className = 'w-2 h-2 rounded-full bg-blue-500';
           text.textContent = `Surat Tugas GTK (1 Lembar Presisi A4)`;
           return;
         }
@@ -2645,12 +2661,13 @@
 
         if (totalPages > 1) {
           badge.className = 'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-indigo-100 text-indigo-800 border border-indigo-200';
-          badge.querySelector('span:first-child').className = 'w-2 h-2 rounded-full bg-indigo-600';
+          if (dot) dot.className = 'w-2 h-2 rounded-full bg-indigo-600';
           text.textContent = `Multi-Halaman: ${totalPages} Lembar Surat (${groups.map(g => g.cabang).join(', ')})`;
         } else {
           badge.className = 'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200';
-          badge.querySelector('span:first-child').className = 'w-2 h-2 rounded-full bg-emerald-500';
-          text.textContent = `Muat 1 Halaman A4 (${groups[0].students.length} Siswa)`;
+          if (dot) dot.className = 'w-2 h-2 rounded-full bg-emerald-500';
+          const studentCount = (groups[0] && groups[0].students) ? groups[0].students.length : 0;
+          text.textContent = `Muat 1 Halaman A4 (${studentCount} Siswa)`;
         }
       }
 
@@ -3573,7 +3590,7 @@
           btn.addEventListener('click', () => toggleStudentInLetter(btn.dataset.studentId));
         });
 
-        lucide.createIcons({ nodes: [container] });
+        safeRefreshIcons(container);
       }
 
       function toggleStudentInLetter(studentId) {
@@ -3701,7 +3718,7 @@
           });
         });
 
-        lucide.createIcons({ nodes: [container] });
+        safeRefreshIcons(container);
       }
 
       function renderHistoryList() {
@@ -3717,7 +3734,7 @@
               <p class="text-xs font-semibold text-slate-600">Belum ada riwayat surat</p>
             </div>
           `;
-          lucide.createIcons({ nodes: [container] });
+          safeRefreshIcons(container);
           return;
         }
 
@@ -3770,7 +3787,7 @@
           });
         });
 
-        lucide.createIcons({ nodes: [container] });
+        safeRefreshIcons(container);
       }
 
       // =====================================================================
@@ -3923,6 +3940,8 @@
           $('dash-stat-gtk').textContent = gtkDatabase.length;
         }
       }
+
+      function updateAssetThumbsUI() {
         const map = [
           ['logoKiri', 'thumb-logo-kiri', 'empty-logo-kiri'],
           ['logoKanan', 'thumb-logo-kanan', 'empty-logo-kanan'],
@@ -4538,7 +4557,7 @@
 
         bindEvents();
         renderPreview();
-        lucide.createIcons();
+        safeRefreshIcons();
 
         // Coba sinkronisasi awal dengan Google Sheets via config.js / GAS Web App
         syncDataFromCloud();

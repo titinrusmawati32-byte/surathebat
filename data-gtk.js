@@ -12,3 +12,11 @@ const DEFAULT_GTK_DATA = [
   { id: 'gtk11', nama: 'Reni Setyowati', nip: '-', pangkat: '-', jabatan: 'Pelatih Hadrah' },
   { id: 'gtk12', nama: 'Najid Riska Amalia', nip: '-', pangkat: '-', jabatan: 'Pelatih Menggambar' }
 ];
+
+
+if (typeof window !== 'undefined') {
+  window.DEFAULT_GTK_DATA = typeof DEFAULT_GTK_DATA !== 'undefined' ? DEFAULT_GTK_DATA : [];
+}
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { DEFAULT_GTK_DATA };
+}
