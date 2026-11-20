@@ -23,6 +23,10 @@
   <script src="https://unpkg.com/lucide@latest"></script>
   <!-- Konfigurasi Database Google Apps Script & Vercel Proxy -->
   <script src="config.js"></script>
+  <!-- Data Default BPU BOSP & Logo Resmi SDN Sumberejo 04 -->
+  <script src="assets-logos.js"></script>
+  <script src="data-bpu.js"></script>
+  <script src="data-gtk.js"></script>
 
   <!-- Google Fonts: Inter & Plus Jakarta Sans untuk UI, Times New Roman untuk Kertas A4 -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -277,20 +281,21 @@
 
         <!-- Identitas Aplikasi & Status Cloud -->
         <div class="flex items-center gap-3 min-w-0">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-700 to-indigo-500 text-white flex items-center justify-center shadow-md shadow-indigo-200 shrink-0">
-            <i data-lucide="file-badge-2" class="w-5 h-5"></i>
-          </div>
+          <button id="btn-nav-dashboard" type="button" title="Kembali ke Dashboard Utama"
+            class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-700 to-indigo-500 hover:from-indigo-800 hover:to-indigo-600 text-white flex items-center justify-center shadow-md shadow-indigo-200 shrink-0 transition active:scale-95">
+            <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+          </button>
           <div class="min-w-0">
             <div class="flex items-center gap-2">
-              <h1 class="text-sm sm:text-base font-extrabold text-slate-900 tracking-tight truncate leading-tight">
+              <h1 id="app-header-title" class="text-sm sm:text-base font-extrabold text-slate-900 tracking-tight truncate leading-tight">
                 Surat Aktif &amp; Surat Tugas Lomba
               </h1>
-              <span id="cloud-status-pill" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
+              <span id="cloud-status-pill" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200 cursor-pointer">
                 <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
                 <span id="cloud-status-text">Mode Lokal</span>
               </span>
             </div>
-            <p class="text-[11px] sm:text-xs text-slate-500 truncate">
+            <p id="app-header-subtitle" class="text-[11px] sm:text-xs text-slate-500 truncate">
               SD Negeri Sumberejo 04 • Cetak A4 Presisi &amp; Ekspor Word (.doc) Rapi
             </p>
           </div>
@@ -299,8 +304,28 @@
         <!-- Tombol Aksi Utama (Toolbar Kanan) -->
         <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
 
-          <!-- Dropdown Pilihan Dokumen: Surat Aktif Siswa vs Surat Tugas Pembina -->
-          <div class="relative">
+          <!-- Tombol Pintas Pindah Modul Persuratan -->
+          <div class="inline-flex rounded-xl bg-slate-100 p-0.5 border border-slate-200 text-xs">
+            <button id="nav-btn-dashboard" type="button" class="px-2.5 py-1.5 rounded-lg font-bold transition flex items-center gap-1 text-slate-600 hover:text-slate-900">
+              <i data-lucide="home" class="w-3.5 h-3.5"></i>
+              <span class="hidden sm:inline">Beranda</span>
+            </button>
+            <button id="nav-btn-siswa" type="button" class="px-2.5 py-1.5 rounded-lg font-bold transition flex items-center gap-1 bg-white text-indigo-700 shadow-sm border border-slate-200">
+              <i data-lucide="graduation-cap" class="w-3.5 h-3.5"></i>
+              <span>Siswa</span>
+            </button>
+            <button id="nav-btn-bosp" type="button" class="px-2.5 py-1.5 rounded-lg font-bold transition flex items-center gap-1 text-slate-600 hover:text-slate-900">
+              <i data-lucide="wallet" class="w-3.5 h-3.5 text-emerald-600"></i>
+              <span>LPJ BOSP</span>
+            </button>
+            <button id="nav-btn-gtk" type="button" class="px-2.5 py-1.5 rounded-lg font-bold transition flex items-center gap-1 text-slate-600 hover:text-slate-900">
+              <i data-lucide="briefcase" class="w-3.5 h-3.5 text-blue-600"></i>
+              <span>Kepegawaian</span>
+            </button>
+          </div>
+
+          <!-- Dropdown Pilihan Sub-Dokumen -->
+          <div id="wrapper-select-doc-type" class="relative">
             <select id="select-doc-type"
               class="px-2.5 py-2 rounded-lg text-xs font-bold text-indigo-900 bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 focus:ring-2 focus:ring-indigo-500/30 outline-none transition cursor-pointer">
               <option value="aktif">📄 Surat Aktif Lomba (Siswa)</option>
@@ -452,6 +477,135 @@
       </div>
     </header>
 
+    <!-- DASHBOARD UTAMA OVERLAY (PERSURATAN TERPADU) -->
+    <div id="dashboard-view" class="hidden flex-1 overflow-y-auto bg-slate-50/70 p-4 sm:p-6 lg:p-8">
+      <div class="max-w-6xl mx-auto space-y-6">
+
+        <!-- Welcome Banner -->
+        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-indigo-700 via-indigo-600 to-indigo-900 text-white p-6 sm:p-8 shadow-xl">
+          <div class="relative z-10 max-w-2xl space-y-2">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white/15 backdrop-blur-md text-indigo-100 border border-white/20">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-300"></i>
+              <span>Sistem Administrasi Persuratan Terpadu</span>
+            </span>
+            <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight">SD NEGERI SUMBEREJO 04</h2>
+            <p class="text-xs sm:text-sm text-indigo-100 leading-relaxed">
+              Pusat pembuatan dan pencetakan dokumen resmi sekolah: Surat Aktif/Tugas Siswa, Lampiran BPU LPJ BOSP, dan Surat Tugas Kepegawaian GTK dengan standar cetak presisi A4 serta ekspor Microsoft Word resmi.
+            </p>
+          </div>
+          <div class="absolute -right-8 -bottom-10 opacity-15 pointer-events-none">
+            <i data-lucide="file-text" class="w-72 h-72 text-white"></i>
+          </div>
+        </div>
+
+        <!-- 3 Kartu Modul Utama (Quick Launch) -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- Modul 1: Siswa -->
+          <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition space-y-3 group">
+            <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center group-hover:scale-105 transition shadow-inner">
+              <i data-lucide="graduation-cap" class="w-6 h-6"></i>
+            </div>
+            <div>
+              <h3 class="text-base font-bold text-slate-900">Surat Siswa &amp; Lomba</h3>
+              <p class="text-xs text-slate-500 mt-0.5 leading-relaxed">
+                Surat aktif belajar &amp; surat tugas lomba (O2SN, FLS2N, OSN, Pramuka). Dilengkapi fitur multi-halaman per cabang lomba otomatis.
+              </p>
+            </div>
+            <div class="pt-2">
+              <button id="dash-btn-open-siswa" type="button" class="w-full py-2.5 rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-sm transition flex items-center justify-center gap-1.5">
+                <span>Buka Modul Siswa</span>
+                <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Modul 2: BPU BOSP -->
+          <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition space-y-3 group">
+            <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center group-hover:scale-105 transition shadow-inner">
+              <i data-lucide="wallet" class="w-6 h-6"></i>
+            </div>
+            <div>
+              <h3 class="text-base font-bold text-slate-900">Lampiran BPU LPJ BOSP</h3>
+              <p class="text-xs text-slate-500 mt-0.5 leading-relaxed">
+                Tanda Terima Honor Pelatih Ekstrakurikuler bersumber langsung dari data Excel LPJ BOS. Sekali klik langsung cetak A4 atau ekspor Word.
+              </p>
+            </div>
+            <div class="pt-2">
+              <button id="dash-btn-open-bosp" type="button" class="w-full py-2.5 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm transition flex items-center justify-center gap-1.5">
+                <span>Buka Modul BOSP</span>
+                <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Modul 3: Kepegawaian GTK -->
+          <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition space-y-3 group">
+            <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center group-hover:scale-105 transition shadow-inner">
+              <i data-lucide="briefcase" class="w-6 h-6"></i>
+            </div>
+            <div>
+              <h3 class="text-base font-bold text-slate-900">Surat Tugas GTK</h3>
+              <p class="text-xs text-slate-500 mt-0.5 leading-relaxed">
+                Surat tugas dinas guru untuk KKG, Bimtek, Pelatihan, dan agenda kedinasan Korwil Ambulu &amp; Dispendik Jember.
+              </p>
+            </div>
+            <div class="pt-2">
+              <button id="dash-btn-open-gtk" type="button" class="w-full py-2.5 rounded-xl text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-sm transition flex items-center justify-center gap-1.5">
+                <span>Buka Modul GTK</span>
+                <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ringkasan Status & Info Cepat -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="bg-white rounded-2xl border border-slate-200 p-5 space-y-3">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
+              <i data-lucide="database" class="w-4 h-4 text-indigo-600"></i>
+              <span>Status Pangkalan Data Sekolah</span>
+            </h4>
+            <div class="grid grid-cols-3 gap-3 text-center">
+              <div class="p-3 rounded-xl bg-slate-50 border border-slate-100">
+                <div id="dash-stat-siswa" class="text-lg font-extrabold text-indigo-700">8</div>
+                <div class="text-[11px] text-slate-500 font-medium">Siswa Terdata</div>
+              </div>
+              <div class="p-3 rounded-xl bg-slate-50 border border-slate-100">
+                <div id="dash-stat-bpu" class="text-lg font-extrabold text-emerald-700">28</div>
+                <div class="text-[11px] text-slate-500 font-medium">Item BPU BOS</div>
+              </div>
+              <div class="p-3 rounded-xl bg-slate-50 border border-slate-100">
+                <div id="dash-stat-gtk" class="text-lg font-extrabold text-blue-700">12</div>
+                <div class="text-[11px] text-slate-500 font-medium">Guru &amp; GTK</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-slate-200 p-5 space-y-3">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
+              <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i>
+              <span>Keunggulan Format Resmi</span>
+            </h4>
+            <ul class="text-xs text-slate-600 space-y-1.5 leading-relaxed">
+              <li class="flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                <span><strong>Presisi A4:</strong> Desain pas 1 lembar tanpa terpotong dan tanpa margin browser.</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
+                <span><strong>Ekspor Word (.doc):</strong> Dilengkapi logo Pemkab Jember &amp; Logo Emas SDN 04 utuh.</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                <span><strong>Koneksi Cloud:</strong> Siap tersambung ke Google Spreadsheet &amp; Google Apps Script.</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
     <!-- =====================================================================
          MAIN AREA SPLIT-SCREEN (KIRI: KONTROL 4 TAB, KANAN: PREVIEW A4)
          ===================================================================== -->
@@ -460,28 +614,38 @@
       <!-- PANEL KIRI (PENGATURAN, SISWA, DETAIL, KOP, RIWAYAT) -->
       <section id="form-pane" class="w-full lg:w-[460px] xl:w-[480px] shrink-0 bg-white border-r border-slate-200 flex flex-col lg:h-full">
 
-        <!-- Navigasi 4 Tab -->
-        <nav class="border-b border-slate-200 bg-slate-50/90 px-2 pt-2 flex gap-1 shrink-0" role="tablist">
+        <!-- Navigasi 6 Tab (Siswa, BOSP, GTK, Redaksi, Kop, Riwayat) -->
+        <nav class="border-b border-slate-200 bg-slate-50/90 px-2 pt-2 flex gap-1 shrink-0 overflow-x-auto no-scrollbar" role="tablist">
           <button type="button" data-tab="siswa"
-            class="main-tab-btn flex-1 px-2 py-2 text-[11px] sm:text-xs font-bold rounded-t-lg border-b-2 border-indigo-600 text-indigo-700 bg-white flex items-center justify-center gap-1 transition">
+            class="main-tab-btn flex-1 min-w-[70px] px-2 py-2 text-[11px] sm:text-xs font-bold rounded-t-lg border-b-2 border-indigo-600 text-indigo-700 bg-white flex items-center justify-center gap-1 transition">
             <i data-lucide="users" class="w-3.5 h-3.5"></i>
-            <span class="truncate">Siswa / Peserta</span>
+            <span class="truncate">Siswa</span>
+          </button>
+          <button type="button" data-tab="bosp"
+            class="main-tab-btn flex-1 min-w-[70px] px-2 py-2 text-[11px] sm:text-xs font-semibold rounded-t-lg border-b-2 border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-100 flex items-center justify-center gap-1 transition">
+            <i data-lucide="wallet" class="w-3.5 h-3.5 text-emerald-600"></i>
+            <span class="truncate">BOSP</span>
+          </button>
+          <button type="button" data-tab="gtk"
+            class="main-tab-btn flex-1 min-w-[70px] px-2 py-2 text-[11px] sm:text-xs font-semibold rounded-t-lg border-b-2 border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-100 flex items-center justify-center gap-1 transition">
+            <i data-lucide="briefcase" class="w-3.5 h-3.5 text-blue-600"></i>
+            <span class="truncate">GTK</span>
           </button>
           <button type="button" data-tab="detail"
-            class="main-tab-btn flex-1 px-2 py-2 text-[11px] sm:text-xs font-semibold rounded-t-lg border-b-2 border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-100 flex items-center justify-center gap-1 transition">
+            class="main-tab-btn flex-1 min-w-[70px] px-2 py-2 text-[11px] sm:text-xs font-semibold rounded-t-lg border-b-2 border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-100 flex items-center justify-center gap-1 transition">
             <i data-lucide="file-signature" class="w-3.5 h-3.5"></i>
-            <span class="truncate">Redaksi &amp; KS</span>
+            <span class="truncate">Redaksi</span>
           </button>
           <button type="button" data-tab="kop"
-            class="main-tab-btn flex-1 px-2 py-2 text-[11px] sm:text-xs font-semibold rounded-t-lg border-b-2 border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-100 flex items-center justify-center gap-1 transition">
+            class="main-tab-btn flex-1 min-w-[65px] px-2 py-2 text-[11px] sm:text-xs font-semibold rounded-t-lg border-b-2 border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-100 flex items-center justify-center gap-1 transition">
             <i data-lucide="image" class="w-3.5 h-3.5"></i>
-            <span class="truncate">Kop &amp; Aset</span>
+            <span class="truncate">Kop</span>
           </button>
           <button type="button" data-tab="riwayat"
-            class="main-tab-btn flex-1 px-2 py-2 text-[11px] sm:text-xs font-semibold rounded-t-lg border-b-2 border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-100 flex items-center justify-center gap-1 transition">
+            class="main-tab-btn flex-1 min-w-[70px] px-2 py-2 text-[11px] sm:text-xs font-semibold rounded-t-lg border-b-2 border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-100 flex items-center justify-center gap-1 transition">
             <i data-lucide="history" class="w-3.5 h-3.5"></i>
             <span class="truncate">Riwayat</span>
-            <span id="history-badge" class="min-w-[18px] h-[18px] px-1 text-[10px] font-bold rounded-full bg-indigo-100 text-indigo-700 inline-flex items-center justify-center">0</span>
+            <span id="history-badge" class="min-w-[16px] h-[16px] px-1 text-[9px] font-bold rounded-full bg-indigo-100 text-indigo-700 inline-flex items-center justify-center">0</span>
           </button>
         </nav>
 
@@ -953,6 +1117,156 @@
           </div>
 
           <!-- =============================================================
+               TAB 5: MODUL LPJ BOSP (TANDA TERIMA HONOR & BPU)
+               ============================================================= -->
+          <div id="tab-panel-bosp" class="tab-panel hidden space-y-4">
+            <!-- Header Info BPU BOSP -->
+            <div class="rounded-xl border border-emerald-200 bg-emerald-50/70 p-3 space-y-2">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <div class="w-8 h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+                    <i data-lucide="wallet" class="w-4 h-4"></i>
+                  </div>
+                  <div>
+                    <h2 class="text-xs font-bold text-slate-900">Lampiran BPU LPJ BOSP</h2>
+                    <p id="bpu-status-text" class="text-[11px] text-emerald-800 font-semibold">28 Data Tanda Terima Honor</p>
+                  </div>
+                </div>
+                <label for="input-excel-bpu" class="cursor-pointer inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm transition">
+                  <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+                  <span>Unggah Excel</span>
+                </label>
+                <input id="input-excel-bpu" type="file" accept=".xlsx,.xls,.csv" class="hidden" />
+              </div>
+              <p class="text-[11px] text-slate-600 leading-relaxed">
+                Tanda Terima Honor Pelatih Ekstrakurikuler bersumber langsung dari data Excel LPJ BOS SD Negeri Sumberejo 04.
+              </p>
+            </div>
+
+            <!-- Filter Pencarian BPU -->
+            <div class="grid grid-cols-1 sm:grid-cols-12 gap-2">
+              <div class="sm:col-span-7 relative">
+                <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                <input id="search-bpu" type="text" placeholder="Cari Pelatih / BPU / Kegiatan..."
+                  class="w-full pl-8 pr-3 py-2 text-xs rounded-lg border border-slate-300 focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 outline-none" />
+              </div>
+              <div class="sm:col-span-5">
+                <select id="filter-bulan-bpu"
+                  class="w-full px-2.5 py-2 text-xs rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 outline-none">
+                  <option value="">Semua Periode</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Tombol Aksi Cepat BPU -->
+            <div class="flex items-center justify-between gap-2">
+              <div class="flex items-center gap-1.5">
+                <button id="btn-select-all-bpu" type="button" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition">
+                  Pilih Semua
+                </button>
+                <button id="btn-clear-bpu" type="button" class="px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition">
+                  Bersihkan
+                </button>
+              </div>
+              <span id="bpu-selected-badge" class="text-xs font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full">
+                1 Dipilih
+              </span>
+            </div>
+
+            <!-- Daftar Item BPU Excel (List Picker) -->
+            <div id="bpu-item-list" class="max-h-[280px] overflow-y-auto rounded-xl border border-slate-200 divide-y divide-slate-100 bg-white shadow-inner">
+              <!-- Rendered dynamically -->
+            </div>
+
+            <!-- Pengaturan Pejabat BOSP -->
+            <div class="rounded-xl border border-slate-200 bg-slate-50 p-3 space-y-2.5">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 border-b border-slate-200 pb-1 flex items-center justify-between">
+                <span>Pejabat Penandatangan LPJ BOS</span>
+                <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-600"></i>
+              </h3>
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-700 mb-0.5">Kepala SDN Sumberejo 04</label>
+                <input id="input-bosp-ks-nama" type="text" class="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-300 outline-none focus:border-emerald-500" value="SUSI INDAH PALUPININGDYAH, S.Pd" />
+                <input id="input-bosp-ks-nip" type="text" class="w-full mt-1 px-2.5 py-1.5 text-xs font-mono rounded-lg border border-slate-300 outline-none focus:border-emerald-500" value="197205022008012014" placeholder="NIP Kepala Sekolah" />
+              </div>
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-700 mb-0.5">Bendahara BOS</label>
+                <input id="input-bosp-bendahara-nama" type="text" class="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-300 outline-none focus:border-emerald-500" value="DODIK MUQSID SETIADI S.Pd." />
+                <input id="input-bosp-bendahara-nip" type="text" class="w-full mt-1 px-2.5 py-1.5 text-xs font-mono rounded-lg border border-slate-300 outline-none focus:border-emerald-500" value="198603102014121002" placeholder="NIP Bendahara BOS" />
+              </div>
+            </div>
+          </div>
+
+          <!-- =============================================================
+               TAB 6: MODUL KEPEGAWAIAN (GTK)
+               ============================================================= -->
+          <div id="tab-panel-gtk" class="tab-panel hidden space-y-4">
+            <div class="rounded-xl border border-blue-200 bg-blue-50/70 p-3 space-y-2">
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+                  <i data-lucide="briefcase" class="w-4 h-4"></i>
+                </div>
+                <div>
+                  <h2 class="text-xs font-bold text-slate-900">Surat Tugas Kepegawaian (GTK)</h2>
+                  <p class="text-[11px] text-blue-800 font-semibold">Dinas Luar, KKG, Bimtek &amp; Diklat Guru</p>
+                </div>
+              </div>
+              <p class="text-[11px] text-slate-600 leading-relaxed">
+                Pilih Guru/Tenaga Kependidikan dari database sekolah atau masukkan data tugas baru.
+              </p>
+            </div>
+
+            <!-- Form Tugas GTK -->
+            <div class="space-y-3">
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Pilih Guru / GTK:</label>
+                <select id="select-gtk-picker" class="w-full px-2.5 py-2 text-xs rounded-lg border border-slate-300 bg-white outline-none focus:border-blue-500 font-medium">
+                  <!-- Populated dynamically -->
+                </select>
+              </div>
+
+              <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-2 text-xs">
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">Nama Guru / Pegawai</label>
+                  <input id="input-gtk-nama" type="text" class="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-300 bg-white outline-none focus:border-blue-500 font-bold" />
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                  <div>
+                    <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">NIP</label>
+                    <input id="input-gtk-nip" type="text" class="w-full px-2.5 py-1.5 text-xs font-mono rounded-lg border border-slate-300 bg-white outline-none focus:border-blue-500" />
+                  </div>
+                  <div>
+                    <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">Pangkat / Gol.</label>
+                    <input id="input-gtk-pangkat" type="text" class="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-300 bg-white outline-none focus:border-blue-500" />
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">Jabatan / Unit Kerja</label>
+                  <input id="input-gtk-jabatan" type="text" class="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-300 bg-white outline-none focus:border-blue-500" />
+                </div>
+              </div>
+
+              <div class="space-y-2">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200 pb-1">Uraian Penugasan Dinas</h3>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-700 mb-0.5">Nama Kegiatan / Keperluan</label>
+                  <textarea id="input-gtk-keperluan" rows="2" class="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-300 outline-none focus:border-blue-500" placeholder="Contoh: Menghadiri Kegiatan Rapat Koordinasi dan Verifikasi SPJ BOSP Tahap I Tahun 2026">Menghadiri Rapat Koordinasi dan Pembinaan GTK di Lingkungan Korwil Bidik Kecamatan Ambulu.</textarea>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                  <div>
+                    <label class="block text-[11px] font-semibold text-slate-700 mb-0.5">Hari / Tanggal</label>
+                    <input id="input-gtk-waktu" type="text" class="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-300 outline-none focus:border-blue-500" value="Kamis, 26 Februari 2026" />
+                  </div>
+                  <div>
+                    <label class="block text-[11px] font-semibold text-slate-700 mb-0.5">Tempat Pelaksanaan</label>
+                    <input id="input-gtk-tempat" type="text" class="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-300 outline-none focus:border-blue-500" value="Aula Korwil Bidik Ambulu" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- =============================================================
                TAB 4: RIWAYAT SURAT TERSIMPAN
                ============================================================= -->
           <div id="tab-panel-riwayat" class="tab-panel hidden space-y-3">
@@ -1155,13 +1469,37 @@
       }
 
       // STATE UTAMA APLIKASI
+      let currentAppModule = 'siswa'; // 'dashboard' | 'siswa' | 'bosp' | 'gtk'
       let studentDatabase = JSON.parse(JSON.stringify(SAMPLE_STUDENTS));
+      let bpuDatabase = (typeof DEFAULT_BPU_DATA !== 'undefined' && Array.isArray(DEFAULT_BPU_DATA))
+        ? JSON.parse(JSON.stringify(DEFAULT_BPU_DATA))
+        : [];
+      let gtkDatabase = (typeof DEFAULT_GTK_DATA !== 'undefined' && Array.isArray(DEFAULT_GTK_DATA))
+        ? JSON.parse(JSON.stringify(DEFAULT_GTK_DATA))
+        : [];
+
       let dbSourceLabel = '8 Siswa Sampel Siap Pakai';
       let isGasEnvironment = typeof google !== 'undefined' && google.script && google.script.run;
       let cachedQrDataUrl = '';
 
       let state = {
-        docType: 'aktif', // 'aktif' | 'tugas'
+        docType: 'aktif', // 'aktif' | 'tugas' | 'bosp_honor' | 'gtk_tugas'
+        selectedBpuIds: ['bpu_1'], // ID BPU yang dipilih untuk dicetak
+        bosp: {
+          ksNama: 'SUSI INDAH PALUPININGDYAH, S.Pd',
+          ksNip: '197205022008012014',
+          bendaharaNama: 'DODIK MUQSID SETIADI S.Pd.',
+          bendaharaNip: '198603102014121002'
+        },
+        gtkForm: {
+          nama: 'Ahmad Fauzi, S.Pd',
+          nip: '198504122010011015',
+          pangkat: 'Penata Muda, III/a',
+          jabatan: 'Guru Kelas IV / Guru Pembina',
+          keperluan: 'Menghadiri Rapat Koordinasi dan Pembinaan GTK di Lingkungan Korwil Bidik Kecamatan Ambulu.',
+          waktu: 'Kamis, 26 Februari 2026',
+          tempat: 'Aula Korwil Bidik Ambulu'
+        },
         page: {
           marginTop: 2.0,
           marginBottom: 2.0,
@@ -1244,6 +1582,11 @@
           .replace(/>/g, '&gt;')
           .replace(/"/g, '&quot;')
           .replace(/'/g, '&#39;');
+      }
+
+      function formatRupiah(num) {
+        const n = parseInt(num, 10) || 0;
+        return 'Rp ' + n.toLocaleString('id-ID');
       }
 
       function toTitleCase(str) {
@@ -1573,12 +1916,24 @@
       }
 
       function loadKopAssetsFromStorage() {
+        // Terapkan logo default resmi jika ada dari assets-logos.js
+        if (typeof DEFAULT_LOGO_KIRI !== 'undefined' && DEFAULT_LOGO_KIRI && !state.assets.logoKiri) {
+          state.assets.logoKiri = DEFAULT_LOGO_KIRI;
+        }
+        if (typeof DEFAULT_LOGO_KANAN !== 'undefined' && DEFAULT_LOGO_KANAN && !state.assets.logoKanan) {
+          state.assets.logoKanan = DEFAULT_LOGO_KANAN;
+        }
         try {
           const raw = localStorage.getItem(KEY_KOP_ASET) || localStorage.getItem('sdns04_kop_aset_v2');
           if (!raw) return;
           const parsed = JSON.parse(raw);
           if (parsed.kop) state.kop = { ...state.kop, ...parsed.kop };
-          if (parsed.assets) state.assets = { ...state.assets, ...parsed.assets };
+          if (parsed.assets) {
+            state.assets = { ...state.assets, ...parsed.assets };
+            // Pastikan jika localStorage kosong logo, pakai default
+            if (!state.assets.logoKiri && typeof DEFAULT_LOGO_KIRI !== 'undefined') state.assets.logoKiri = DEFAULT_LOGO_KIRI;
+            if (!state.assets.logoKanan && typeof DEFAULT_LOGO_KANAN !== 'undefined') state.assets.logoKanan = DEFAULT_LOGO_KANAN;
+          }
           if (parsed.ks) state.ks = { ...state.ks, ...parsed.ks };
           if (parsed.guruTugas) state.guruTugas = { ...state.guruTugas, ...parsed.guruTugas };
           if (parsed.page) state.page = { ...state.page, ...parsed.page };
@@ -2023,7 +2378,240 @@
         `;
       }
 
+      // =====================================================================
+      // BUILDER HALAMAN BPU BOSP (TANDA TERIMA HONOR EKSTRAKURIKULER)
+      // =====================================================================
+      function buildSingleBpuPageMarkup(bpuItem, pageIndex = 0, totalPages = 1) {
+        const bodyFontPt = state.page.fontSize || 12;
+        const tableFontPt = bodyFontPt <= 10.5 ? 9.5 : (bodyFontPt === 11 ? 10 : 11);
+        const hasKiri = Boolean(state.assets.logoKiri);
+        const hasKanan = Boolean(state.assets.logoKanan);
+
+        const pageBreakStyle = pageIndex < totalPages - 1 ? 'page-break-after: always; break-after: page;' : '';
+
+        const honorPerMinggu = parseInt(bpuItem.honorPerMinggu, 10) || 100000;
+        const jumlahMinggu = parseInt(bpuItem.jumlahMinggu, 10) || 4;
+        const jumlahDiterima = parseInt(bpuItem.jumlahDiterima, 10) || (honorPerMinggu * 1);
+        const pph21 = bpuItem.pph21 ? formatRupiah(bpuItem.pph21) : '-';
+
+        return `
+          <div class="print-letter-root" style="font-family: 'Times New Roman', Times, Georgia, serif; color: #000000; font-size: ${bodyFontPt}pt; line-height: 1.35; ${pageBreakStyle}">
+
+            <!-- 1. KOP SURAT RESMI KEDINASAN -->
+            <table class="kop-table-official">
+              <tr>
+                <td style="width: 78px; text-align: center; vertical-align: middle;">
+                  ${hasKiri
+                    ? `<img src="${state.assets.logoKiri}" alt="Logo Jember" style="max-height: 76px; max-width: 76px; object-fit: contain; display: block; margin: 0 auto;" />`
+                    : `<div class="logo-placeholder-box" style="width: 66px; height: 72px; margin: 0 auto; border: 1px dashed #cbd5e1; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 8pt; color: #94a3b8; font-family: Inter, sans-serif; text-align: center; line-height: 1.15;">Logo<br/>Jember</div>`
+                  }
+                </td>
+                <td style="text-align: center; line-height: 1.18; padding: 0 6px;">
+                  <div style="font-size: 13.5pt; font-weight: 700;">${escapeHtml(state.kop.baris1)}</div>
+                  <div style="font-size: 15.5pt; font-weight: 700;">${escapeHtml(state.kop.baris2)}</div>
+                  <div style="font-size: 10pt;">${escapeHtml(state.kop.baris3)}</div>
+                  <div style="font-size: 10pt;">${escapeHtml(state.kop.baris4)}</div>
+                  <div style="font-size: 9.5pt; font-style: italic;">${escapeHtml(state.kop.baris5)}</div>
+                </td>
+                <td style="width: 78px; text-align: center; vertical-align: middle;">
+                  ${hasKanan
+                    ? `<img src="${state.assets.logoKanan}" alt="Logo Sekolah" style="max-height: 76px; max-width: 76px; object-fit: contain; display: block; margin: 0 auto;" />`
+                    : `<div class="logo-placeholder-box" style="width: 66px; height: 72px; margin: 0 auto; border: 1px dashed #cbd5e1; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 8pt; color: #94a3b8; font-family: Inter, sans-serif; text-align: center; line-height: 1.15;">Logo<br/>Sekolah</div>`
+                  }
+                </td>
+              </tr>
+            </table>
+
+            <div class="kop-divider-official"></div>
+
+            <!-- 2. IDENTITAS BPU & JUDUL TANDA TERIMA -->
+            <div style="margin-top: 4px; margin-bottom: 10px;">
+              <div style="font-size: 10.5pt; font-weight: 700; color: #1e293b;">${escapeHtml(bpuItem.bpu || 'Lampiran BPU')}</div>
+              <div style="font-size: 12.5pt; font-weight: 700; text-transform: uppercase; margin-top: 2px;">
+                ${escapeHtml(bpuItem.uraian || 'TANDA TERIMA HONOR PELATIH EKSTRAKURIKULER')}
+              </div>
+              <div style="font-size: 11pt; font-weight: 700; text-transform: uppercase;">
+                ${escapeHtml(bpuItem.bulan || 'BULAN JANUARI 2026')}
+              </div>
+            </div>
+
+            <!-- 3. TABEL PEMBAYARAN LPJ BOSP RESMI -->
+            <table class="siswa-table-official" style="font-size: ${tableFontPt}pt; width: 100%; border-collapse: collapse; margin-bottom: 12px;">
+              <thead>
+                <tr style="background-color: #f8fafc;">
+                  <th style="padding: 4px; border: 1px solid #000; width: 4%;">NO</th>
+                  <th style="padding: 4px; border: 1px solid #000; width: 22%;">NAMA</th>
+                  <th style="padding: 4px; border: 1px solid #000; width: 10%;">Jabatan</th>
+                  <th style="padding: 4px; border: 1px solid #000; width: 8%;">NPWP</th>
+                  <th style="padding: 4px; border: 1px solid #000; width: 13%;">Honor Perminggu</th>
+                  <th style="padding: 4px; border: 1px solid #000; width: 9%;">Jumlah minggu</th>
+                  <th style="padding: 4px; border: 1px solid #000; width: 12%;">Jumlah Honor</th>
+                  <th style="padding: 4px; border: 1px solid #000; width: 7%;">PPh 21</th>
+                  <th style="padding: 4px; border: 1px solid #000; width: 13%;">Jumlah Yang Diterima</th>
+                  <th style="padding: 4px; border: 1px solid #000; width: 10%;">TANDA TANGAN</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="text-align: center; padding: 6px 3px; border: 1px solid #000;">1</td>
+                  <td style="text-align: left; padding: 6px 4px; font-weight: bold; border: 1px solid #000;">${escapeHtml(bpuItem.namaPelatih)}</td>
+                  <td style="text-align: center; padding: 6px 3px; border: 1px solid #000;">${escapeHtml(bpuItem.jabatan || 'Pelatih')}</td>
+                  <td style="text-align: center; padding: 6px 3px; border: 1px solid #000;">${escapeHtml(bpuItem.npwp || '-')}</td>
+                  <td style="text-align: right; padding: 6px 4px; border: 1px solid #000;">${formatRupiah(honorPerMinggu)}</td>
+                  <td style="text-align: center; padding: 6px 3px; border: 1px solid #000;">${jumlahMinggu}</td>
+                  <td style="text-align: right; padding: 6px 4px; border: 1px solid #000;">${formatRupiah(honorPerMinggu)}</td>
+                  <td style="text-align: center; padding: 6px 3px; border: 1px solid #000;">${pph21}</td>
+                  <td style="text-align: right; padding: 6px 4px; font-weight: bold; border: 1px solid #000;">${formatRupiah(jumlahDiterima)}</td>
+                  <td style="text-align: left; padding: 6px 4px; border: 1px solid #000; vertical-align: top;">1.</td>
+                </tr>
+                <tr style="font-weight: bold; background-color: #fafafa;">
+                  <td colspan="4" style="text-align: center; padding: 5px; border: 1px solid #000;">Jumlah</td>
+                  <td style="text-align: right; padding: 5px 4px; border: 1px solid #000;">${formatRupiah(honorPerMinggu)}</td>
+                  <td style="text-align: center; padding: 5px 3px; border: 1px solid #000;">${jumlahMinggu}</td>
+                  <td style="text-align: right; padding: 5px 4px; border: 1px solid #000;">${formatRupiah(honorPerMinggu)}</td>
+                  <td style="text-align: center; padding: 5px 3px; border: 1px solid #000;">${pph21}</td>
+                  <td style="text-align: right; padding: 5px 4px; border: 1px solid #000;">${formatRupiah(jumlahDiterima)}</td>
+                  <td style="border: 1px solid #000;"></td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- 4. PENGESAHAN DUA TANDA TANGAN (KEPALA SEKOLAH & BENDAHARA BOS) -->
+            <table style="width: 100%; margin-top: 24px; border-collapse: collapse; page-break-inside: avoid; break-inside: avoid;">
+              <tr>
+                <td style="width: 50%; text-align: center; vertical-align: top; padding: 0 10px;">
+                  <div style="visibility: hidden;">Titik Mangsa</div>
+                  <div style="font-weight: 500;">Mengetahui,</div>
+                  <div style="font-weight: 600;">Kepala SDN Sumberejo 04</div>
+                  <div style="height: 68px;"></div>
+                  <div style="font-weight: bold; text-decoration: underline;">${escapeHtml(state.bosp.ksNama)}</div>
+                  <div>NIP. ${escapeHtml(state.bosp.ksNip)}</div>
+                </td>
+                <td style="width: 50%; text-align: center; vertical-align: top; padding: 0 10px;">
+                  <div>${escapeHtml(bpuItem.tanggal || 'Ambulu, ' + formatTanggalIndo(getTodayISO()))}</div>
+                  <div style="visibility: hidden;">-</div>
+                  <div style="font-weight: 600;">Bendahara BOS</div>
+                  <div style="height: 68px;"></div>
+                  <div style="font-weight: bold; text-decoration: underline;">${escapeHtml(state.bosp.bendaharaNama)}</div>
+                  <div>NIP. ${escapeHtml(state.bosp.bendaharaNip)}</div>
+                </td>
+              </tr>
+            </table>
+
+          </div>
+        `;
+      }
+
+      // =====================================================================
+      // BUILDER HALAMAN SURAT TUGAS KEPEGAWAIAN (GTK)
+      // =====================================================================
+      function buildSingleGtkPageMarkup(gtk, pageIndex = 0, totalPages = 1) {
+        const bodyFontPt = state.page.fontSize || 12;
+        const hasKiri = Boolean(state.assets.logoKiri);
+        const hasKanan = Boolean(state.assets.logoKanan);
+        const showStempel = state.toggles.showStempel && Boolean(state.assets.stempel);
+        const showTtd = state.toggles.showTtd && Boolean(state.assets.ttd);
+
+        const pageBreakStyle = pageIndex < totalPages - 1 ? 'page-break-after: always; break-after: page;' : '';
+
+        return `
+          <div class="print-letter-root" style="font-family: 'Times New Roman', Times, Georgia, serif; color: #000000; font-size: ${bodyFontPt}pt; line-height: 1.38; ${pageBreakStyle}">
+
+            <!-- KOP SURAT -->
+            <table class="kop-table-official">
+              <tr>
+                <td style="width: 78px; text-align: center; vertical-align: middle;">
+                  ${hasKiri
+                    ? `<img src="${state.assets.logoKiri}" alt="Logo Jember" style="max-height: 76px; max-width: 76px; object-fit: contain; display: block; margin: 0 auto;" />`
+                    : `<div class="logo-placeholder-box" style="width: 66px; height: 72px; margin: 0 auto; border: 1px dashed #cbd5e1; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 8pt; color: #94a3b8; font-family: Inter, sans-serif; text-align: center; line-height: 1.15;">Logo<br/>Jember</div>`
+                  }
+                </td>
+                <td style="text-align: center; line-height: 1.18; padding: 0 6px;">
+                  <div style="font-size: 13.5pt; font-weight: 700;">${escapeHtml(state.kop.baris1)}</div>
+                  <div style="font-size: 15.5pt; font-weight: 700;">${escapeHtml(state.kop.baris2)}</div>
+                  <div style="font-size: 10pt;">${escapeHtml(state.kop.baris3)}</div>
+                  <div style="font-size: 10pt;">${escapeHtml(state.kop.baris4)}</div>
+                  <div style="font-size: 9.5pt; font-style: italic;">${escapeHtml(state.kop.baris5)}</div>
+                </td>
+                <td style="width: 78px; text-align: center; vertical-align: middle;">
+                  ${hasKanan
+                    ? `<img src="${state.assets.logoKanan}" alt="Logo Sekolah" style="max-height: 76px; max-width: 76px; object-fit: contain; display: block; margin: 0 auto;" />`
+                    : `<div class="logo-placeholder-box" style="width: 66px; height: 72px; margin: 0 auto; border: 1px dashed #cbd5e1; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 8pt; color: #94a3b8; font-family: Inter, sans-serif; text-align: center; line-height: 1.15;">Logo<br/>Sekolah</div>`
+                  }
+                </td>
+              </tr>
+            </table>
+
+            <div class="kop-divider-official"></div>
+
+            <!-- JUDUL & NOMOR SURAT -->
+            <div style="text-align: center; margin-top: 8px; margin-bottom: 12px;">
+              <div style="font-size: 13pt; font-weight: 700; text-decoration: underline; letter-spacing: 0.5px;">S U R A T   T U G A S</div>
+              <div style="font-size: ${bodyFontPt}pt; margin-top: 1.5px;">Nomor : ${escapeHtml(state.surat.nomor || '800/ ... /335.09.310.02.20524058/2026')}</div>
+            </div>
+
+            <!-- PEMBUKA TUGAS -->
+            <p style="text-align: justify; margin: 0 0 6px 0;">
+              Yang bertanda tangan di bawah ini Kepala SD Negeri Sumberejo 04 Kecamatan Ambulu Kabupaten Jember, memberikan tugas kepada :
+            </p>
+
+            <table class="biodata-table-official" style="font-size: ${bodyFontPt}pt; margin-bottom: 10px;">
+              <tr><td class="col-label">N a m a</td><td class="col-colon">:</td><td style="font-weight: 700;">${escapeHtml(gtk.nama)}</td></tr>
+              <tr><td class="col-label">NIP</td><td class="col-colon">:</td><td>${escapeHtml(gtk.nip || '-')}</td></tr>
+              <tr><td class="col-label">Pangkat / Gol.</td><td class="col-colon">:</td><td>${escapeHtml(gtk.pangkat || '-')}</td></tr>
+              <tr><td class="col-label">Jabatan</td><td class="col-colon">:</td><td>${escapeHtml(gtk.jabatan || 'Guru')}</td></tr>
+              <tr><td class="col-label">Unit Kerja</td><td class="col-colon">:</td><td>SD Negeri Sumberejo 04</td></tr>
+            </table>
+
+            <p style="text-align: justify; margin: 0 0 6px 0;">
+              Untuk melaksanakan tugas kedinasan dengan rincian kegiatan sebagai berikut :
+            </p>
+
+            <table class="biodata-table-official" style="font-size: ${bodyFontPt}pt; margin-bottom: 12px;">
+              <tr><td class="col-label">Keperluan / Acara</td><td class="col-colon">:</td><td style="font-weight: 600;">${escapeHtml(gtk.keperluan || 'Kegiatan Dinas Pendidikan')}</td></tr>
+              <tr><td class="col-label">Hari / Tanggal</td><td class="col-colon">:</td><td>${escapeHtml(gtk.waktu || formatTanggalIndo(getTodayISO()))}</td></tr>
+              <tr><td class="col-label">Tempat Tujuan</td><td class="col-colon">:</td><td>${escapeHtml(gtk.tempat || 'Korwil Bidik Kecamatan Ambulu')}</td></tr>
+            </table>
+
+            <p style="text-align: justify; margin: 8px 0 0 0;">
+              Demikian Surat Tugas ini dibuat untuk dilaksanakan dengan penuh rasa tanggung jawab, dan setelah selesai melaksanakan tugas agar segera melaporkan hasilnya kepada Kepala Sekolah.
+            </p>
+
+            <!-- PENGESAHAN KEPALA SEKOLAH -->
+            <div class="ttd-block-official" style="display: flex; justify-content: flex-end; margin-top: 24px; font-size: ${bodyFontPt}pt; line-height: 1.35; page-break-inside: avoid; break-inside: avoid;">
+              <div style="width: 250px; text-align: left;">
+                <div>${escapeHtml(state.surat.kota)}, ${escapeHtml(formatTanggalIndo(state.surat.tanggal))}</div>
+                <div>${escapeHtml(state.ks.jabatan)}</div>
+
+                <div style="position: relative; height: 76px; margin: 2px 0;">
+                  ${showStempel
+                    ? `<img src="${state.assets.stempel}" alt="Stempel Sekolah" class="stamp-blend" style="position: absolute; left: ${state.assets.stempelX}px; top: ${state.assets.stempelY}px; height: ${state.assets.stempelSize}px; width: auto; object-fit: contain; z-index: 2; pointer-events: none;" />`
+                    : ''
+                  }
+                  ${showTtd
+                    ? `<img src="${state.assets.ttd}" alt="Tanda Tangan Kepala Sekolah" class="stamp-blend" style="position: absolute; left: 16px; top: -2px; height: ${state.assets.ttdSize}px; width: auto; object-fit: contain; z-index: 1; pointer-events: none;" />`
+                    : ''
+                  }
+                </div>
+
+                <div style="font-weight: 700; text-decoration: underline;">${escapeHtml(state.ks.nama)}</div>
+                <div>${state.ks.nip ? 'NIP. ' + escapeHtml(state.ks.nip) : ''}</div>
+              </div>
+            </div>
+
+          </div>
+        `;
+      }
+
       function buildLetterMarkup() {
+        if (state.docType === 'bosp_honor') {
+          const selectedBpu = bpuDatabase.filter(b => state.selectedBpuIds.includes(b.id));
+          const list = selectedBpu.length > 0 ? selectedBpu : (bpuDatabase.slice(0, 1));
+          return list.map((item, idx) => buildSingleBpuPageMarkup(item, idx, list.length)).join('');
+        }
+        if (state.docType === 'gtk_tugas') {
+          return buildSingleGtkPageMarkup(state.gtkForm, 0, 1);
+        }
         const groups = getGroupedStudentsByCabang();
         return groups.map((g, idx) => buildSinglePageMarkup(g.students, idx, groups.length)).join('');
       }
@@ -2035,6 +2623,22 @@
         const badge = $('page-fit-badge');
         const text = $('page-fit-text');
         if (!badge || !text) return;
+
+        if (state.docType === 'bosp_honor') {
+          const selectedBpu = bpuDatabase.filter(b => state.selectedBpuIds.includes(b.id));
+          const count = selectedBpu.length > 0 ? selectedBpu.length : 1;
+          badge.className = 'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200';
+          badge.querySelector('span:first-child').className = 'w-2 h-2 rounded-full bg-emerald-500';
+          text.textContent = count > 1 ? `Multi-Halaman: ${count} Lembar Lampiran BPU BOSP` : `Lampiran BPU BOSP (1 Lembar Presisi A4)`;
+          return;
+        }
+
+        if (state.docType === 'gtk_tugas') {
+          badge.className = 'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-100 text-blue-800 border border-blue-200';
+          badge.querySelector('span:first-child').className = 'w-2 h-2 rounded-full bg-blue-500';
+          text.textContent = `Surat Tugas GTK (1 Lembar Presisi A4)`;
+          return;
+        }
 
         const groups = getGroupedStudentsByCabang();
         const totalPages = groups.length;
@@ -2052,11 +2656,44 @@
 
       async function renderPreview() {
         updateDynamicPageStyle();
-        const groups = getGroupedStudentsByCabang();
         const { marginTop, marginRight, marginBottom, marginLeft, fontSize, showMarginGuide } = state.page;
         const container = $('preview-multi-pages');
+        if (!container) return;
 
-        if (container) {
+        if (state.docType === 'bosp_honor') {
+          const selectedBpu = bpuDatabase.filter(b => state.selectedBpuIds.includes(b.id));
+          const list = selectedBpu.length > 0 ? selectedBpu : (bpuDatabase.slice(0, 1));
+          container.innerHTML = list.map((item, idx) => `
+            <div class="flex flex-col items-center">
+              <div class="text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wide flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                <span>Halaman ${idx + 1} dari ${list.length} — ${escapeHtml(item.bpu || 'BPU')} (${escapeHtml(item.namaPelatih)})</span>
+              </div>
+              <article class="a4-document-page a4-paper shadow-2xl ring-1 ring-slate-900/15 ${showMarginGuide ? 'show-margin-guide' : ''}"
+                style="padding: ${marginTop}cm ${marginRight}cm ${marginBottom}cm ${marginLeft}cm; font-size: ${fontSize}pt;">
+                <div class="letter-inner-content">
+                  ${buildSingleBpuPageMarkup(item, idx, list.length)}
+                </div>
+              </article>
+            </div>
+          `).join('');
+        } else if (state.docType === 'gtk_tugas') {
+          container.innerHTML = `
+            <div class="flex flex-col items-center">
+              <div class="text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wide flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                <span>Surat Tugas Pegawai (GTK) — ${escapeHtml(state.gtkForm.nama)}</span>
+              </div>
+              <article class="a4-document-page a4-paper shadow-2xl ring-1 ring-slate-900/15 ${showMarginGuide ? 'show-margin-guide' : ''}"
+                style="padding: ${marginTop}cm ${marginRight}cm ${marginBottom}cm ${marginLeft}cm; font-size: ${fontSize}pt;">
+                <div class="letter-inner-content">
+                  ${buildSingleGtkPageMarkup(state.gtkForm, 0, 1)}
+                </div>
+              </article>
+            </div>
+          `;
+        } else {
+          const groups = getGroupedStudentsByCabang();
           container.innerHTML = groups.map((g, idx) => `
             <div class="flex flex-col items-center">
               <div class="text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wide flex items-center gap-1.5">
@@ -2090,14 +2727,24 @@
           printStage.innerHTML = buildLetterMarkup();
 
           const origTitle = document.title;
-          const noUrutMatch = (state.surat.nomor || '').match(/\/\s*(\d+)\s*\//);
-          const noUrut = noUrutMatch ? noUrutMatch[1] : 'Surat';
           const tglClean = (state.surat.tanggal || getTodayISO()).replace(/[^0-9-]/g, '');
-          const prefix = state.docType === 'tugas' ? 'Surat_Tugas_Pembina' : 'Surat_Aktif_Lomba';
-          const groups = getGroupedStudentsByCabang();
-          document.title = `${prefix}_SDN_Sumberejo_04_${noUrut}_${tglClean}_${groups.length}Hal`;
 
-          showToast(`Membuka dialog cetak... Dokumen siap (${groups.length} halaman untuk ${groups.length} cabang lomba).`, 'info', 4500);
+          if (state.docType === 'bosp_honor') {
+            const count = state.selectedBpuIds.length || 1;
+            document.title = `LPJ_BOSP_Honor_Pelatih_SDN04_${tglClean}_${count}Lembar`;
+            showToast(`Membuka dialog cetak... Dokumen siap (${count} lembar lampiran BPU).`, 'info', 4500);
+          } else if (state.docType === 'gtk_tugas') {
+            const cleanGtkNama = (state.gtkForm.nama || 'GTK').replace(/[^a-zA-Z0-9]/g, '_');
+            document.title = `Surat_Tugas_GTK_${cleanGtkNama}_${tglClean}`;
+            showToast('Membuka dialog cetak... Surat Tugas GTK siap.', 'info', 4500);
+          } else {
+            const noUrutMatch = (state.surat.nomor || '').match(/\/\s*(\d+)\s*\//);
+            const noUrut = noUrutMatch ? noUrutMatch[1] : 'Surat';
+            const prefix = state.docType === 'tugas' ? 'Surat_Tugas_Pembina' : 'Surat_Aktif_Lomba';
+            const groups = getGroupedStudentsByCabang();
+            document.title = `${prefix}_SDN_Sumberejo_04_${noUrut}_${tglClean}_${groups.length}Hal`;
+            showToast(`Membuka dialog cetak... Dokumen siap (${groups.length} halaman untuk ${groups.length} cabang lomba).`, 'info', 4500);
+          }
 
           setTimeout(() => {
             window.print();
@@ -2404,7 +3051,193 @@
             `;
           };
 
-          const pagesWordHtml = groups.map((g, idx) => buildWordPageHtml(g.students, idx)).join('');
+          let pagesWordHtml = '';
+          let downloadDocTitle = '';
+
+          if (state.docType === 'bosp_honor') {
+            const selectedBpu = bpuDatabase.filter(b => state.selectedBpuIds.includes(b.id));
+            const list = selectedBpu.length > 0 ? selectedBpu : (bpuDatabase.slice(0, 1));
+            downloadDocTitle = `LPJ_BOSP_Honor_Pelatih_SDN04_${tglClean}_${list.length}Lembar`;
+
+            pagesWordHtml = list.map((bpuItem, pageIdx) => {
+              const honorPerMinggu = parseInt(bpuItem.honorPerMinggu, 10) || 100000;
+              const jumlahMinggu = parseInt(bpuItem.jumlahMinggu, 10) || 4;
+              const jumlahDiterima = parseInt(bpuItem.jumlahDiterima, 10) || (honorPerMinggu * 1);
+              const pph21 = bpuItem.pph21 ? formatRupiah(bpuItem.pph21) : '-';
+
+              return `
+                ${pageIdx > 0 ? '<br clear="all" style="mso-special-character:line-break; page-break-before:always;" />' : ''}
+                <!-- 1. KOP SURAT 3 KOLOM SIMETRIS -->
+                <table width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%; border-collapse:collapse;">
+                  <tr>
+                    <td width="14%" align="center" valign="middle" style="padding:0;">${logoKiriHtml}</td>
+                    <td width="72%" align="center" valign="middle" style="padding:0 4pt; line-height:1.15;">
+                      <p style="font-size:13.5pt; font-weight:bold; text-align:center;">${escapeHtml(state.kop.baris1)}</p>
+                      <p style="font-size:15.5pt; font-weight:bold; text-align:center;">${escapeHtml(state.kop.baris2)}</p>
+                      <p style="font-size:10pt; text-align:center;">${escapeHtml(state.kop.baris3)}</p>
+                      <p style="font-size:10pt; text-align:center;">${escapeHtml(state.kop.baris4)}</p>
+                      <p style="font-size:9.5pt; font-style:italic; text-align:center;">${escapeHtml(state.kop.baris5)}</p>
+                    </td>
+                    <td width="14%" align="center" valign="middle" style="padding:0;">${logoKananHtml}</td>
+                  </tr>
+                </table>
+
+                <table width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%; margin-top:3pt; margin-bottom:10pt;">
+                  <tr><td style="border-top:2.5pt solid #000000; border-bottom:0.75pt solid #000000; height:2pt; font-size:1pt; line-height:1pt;">&nbsp;</td></tr>
+                </table>
+
+                <!-- 2. IDENTITAS BPU & JUDUL TANDA TERIMA -->
+                <p style="font-size:10.5pt; font-weight:bold; margin-bottom:2pt;">${escapeHtml(bpuItem.bpu || 'Lampiran BPU')}</p>
+                <p style="font-size:12.5pt; font-weight:bold; text-transform:uppercase; margin-bottom:2pt;">
+                  ${escapeHtml(bpuItem.uraian || 'TANDA TERIMA HONOR PELATIH EKSTRAKURIKULER')}
+                </p>
+                <p style="font-size:11pt; font-weight:bold; text-transform:uppercase; margin-bottom:10pt;">
+                  ${escapeHtml(bpuItem.bulan || 'BULAN JANUARI 2026')}
+                </p>
+
+                <!-- 3. TABEL LPJ BOSP -->
+                <table width="100%" cellpadding="0" cellspacing="0" border="1"
+                  style="width:100%; border-collapse:collapse; border:1pt solid #000000; font-size:${tableFontPt}pt; margin-bottom:14pt;">
+                  <thead>
+                    <tr style="background-color:#f1f5f9;">
+                      <th width="4%" style="border:1pt solid #000; padding:4pt 2pt; text-align:center; font-weight:bold;">NO</th>
+                      <th width="22%" style="border:1pt solid #000; padding:4pt 3pt; text-align:center; font-weight:bold;">NAMA</th>
+                      <th width="10%" style="border:1pt solid #000; padding:4pt 2pt; text-align:center; font-weight:bold;">Jabatan</th>
+                      <th width="8%" style="border:1pt solid #000; padding:4pt 2pt; text-align:center; font-weight:bold;">NPWP</th>
+                      <th width="13%" style="border:1pt solid #000; padding:4pt 3pt; text-align:center; font-weight:bold;">Honor Perminggu</th>
+                      <th width="9%" style="border:1pt solid #000; padding:4pt 2pt; text-align:center; font-weight:bold;">Jumlah minggu</th>
+                      <th width="12%" style="border:1pt solid #000; padding:4pt 3pt; text-align:center; font-weight:bold;">Jumlah Honor</th>
+                      <th width="7%" style="border:1pt solid #000; padding:4pt 2pt; text-align:center; font-weight:bold;">PPh 21</th>
+                      <th width="13%" style="border:1pt solid #000; padding:4pt 3pt; text-align:center; font-weight:bold;">Jumlah Yang Diterima</th>
+                      <th width="10%" style="border:1pt solid #000; padding:4pt 3pt; text-align:center; font-weight:bold;">TANDA TANGAN</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td style="border:1pt solid #000; padding:5pt 2pt; text-align:center;">1</td>
+                      <td style="border:1pt solid #000; padding:5pt 3pt; font-weight:bold; text-align:left;">${escapeHtml(bpuItem.namaPelatih)}</td>
+                      <td style="border:1pt solid #000; padding:5pt 2pt; text-align:center;">${escapeHtml(bpuItem.jabatan || 'Pelatih')}</td>
+                      <td style="border:1pt solid #000; padding:5pt 2pt; text-align:center;">${escapeHtml(bpuItem.npwp || '-')}</td>
+                      <td style="border:1pt solid #000; padding:5pt 3pt; text-align:right;">${formatRupiah(honorPerMinggu)}</td>
+                      <td style="border:1pt solid #000; padding:5pt 2pt; text-align:center;">${jumlahMinggu}</td>
+                      <td style="border:1pt solid #000; padding:5pt 3pt; text-align:right;">${formatRupiah(honorPerMinggu)}</td>
+                      <td style="border:1pt solid #000; padding:5pt 2pt; text-align:center;">${pph21}</td>
+                      <td style="border:1pt solid #000; padding:5pt 3pt; font-weight:bold; text-align:right;">${formatRupiah(jumlahDiterima)}</td>
+                      <td style="border:1pt solid #000; padding:5pt 3pt; text-align:left; vertical-align:top;">1.</td>
+                    </tr>
+                    <tr style="font-weight:bold; background-color:#f8fafc;">
+                      <td colspan="4" style="border:1pt solid #000; padding:4pt; text-align:center;">Jumlah</td>
+                      <td style="border:1pt solid #000; padding:4pt 3pt; text-align:right;">${formatRupiah(honorPerMinggu)}</td>
+                      <td style="border:1pt solid #000; padding:4pt 2pt; text-align:center;">${jumlahMinggu}</td>
+                      <td style="border:1pt solid #000; padding:4pt 3pt; text-align:right;">${formatRupiah(honorPerMinggu)}</td>
+                      <td style="border:1pt solid #000; padding:4pt 2pt; text-align:center;">${pph21}</td>
+                      <td style="border:1pt solid #000; padding:4pt 3pt; text-align:right;">${formatRupiah(jumlahDiterima)}</td>
+                      <td style="border:1pt solid #000;">&nbsp;</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <!-- 4. PENGESAHAN DUA TANDA TANGAN DI WORD -->
+                <table width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%; margin-top:20pt; page-break-inside:avoid;">
+                  <tr>
+                    <td width="50%" align="center" valign="top" style="font-size:${fontSize}pt; line-height:1.35;">
+                      <p>&nbsp;</p>
+                      <p>Mengetahui,</p>
+                      <p><b>Kepala SDN Sumberejo 04</b></p>
+                      <p style="height:48pt;">&nbsp;</p>
+                      <p style="font-weight:bold; text-decoration:underline;">${escapeHtml(state.bosp.ksNama)}</p>
+                      <p>NIP. ${escapeHtml(state.bosp.ksNip)}</p>
+                    </td>
+                    <td width="50%" align="center" valign="top" style="font-size:${fontSize}pt; line-height:1.35;">
+                      <p>${escapeHtml(bpuItem.tanggal || 'Ambulu, ' + formatTanggalIndo(getTodayISO()))}</p>
+                      <p>&nbsp;</p>
+                      <p><b>Bendahara BOS</b></p>
+                      <p style="height:48pt;">&nbsp;</p>
+                      <p style="font-weight:bold; text-decoration:underline;">${escapeHtml(state.bosp.bendaharaNama)}</p>
+                      <p>NIP. ${escapeHtml(state.bosp.bendaharaNip)}</p>
+                    </td>
+                  </tr>
+                </table>
+              `;
+            }).join('');
+          } else if (state.docType === 'gtk_tugas') {
+            const cleanGtkNama = (state.gtkForm.nama || 'GTK').replace(/[^a-zA-Z0-9]/g, '_');
+            downloadDocTitle = `Surat_Tugas_GTK_${cleanGtkNama}_${tglClean}`;
+
+            pagesWordHtml = `
+              <!-- 1. KOP SURAT 3 KOLOM SIMETRIS -->
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%; border-collapse:collapse;">
+                <tr>
+                  <td width="14%" align="center" valign="middle" style="padding:0;">${logoKiriHtml}</td>
+                  <td width="72%" align="center" valign="middle" style="padding:0 4pt; line-height:1.15;">
+                    <p style="font-size:13.5pt; font-weight:bold; text-align:center;">${escapeHtml(state.kop.baris1)}</p>
+                    <p style="font-size:15.5pt; font-weight:bold; text-align:center;">${escapeHtml(state.kop.baris2)}</p>
+                    <p style="font-size:10pt; text-align:center;">${escapeHtml(state.kop.baris3)}</p>
+                    <p style="font-size:10pt; text-align:center;">${escapeHtml(state.kop.baris4)}</p>
+                    <p style="font-size:9.5pt; font-style:italic; text-align:center;">${escapeHtml(state.kop.baris5)}</p>
+                  </td>
+                  <td width="14%" align="center" valign="middle" style="padding:0;">${logoKananHtml}</td>
+                </tr>
+              </table>
+
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%; margin-top:3pt; margin-bottom:10pt;">
+                <tr><td style="border-top:2.5pt solid #000000; border-bottom:0.75pt solid #000000; height:2pt; font-size:1pt; line-height:1pt;">&nbsp;</td></tr>
+              </table>
+
+              <!-- 2. JUDUL & NOMOR SURAT -->
+              <p style="text-align:center; font-size:13pt; font-weight:bold; text-decoration:underline; margin-top:2pt; margin-bottom:2pt;">
+                S&nbsp;U&nbsp;R&nbsp;A&nbsp;T&nbsp;&nbsp;&nbsp;T&nbsp;U&nbsp;G&nbsp;A&nbsp;S
+              </p>
+              <p style="text-align:center; font-size:${fontSize}pt; margin-bottom:12pt;">
+                Nomor : ${escapeHtml(state.surat.nomor || '800/ ... /335.09.310.02.20524058/2026')}
+              </p>
+
+              <!-- 3. PEMBUKA & BIODATA GTK -->
+              <p style="text-align:justify; font-size:${fontSize}pt; margin-bottom:4pt;">
+                Yang bertanda tangan di bawah ini Kepala SD Negeri Sumberejo 04 Kecamatan Ambulu Kabupaten Jember memberikan tugas kepada :
+              </p>
+              <table width="100%" cellpadding="1" cellspacing="0" border="0" style="width:100%; margin-left:16pt; margin-bottom:8pt; font-size:${fontSize}pt;">
+                <tr><td width="115pt" valign="top">N&nbsp;a&nbsp;m&nbsp;a</td><td width="12pt" align="center" valign="top">:</td><td valign="top"><b>${escapeHtml(state.gtkForm.nama)}</b></td></tr>
+                <tr><td width="115pt" valign="top">NIP</td><td width="12pt" align="center" valign="top">:</td><td valign="top">${escapeHtml(state.gtkForm.nip || '-')}</td></tr>
+                <tr><td width="115pt" valign="top">Pangkat / Gol.</td><td width="12pt" align="center" valign="top">:</td><td valign="top">${escapeHtml(state.gtkForm.pangkat || '-')}</td></tr>
+                <tr><td width="115pt" valign="top">Jabatan</td><td width="12pt" align="center" valign="top">:</td><td valign="top">${escapeHtml(state.gtkForm.jabatan || 'Guru')}</td></tr>
+                <tr><td width="115pt" valign="top">Unit Kerja</td><td width="12pt" align="center" valign="top">:</td><td valign="top">SD Negeri Sumberejo 04</td></tr>
+              </table>
+
+              <p style="text-align:justify; font-size:${fontSize}pt; margin-bottom:4pt;">
+                Untuk melaksanakan tugas kedinasan dengan rincian kegiatan sebagai berikut :
+              </p>
+              <table width="100%" cellpadding="1" cellspacing="0" border="0" style="width:100%; margin-left:16pt; margin-bottom:8pt; font-size:${fontSize}pt;">
+                <tr><td width="115pt" valign="top">Keperluan / Acara</td><td width="12pt" align="center" valign="top">:</td><td valign="top"><b>${escapeHtml(state.gtkForm.keperluan)}</b></td></tr>
+                <tr><td width="115pt" valign="top">Hari / Tanggal</td><td width="12pt" align="center" valign="top">:</td><td valign="top">${escapeHtml(state.gtkForm.waktu)}</td></tr>
+                <tr><td width="115pt" valign="top">Tempat Tujuan</td><td width="12pt" align="center" valign="top">:</td><td valign="top">${escapeHtml(state.gtkForm.tempat)}</td></tr>
+              </table>
+
+              <p style="text-align:justify; font-size:${fontSize}pt; margin-top:8pt; margin-bottom:14pt;">
+                Demikian Surat Tugas ini dibuat untuk dilaksanakan dengan penuh rasa tanggung jawab, dan setelah selesai melaksanakan tugas agar segera melaporkan hasilnya kepada Kepala Sekolah.
+              </p>
+
+              <!-- 4. PENGESAHAN KEPALA SEKOLAH -->
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%; margin-top:16pt; page-break-inside:avoid;">
+                <tr>
+                  <td width="55%">&nbsp;</td>
+                  <td width="45%" align="left" valign="top" style="font-size:${fontSize}pt; line-height:1.35;">
+                    <p>${escapeHtml(state.surat.kota)}, ${escapeHtml(formatTanggalIndo(state.surat.tanggal))}</p>
+                    <p>${escapeHtml(state.ks.jabatan)}</p>
+                    ${sigAreaHtml}
+                    <p style="font-weight:bold; text-decoration:underline;">${escapeHtml(state.ks.nama)}</p>
+                    <p>${state.ks.nip ? 'NIP. ' + escapeHtml(state.ks.nip) : ''}</p>
+                  </td>
+                </tr>
+              </table>
+            `;
+          } else {
+            const noUrutMatch = (state.surat.nomor || '').match(/\/\s*(\d+)\s*\//);
+            const noUrut = noUrutMatch ? noUrutMatch[1] : 'Surat';
+            const prefix = isTugas ? 'Surat_Tugas_Pembina' : 'Surat_Aktif_Lomba';
+            downloadDocTitle = `${prefix}_SDN_Sumberejo_04_${noUrut}_${tglClean}_${groups.length}Hal`;
+            pagesWordHtml = groups.map((g, idx) => buildWordPageHtml(g.students, idx)).join('');
+          }
 
           const docWordXml = `
 <html xmlns:o="urn:schemas-microsoft-com:office:office"
@@ -2482,12 +3315,8 @@
           const a = document.createElement('a');
           a.href = url;
 
-          const noUrutMatch = (state.surat.nomor || '').match(/\/\s*(\d+)\s*\//);
-          const noUrut = noUrutMatch ? noUrutMatch[1] : 'Surat';
-          const tglClean = (state.surat.tanggal || getTodayISO()).replace(/[^0-9-]/g, '');
-          const prefix = isTugas ? 'Surat_Tugas_Pembina' : 'Surat_Aktif_Lomba';
           const suffix = isDigital ? 'Digital' : 'Basah';
-          a.download = `${prefix}_SDN_Sumberejo_04_${noUrut}_${tglClean}_${suffix}.doc`;
+          a.download = `${downloadDocTitle || 'Surat_SDN_Sumberejo_04'}_${suffix}.doc`;
 
           document.body.appendChild(a);
           a.click();
@@ -2944,7 +3773,156 @@
         lucide.createIcons({ nodes: [container] });
       }
 
-      function updateAssetThumbsUI() {
+      // =====================================================================
+      // RENDER & EVENT HANDLER MODUL LPJ BOSP
+      // =====================================================================
+      function populateBpuBulanFilter() {
+        const select = $('filter-bulan-bpu');
+        if (!select) return;
+        const bulans = [...new Set(bpuDatabase.map(b => b.bulan).filter(Boolean))];
+        select.innerHTML = '<option value="">Semua Periode</option>' +
+          bulans.map(b => `<option value="${escapeHtml(b)}">${escapeHtml(b)}</option>`).join('');
+      }
+
+      function renderBpuPickerList() {
+        const container = $('bpu-item-list');
+        if (!container) return;
+        const query = ($('search-bpu')?.value || '').trim().toLowerCase();
+        const bulanFilter = $('filter-bulan-bpu')?.value || '';
+
+        const filtered = bpuDatabase.filter(b => {
+          if (bulanFilter && b.bulan !== bulanFilter) return false;
+          if (!query) return true;
+          return (
+            String(b.namaPelatih || '').toLowerCase().includes(query) ||
+            String(b.uraian || '').toLowerCase().includes(query) ||
+            String(b.bpu || '').toLowerCase().includes(query)
+          );
+        });
+
+        $('bpu-status-text').textContent = `${bpuDatabase.length} Data Tanda Terima Honor`;
+        $('bpu-selected-badge').textContent = `${state.selectedBpuIds.length} Dipilih`;
+
+        if (filtered.length === 0) {
+          container.innerHTML = `<div class="p-4 text-center text-xs text-slate-400">Data BPU tidak ditemukan.</div>`;
+          return;
+        }
+
+        container.innerHTML = filtered.map(b => {
+          const isSelected = state.selectedBpuIds.includes(b.id);
+          const nominal = parseInt(b.jumlahDiterima || b.honorPerMinggu, 10) || 100000;
+          return `
+            <div data-bpu-id="${escapeHtml(b.id)}"
+              class="bpu-item-row px-3 py-2.5 flex items-center justify-between gap-2.5 hover:bg-emerald-50/70 transition cursor-pointer ${isSelected ? 'bg-emerald-50/90 border-l-4 border-emerald-600' : 'bg-white'}">
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-1.5">
+                  <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700 font-mono">${escapeHtml(b.bpu)}</span>
+                  <span class="text-xs font-bold text-slate-900 truncate">${escapeHtml(b.namaPelatih)}</span>
+                </div>
+                <div class="text-[11px] text-slate-600 truncate mt-0.5">${escapeHtml(b.uraian)}</div>
+                <div class="text-[10.5px] text-emerald-700 font-semibold flex items-center gap-2 mt-0.5">
+                  <span>${formatRupiah(nominal)}</span>
+                  <span>•</span>
+                  <span class="text-slate-400 font-normal">${escapeHtml(b.bulan)}</span>
+                </div>
+              </div>
+              <div class="shrink-0">
+                <input type="checkbox" data-bpu-cb="${escapeHtml(b.id)}" ${isSelected ? 'checked' : ''} class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 cursor-pointer pointer-events-none" />
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        container.querySelectorAll('.bpu-item-row').forEach(row => {
+          row.addEventListener('click', () => {
+            const id = row.dataset.bpuId;
+            const idx = state.selectedBpuIds.indexOf(id);
+            if (idx !== -1) {
+              if (state.selectedBpuIds.length > 1) {
+                state.selectedBpuIds.splice(idx, 1);
+              } else {
+                showToast('Minimal 1 lembar BPU harus dipilih.', 'info');
+                return;
+              }
+            } else {
+              state.selectedBpuIds.push(id);
+            }
+            renderBpuPickerList();
+            renderPreview();
+          });
+        });
+      }
+
+      // =====================================================================
+      // RENDER & EVENT HANDLER MODUL KEPEGAWAIAN (GTK)
+      // =====================================================================
+      function populateGtkDropdown() {
+        const select = $('select-gtk-picker');
+        if (!select) return;
+        select.innerHTML = '<option value="">-- Pilih Guru / GTK dari Database --</option>' +
+          gtkDatabase.map(g => `<option value="${escapeHtml(g.id)}">${escapeHtml(g.nama)} (${escapeHtml(g.jabatan)})</option>`).join('');
+      }
+
+      // =====================================================================
+      // ROUTER & NAVIGASI MODUL APLIKASI UTAMA (DASHBOARD, SISWA, BOSP, GTK)
+      // =====================================================================
+      function setAppModule(modName) {
+        currentAppModule = modName;
+        const isDash = modName === 'dashboard';
+
+        $('dashboard-view').classList.toggle('hidden', !isDash);
+        $('dashboard-view').classList.toggle('flex', isDash);
+        $('app-main').classList.toggle('hidden', isDash);
+        $('app-main').classList.toggle('flex', !isDash);
+
+        // Update Nav Tabs Toolbar Kanan
+        const mapNav = {
+          dashboard: $('nav-btn-dashboard'),
+          siswa: $('nav-btn-siswa'),
+          bosp: $('nav-btn-bosp'),
+          gtk: $('nav-btn-gtk')
+        };
+
+        Object.keys(mapNav).forEach(k => {
+          const btn = mapNav[k];
+          if (!btn) return;
+          const active = k === modName;
+          btn.className = active
+            ? 'px-2.5 py-1.5 rounded-lg font-bold transition flex items-center gap-1 bg-white text-indigo-700 shadow-sm border border-slate-200'
+            : 'px-2.5 py-1.5 rounded-lg font-bold transition flex items-center gap-1 text-slate-600 hover:text-slate-900';
+        });
+
+        if (modName === 'siswa') {
+          $('app-header-title').textContent = 'Surat Aktif & Surat Tugas Lomba';
+          $('app-header-subtitle').textContent = 'SD Negeri Sumberejo 04 • Cetak A4 Presisi & Ekspor Word (.doc) Rapi';
+          $('wrapper-select-doc-type').classList.remove('hidden');
+          $('select-doc-type').value = 'aktif';
+          state.docType = 'aktif';
+          switchMainTab('siswa');
+          renderPreview();
+        } else if (modName === 'bosp') {
+          $('app-header-title').textContent = 'Lampiran BPU LPJ BOSP (Honor Pelatih)';
+          $('app-header-subtitle').textContent = 'Tanda Terima Honor Pelatih Ekstrakurikuler • Standar LPJ BOS Dinas Pendidikan';
+          $('wrapper-select-doc-type').classList.add('hidden');
+          state.docType = 'bosp_honor';
+          switchMainTab('bosp');
+          renderBpuPickerList();
+          renderPreview();
+        } else if (modName === 'gtk') {
+          $('app-header-title').textContent = 'Surat Tugas Kepegawaian (GTK)';
+          $('app-header-subtitle').textContent = 'Penugasan Dinas Guru, KKG, Bimtek & Diklat Satuan Pendidikan';
+          $('wrapper-select-doc-type').classList.add('hidden');
+          state.docType = 'gtk_tugas';
+          switchMainTab('gtk');
+          renderPreview();
+        } else if (modName === 'dashboard') {
+          $('app-header-title').textContent = 'Dashboard Administrasi Persuratan';
+          $('app-header-subtitle').textContent = 'SD Negeri Sumberejo 04 • Sistem Tata Usaha Terpadu';
+          $('dash-stat-siswa').textContent = studentDatabase.length;
+          $('dash-stat-bpu').textContent = bpuDatabase.length;
+          $('dash-stat-gtk').textContent = gtkDatabase.length;
+        }
+      }
         const map = [
           ['logoKiri', 'thumb-logo-kiri', 'empty-logo-kiri'],
           ['logoKanan', 'thumb-logo-kanan', 'empty-logo-kanan'],
@@ -3419,6 +4397,111 @@
           closeConfirm();
         });
 
+        // Event Navigasi Modul Terpadu & Dashboard
+        $('btn-nav-dashboard').addEventListener('click', () => setAppModule('dashboard'));
+        $('nav-btn-dashboard').addEventListener('click', () => setAppModule('dashboard'));
+        $('nav-btn-siswa').addEventListener('click', () => setAppModule('siswa'));
+        $('nav-btn-bosp').addEventListener('click', () => setAppModule('bosp'));
+        $('nav-btn-gtk').addEventListener('click', () => setAppModule('gtk'));
+
+        // Dashboard Card Quick Action
+        $('dash-btn-open-siswa').addEventListener('click', () => setAppModule('siswa'));
+        $('dash-btn-open-bosp').addEventListener('click', () => setAppModule('bosp'));
+        $('dash-btn-open-gtk').addEventListener('click', () => setAppModule('gtk'));
+
+        // Event Modul BOSP
+        $('search-bpu').addEventListener('input', renderBpuPickerList);
+        $('filter-bulan-bpu').addEventListener('change', renderBpuPickerList);
+        $('btn-select-all-bpu').addEventListener('click', () => {
+          state.selectedBpuIds = bpuDatabase.map(b => b.id);
+          renderBpuPickerList();
+          renderPreview();
+          showToast(`Seluruh ${bpuDatabase.length} data BPU dipilih untuk dicetak borongan.`);
+        });
+        $('btn-clear-bpu').addEventListener('click', () => {
+          if (bpuDatabase.length > 0) state.selectedBpuIds = [bpuDatabase[0].id];
+          renderBpuPickerList();
+          renderPreview();
+          showToast('Pilihan BPU direset ke 1 lembar.', 'info');
+        });
+        $('input-bosp-ks-nama').addEventListener('input', (e) => { state.bosp.ksNama = e.target.value; renderPreview(); });
+        $('input-bosp-ks-nip').addEventListener('input', (e) => { state.bosp.ksNip = e.target.value; renderPreview(); });
+        $('input-bosp-bendahara-nama').addEventListener('input', (e) => { state.bosp.bendaharaNama = e.target.value; renderPreview(); });
+        $('input-bosp-bendahara-nip').addEventListener('input', (e) => { state.bosp.bendaharaNip = e.target.value; renderPreview(); });
+
+        $('input-excel-bpu').addEventListener('change', (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            try {
+              const data = new Uint8Array(ev.target.result);
+              const workbook = XLSX.read(data, { type: 'array' });
+              const sheet = workbook.Sheets[workbook.SheetNames[0]];
+              const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+              if (rows && rows.length > 1) {
+                const newBpu = [];
+                for (let i = 1; i < rows.length; i++) {
+                  const r = rows[i];
+                  if (!r[1] && !r[2] && !r[3]) continue;
+                  newBpu.push({
+                    id: `bpu_up_${i}`,
+                    no: String(r[0] || '1'),
+                    bpu: String(r[1] || `Lampiran BPU${i}`),
+                    uraian: String(r[2] || 'TANDA TERIMA HONOR PELATIH EKSTRAKURIKULER'),
+                    namaPelatih: String(r[3] || 'Pelatih'),
+                    bulan: String(r[4] || 'BULAN JANUARI 2026'),
+                    honorPerMinggu: parseInt(r[5], 10) || 100000,
+                    jumlahMinggu: 4,
+                    jumlahDiterima: parseInt(r[6], 10) || 100000,
+                    tanggal: String(r[7] || 'Ambulu, ' + formatTanggalIndo(getTodayISO())),
+                    jabatan: 'Pelatih',
+                    npwp: '-',
+                    pph21: 0
+                  });
+                }
+                if (newBpu.length > 0) {
+                  bpuDatabase = newBpu;
+                  state.selectedBpuIds = [newBpu[0].id];
+                  populateBpuBulanFilter();
+                  renderBpuPickerList();
+                  renderPreview();
+                  showToast(`Berhasil memuat ${newBpu.length} data BPU dari file Excel!`);
+                }
+              }
+            } catch (err) {
+              console.error(err);
+              showToast('Gagal membaca file Excel BPU.', 'error');
+            }
+          };
+          reader.readAsArrayBuffer(file);
+          e.target.value = '';
+        });
+
+        // Event Modul GTK
+        $('select-gtk-picker').addEventListener('change', (e) => {
+          const found = gtkDatabase.find(g => g.id === e.target.value);
+          if (found) {
+            state.gtkForm.nama = found.nama;
+            state.gtkForm.nip = found.nip;
+            state.gtkForm.pangkat = found.pangkat;
+            state.gtkForm.jabatan = found.jabatan;
+            $('input-gtk-nama').value = found.nama;
+            $('input-gtk-nip').value = found.nip;
+            $('input-gtk-pangkat').value = found.pangkat;
+            $('input-gtk-jabatan').value = found.jabatan;
+            renderPreview();
+            showToast(`Data ${found.nama} dipilih.`);
+          }
+        });
+        $('input-gtk-nama').addEventListener('input', (e) => { state.gtkForm.nama = e.target.value; renderPreview(); });
+        $('input-gtk-nip').addEventListener('input', (e) => { state.gtkForm.nip = e.target.value; renderPreview(); });
+        $('input-gtk-pangkat').addEventListener('input', (e) => { state.gtkForm.pangkat = e.target.value; renderPreview(); });
+        $('input-gtk-jabatan').addEventListener('input', (e) => { state.gtkForm.jabatan = e.target.value; renderPreview(); });
+        $('input-gtk-keperluan').addEventListener('input', (e) => { state.gtkForm.keperluan = e.target.value; renderPreview(); });
+        $('input-gtk-waktu').addEventListener('input', (e) => { state.gtkForm.waktu = e.target.value; renderPreview(); });
+        $('input-gtk-tempat').addEventListener('input', (e) => { state.gtkForm.tempat = e.target.value; renderPreview(); });
+
         $('cloud-status-pill').addEventListener('click', () => {
           showToast('Menghubungkan ke Google Sheets...', 'info');
           syncDataFromCloud();
@@ -3438,6 +4521,21 @@
         renderStudentPicker();
         renderSelectedStudentsList();
         renderHistoryList();
+
+        // Inisialisasi Modul BOSP & GTK
+        populateBpuBulanFilter();
+        renderBpuPickerList();
+        populateGtkDropdown();
+
+        // Inisialisasi input GTK form awal
+        if (gtkDatabase[3]) {
+          const initGtk = gtkDatabase[3];
+          $('input-gtk-nama').value = initGtk.nama;
+          $('input-gtk-nip').value = initGtk.nip;
+          $('input-gtk-pangkat').value = initGtk.pangkat;
+          $('input-gtk-jabatan').value = initGtk.jabatan;
+        }
+
         bindEvents();
         renderPreview();
         lucide.createIcons();
