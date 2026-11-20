@@ -56,7 +56,7 @@
   <style id="dynamic-page-style">
     @media print {
       @page {
-        size: 210mm 297mm;
+        size: A4 portrait;
         margin: 0 !important; /* HILANGKAN URL & TANGGAL BROWSER */
       }
     }
@@ -229,20 +229,23 @@
       #print-stage {
         display: block !important;
         width: 100% !important;
-        margin: 0 !important;
+        max-width: 210mm !important;
+        margin: 0 auto !important;
         padding: 0 !important;
         background: #ffffff !important;
         color: #000000 !important;
         font-family: "Times New Roman", Times, Georgia, serif !important;
+        box-sizing: border-box !important;
       }
 
       #print-stage .print-letter-root {
         width: 100% !important;
-        margin: 0 !important;
-        padding: 0 !important;
+        max-width: 210mm !important;
+        margin: 0 auto !important;
         box-sizing: border-box !important;
         color: #000000 !important;
         background: #ffffff !important;
+        overflow: hidden !important;
       }
 
       #print-stage .logo-placeholder-box {
@@ -746,10 +749,6 @@
                     <input id="toggle-show-ttd" type="checkbox" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" checked />
                     <span>Tampilkan TTD Digital</span>
                   </label>
-                  <label class="inline-flex items-center gap-2 cursor-pointer col-span-2 pt-1 border-t border-slate-200/80">
-                    <input id="toggle-show-qr" type="checkbox" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" checked />
-                    <span>Tampilkan QR Code Verifikasi Kedinasan</span>
-                  </label>
                 </div>
               </div>
             </div>
@@ -1198,7 +1197,7 @@
         toggles: {
           showStempel: true,
           showTtd: true,
-          showQr: true
+          showQr: false
         },
         formatOptions: {
           kelasMode: 'romawi',  // 'romawi' | 'rombel'
@@ -1720,23 +1719,57 @@
           styleEl.textContent = `
             @media print {
               @page {
-                size: 210mm 297mm;
+                size: A4 portrait;
                 margin: 0 !important; /* MENGHILANGKAN URL DAN TANGGAL HEADER/FOOTER BROWSER SECARA OTOMATIS */
+              }
+              html, body {
+                width: 100% !important;
+                height: auto !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                background: #ffffff !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+              }
+              #app-shell {
+                display: none !important;
               }
               #print-stage {
                 display: block !important;
-                width: 210mm !important;
+                width: 100% !important;
+                max-width: 210mm !important;
                 margin: 0 auto !important;
                 padding: 0 !important;
                 background: #ffffff !important;
+                box-sizing: border-box !important;
               }
               #print-stage .print-letter-root {
                 box-sizing: border-box !important;
-                width: 210mm !important;
-                min-height: 297mm !important;
+                width: 100% !important;
+                max-width: 210mm !important;
+                min-height: auto !important;
+                height: auto !important;
                 padding: ${marginTop}cm ${marginRight}cm ${marginBottom}cm ${marginLeft}cm !important;
-                margin: 0 !important;
+                margin: 0 auto !important;
                 background: #ffffff !important;
+                overflow: hidden !important;
+                page-break-after: auto !important;
+              }
+              #print-stage table {
+                box-sizing: border-box !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                table-layout: fixed !important;
+              }
+              #print-stage th, #print-stage td {
+                box-sizing: border-box !important;
+                word-wrap: break-word !important;
+                overflow-wrap: break-word !important;
+              }
+              #print-stage tr,
+              #print-stage .ttd-block-official {
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
               }
             }
           `;
@@ -1893,12 +1926,12 @@
             <table class="siswa-table-official" style="font-size: ${tableFontPt}pt;">
               <thead>
                 <tr>
-                  <th style="width: 6%;">No</th>
+                  <th style="width: 5%;">No</th>
                   <th style="width: 28%;">Nama</th>
-                  <th style="width: 15%;">Cabang Lomba</th>
-                  <th style="width: 14%;">Kelas</th>
+                  <th style="width: 16%;">Cabang Lomba</th>
+                  <th style="width: 12%;">Kelas</th>
                   <th style="width: 15%;">NISN</th>
-                  <th style="width: 22%;">Tempat Tanggal Lahir</th>
+                  <th style="width: 24%;">Tempat Tanggal Lahir</th>
                 </tr>
               </thead>
               <tbody>
@@ -1909,27 +1942,9 @@
             <!-- 5. PENUTUP -->
             ${closingHtml}
 
-            <!-- 6. BLOK TANDA TANGAN + QR CODE VERIFIKASI (ANTI-TERPOTONG) -->
-            <div class="ttd-block-official" style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 18px; font-size: ${bodyFontPt}pt; line-height: 1.32; page-break-inside: avoid; break-inside: avoid;">
-
-              <!-- QR Code Verifikasi Kedinasan di Sisi Kiri Bawah -->
-              <div style="width: 160px; text-align: left;">
-                ${showQr
-                  ? `
-                    <div style="display: flex; align-items: center; gap: 6px;">
-                      <img src="${cachedQrDataUrl}" alt="QR Verifikasi" style="width: 64px; height: 64px; object-fit: contain; border: 1px solid #000; padding: 2px;" />
-                      <div style="font-size: 7.5pt; font-family: Inter, sans-serif; line-height: 1.15; color: #334155;">
-                        <span style="font-weight: 700; color: #000; display: block;">VERIFIKASI RESMI</span>
-                        Dokumen digital sah terdaftar di pangkalan data SDN Sumberejo 04
-                      </div>
-                    </div>
-                  `
-                  : ''
-                }
-              </div>
-
-              <!-- Tanda Tangan & Stempel di Sisi Kanan -->
-              <div style="width: 245px; text-align: left;">
+            <!-- 6. BLOK TANDA TANGAN RESMI (SISI KANAN, ANTI-TERPOTONG) -->
+            <div class="ttd-block-official" style="display: flex; justify-content: flex-end; margin-top: 18px; font-size: ${bodyFontPt}pt; line-height: 1.35; page-break-inside: avoid; break-inside: avoid;">
+              <div style="width: 250px; text-align: left;">
                 <div>${escapeHtml(state.surat.kota)}, ${escapeHtml(formatTanggalIndo(state.surat.tanggal))}</div>
                 <div>${escapeHtml(state.ks.jabatan)}</div>
 
@@ -1998,7 +2013,6 @@
       async function triggerPrintPdf() {
         try {
           updateDynamicPageStyle();
-          await refreshDocQrCode();
 
           const printStage = $('print-stage');
           printStage.innerHTML = buildLetterMarkup();
@@ -2010,7 +2024,7 @@
           const prefix = state.docType === 'tugas' ? 'Surat_Tugas_Pembina' : 'Surat_Aktif_Lomba';
           document.title = `${prefix}_SDN_Sumberejo_04_${noUrut}_${tglClean}`;
 
-          showToast('Tips: Pada jendela cetak, hilangkan centang "Header dan footer" agar bersih tanpa tulisan URL/tanggal.', 'info', 6000);
+          showToast('Membuka dialog cetak... Format A4 otomatis pas dan tidak terpotong.', 'info', 4000);
 
           setTimeout(() => {
             window.print();
@@ -2025,8 +2039,13 @@
       }
 
       // =====================================================================
-      // GENERATOR WORD (.DOC) PRESTISI TINGGI DENGAN KOMPOSIT CANVAS 2D
+      // GENERATOR WORD (.DOC) MHTML PRESTISI DENGAN EMBEDDED LOGO RESMI
       // =====================================================================
+      function formatBase64Mime(base64Str) {
+        if (!base64Str) return '';
+        return base64Str.replace(/(.{76})/g, '$1\r\n');
+      }
+
       function loadImageAsync(src) {
         return new Promise((resolve) => {
           if (!src) return resolve(null);
@@ -2054,8 +2073,12 @@
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
+        const fullDataUrl = canvas.toDataURL('image/png');
+        const rawBase64 = fullDataUrl.replace(/^data:image\/[a-z]+;base64,/, '');
+
         return {
-          dataUrl: canvas.toDataURL('image/png'),
+          dataUrl: fullDataUrl,
+          base64: rawBase64,
           width: displayW,
           height: displayH
         };
@@ -2109,8 +2132,12 @@
           ctx.restore();
         }
 
+        const fullDataUrl = canvas.toDataURL('image/png');
+        const rawBase64 = fullDataUrl.replace(/^data:image\/[a-z]+;base64,/, '');
+
         return {
-          dataUrl: canvas.toDataURL('image/png'),
+          dataUrl: fullDataUrl,
+          base64: rawBase64,
           width: 210,
           height: Math.round((logicalH / logicalW) * 210)
         };
@@ -2122,34 +2149,53 @@
           const { marginTop, marginRight, marginBottom, marginLeft, fontSize } = state.page;
           const tableFontPt = fontSize <= 10.5 ? 9.5 : (fontSize === 11 ? 10 : 11);
 
-          await refreshDocQrCode();
-
           const [logoKiriObj, logoKananObj, sigComposite] = await Promise.all([
             prepareLogoForWord(state.assets.logoKiri, 68),
             prepareLogoForWord(state.assets.logoKanan, 68),
             isDigital ? buildCompositeSignaturePng() : Promise.resolve(null)
           ]);
 
-          const logoKiriHtml = logoKiriObj
-            ? `<img src="${logoKiriObj.dataUrl}" width="${logoKiriObj.width}" height="${logoKiriObj.height}" style="width:${logoKiriObj.width}px; height:${logoKiriObj.height}px;" />`
-            : '&nbsp;';
+          const boundary = '----=_NextPart_SDN_SUMBEREJO_04_' + Date.now();
+          const mimeParts = [];
 
-          const logoKananHtml = logoKananObj
-            ? `<img src="${logoKananObj.dataUrl}" width="${logoKananObj.width}" height="${logoKananObj.height}" style="width:${logoKananObj.width}px; height:${logoKananObj.height}px;" />`
-            : '&nbsp;';
+          let logoKiriHtml = '&nbsp;';
+          if (logoKiriObj) {
+            logoKiriHtml = `<img src="logo_kiri.png" width="${logoKiriObj.width}" height="${logoKiriObj.height}" style="width:${logoKiriObj.width}px; height:${logoKiriObj.height}px;" />`;
+            mimeParts.push(
+              `--${boundary}\r\n` +
+              `Content-Type: image/png\r\n` +
+              `Content-Transfer-Encoding: base64\r\n` +
+              `Content-Location: logo_kiri.png\r\n` +
+              `Content-ID: <logo_kiri.png>\r\n\r\n` +
+              `${formatBase64Mime(logoKiriObj.base64)}\r\n`
+            );
+          }
 
-          const sigAreaHtml = (isDigital && sigComposite)
-            ? `<p style="margin:2pt 0;"><img src="${sigComposite.dataUrl}" width="${sigComposite.width}" height="${sigComposite.height}" style="width:${sigComposite.width}px; height:${sigComposite.height}px; margin-left:-32pt;" /></p>`
-            : `<p style="line-height:48pt; font-size:48pt;">&nbsp;</p>`;
+          let logoKananHtml = '&nbsp;';
+          if (logoKananObj) {
+            logoKananHtml = `<img src="logo_kanan.png" width="${logoKananObj.width}" height="${logoKananObj.height}" style="width:${logoKananObj.width}px; height:${logoKananObj.height}px;" />`;
+            mimeParts.push(
+              `--${boundary}\r\n` +
+              `Content-Type: image/png\r\n` +
+              `Content-Transfer-Encoding: base64\r\n` +
+              `Content-Location: logo_kanan.png\r\n` +
+              `Content-ID: <logo_kanan.png>\r\n\r\n` +
+              `${formatBase64Mime(logoKananObj.base64)}\r\n`
+            );
+          }
 
-          const qrWordHtml = (state.toggles.showQr && cachedQrDataUrl)
-            ? `<table cellpadding="0" cellspacing="0" border="0"><tr>
-                <td width="55" valign="middle"><img src="${cachedQrDataUrl}" width="50" height="50" style="width:50px;height:50px;border:1px solid #000;" /></td>
-                <td valign="middle" style="font-size:7.5pt; font-family:'Times New Roman', serif; line-height:1.1; color:#333;">
-                  <b>VERIFIKASI RESMI</b><br/>SDN Sumberejo 04
-                </td>
-               </tr></table>`
-            : '&nbsp;';
+          let sigAreaHtml = `<p style="line-height:48pt; font-size:48pt;">&nbsp;</p>`;
+          if (isDigital && sigComposite) {
+            sigAreaHtml = `<p style="margin:2pt 0;"><img src="sig_composite.png" width="${sigComposite.width}" height="${sigComposite.height}" style="width:${sigComposite.width}px; height:${sigComposite.height}px; margin-left:-32pt;" /></p>`;
+            mimeParts.push(
+              `--${boundary}\r\n` +
+              `Content-Type: image/png\r\n` +
+              `Content-Transfer-Encoding: base64\r\n` +
+              `Content-Location: sig_composite.png\r\n` +
+              `Content-ID: <sig_composite.png>\r\n\r\n` +
+              `${formatBase64Mime(sigComposite.base64)}\r\n`
+            );
+          }
 
           const isTugas = state.docType === 'tugas';
 
@@ -2301,12 +2347,12 @@
       style="width:100%; border-collapse:collapse; border:1pt solid #000000; font-size:${tableFontPt}pt; margin-bottom:8pt;">
       <thead>
         <tr>
-          <th width="6%" style="border:1pt solid #000000; padding:3.5pt 4pt; text-align:center; font-weight:bold;">No</th>
+          <th width="5%" style="border:1pt solid #000000; padding:3.5pt 4pt; text-align:center; font-weight:bold;">No</th>
           <th width="28%" style="border:1pt solid #000000; padding:3.5pt 4pt; text-align:center; font-weight:bold;">Nama</th>
-          <th width="15%" style="border:1pt solid #000000; padding:3.5pt 4pt; text-align:center; font-weight:bold;">Cabang Lomba</th>
-          <th width="14%" style="border:1pt solid #000000; padding:3.5pt 4pt; text-align:center; font-weight:bold;">Kelas</th>
+          <th width="16%" style="border:1pt solid #000000; padding:3.5pt 4pt; text-align:center; font-weight:bold;">Cabang Lomba</th>
+          <th width="12%" style="border:1pt solid #000000; padding:3.5pt 4pt; text-align:center; font-weight:bold;">Kelas</th>
           <th width="15%" style="border:1pt solid #000000; padding:3.5pt 4pt; text-align:center; font-weight:bold;">NISN</th>
-          <th width="22%" style="border:1pt solid #000000; padding:3.5pt 4pt; text-align:center; font-weight:bold;">Tempat Tanggal Lahir</th>
+          <th width="24%" style="border:1pt solid #000000; padding:3.5pt 4pt; text-align:center; font-weight:bold;">Tempat Tanggal Lahir</th>
         </tr>
       </thead>
       <tbody>
@@ -2317,13 +2363,11 @@
     <!-- 5. PENUTUP -->
     ${closingWordHtml}
 
-    <!-- 6. BLOK TANDA TANGAN & QR VERIFIKASI (TETAP RAPI DI WORD) -->
-    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%; margin-top:8pt; page-break-inside:avoid;">
+    <!-- 6. BLOK TANDA TANGAN (SISI KANAN) -->
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%; margin-top:14pt; page-break-inside:avoid;">
       <tr>
-        <td width="48%" valign="bottom" style="padding-bottom:2pt;">
-          ${qrWordHtml}
-        </td>
-        <td width="52%" valign="top" style="font-size:${fontSize}pt; line-height:1.32;">
+        <td width="55%">&nbsp;</td>
+        <td width="45%" align="left" valign="top" style="font-size:${fontSize}pt; line-height:1.35;">
           <p>${escapeHtml(state.surat.kota)}, ${escapeHtml(formatTanggalIndo(state.surat.tanggal))}</p>
           <p>${escapeHtml(state.ks.jabatan)}</p>
           ${sigAreaHtml}
@@ -2337,7 +2381,20 @@
 </body>
 </html>`;
 
-          const blob = new Blob(['\ufeff', docWordXml], { type: 'application/msword;charset=utf-8' });
+          const mhtmlHeader = [
+            'MIME-Version: 1.0',
+            `Content-Type: multipart/related; boundary="${boundary}"; type="text/html"`,
+            '',
+            `--${boundary}`,
+            'Content-Type: text/html; charset="utf-8"',
+            'Content-Transfer-Encoding: 8bit',
+            '',
+            ''
+          ].join('\r\n');
+
+          const mhtmlDocument = mhtmlHeader + docWordXml + '\r\n\r\n' + mimeParts.join('\r\n') + `\r\n--${boundary}--\r\n`;
+
+          const blob = new Blob([mhtmlDocument], { type: 'application/msword;charset=utf-8' });
           const url = URL.createObjectURL(blob);
           const a = document.createElement('a');
           a.href = url;
@@ -2354,7 +2411,7 @@
           document.body.removeChild(a);
           URL.revokeObjectURL(url);
 
-          showToast(`File Microsoft Word (.doc) ${isDigital ? 'Siap Cetak' : 'TTD Basah'} berhasil diunduh!`);
+          showToast(`File Microsoft Word (.doc) ${isDigital ? 'Siap Cetak' : 'TTD Basah'} berhasil diunduh dengan logo lengkap!`);
         } catch (err) {
           console.error(err);
           showToast('Gagal mengekspor file Word.', 'error');
@@ -2864,7 +2921,7 @@
 
         $('toggle-show-stempel').checked = state.toggles.showStempel;
         $('toggle-show-ttd').checked = state.toggles.showTtd;
-        $('toggle-show-qr').checked = state.toggles.showQr;
+        if ($('toggle-show-qr')) $('toggle-show-qr').checked = Boolean(state.toggles.showQr);
 
         $('kop-baris-1').value = state.kop.baris1;
         $('kop-baris-2').value = state.kop.baris2;
@@ -3176,7 +3233,9 @@
 
         $('toggle-show-stempel').addEventListener('change', (e) => { state.toggles.showStempel = e.target.checked; renderPreview(); });
         $('toggle-show-ttd').addEventListener('change', (e) => { state.toggles.showTtd = e.target.checked; renderPreview(); });
-        $('toggle-show-qr').addEventListener('change', (e) => { state.toggles.showQr = e.target.checked; renderPreview(); });
+        if ($('toggle-show-qr')) {
+          $('toggle-show-qr').addEventListener('change', (e) => { state.toggles.showQr = e.target.checked; renderPreview(); });
+        }
 
         // Tab Kop & Aset
         $('input-docx-extract').addEventListener('change', (e) => {
