@@ -22,7 +22,12 @@ const SHEET_NAMES = {
  * Menyajikan halaman utama Web App
  */
 function doGet(e) {
-  const template = HtmlService.createTemplateFromFile('Index');
+  let template;
+  try {
+    template = HtmlService.createTemplateFromFile('index');
+  } catch (err) {
+    template = HtmlService.createTemplateFromFile('Index');
+  }
   return template
     .evaluate()
     .setTitle(APP_TITLE)
