@@ -1,15 +1,13 @@
 @echo off
-chcp 65001 >nul
+if exist "%SystemRoot%\System32\chcp.com" "%SystemRoot%\System32\chcp.com" 65001 >nul 2>&1
 echo ========================================================
 echo  OTOMATISASI PUSH GIT KE GITHUB - SDN SUMBEREJO 04
 echo ========================================================
 echo.
 
-git status >nul 2>&1
+git remote get-url origin >nul 2>&1
 if %errorlevel% neq 0 (
-    echo [INFO] Inisialisasi Git repository...
-    git init
-    git branch -M main
+    git remote add origin https://github.com/titinrusmawati32-byte/surathebat.git
 )
 
 echo [1/3] Menambahkan seluruh berkas (git add)...
@@ -22,15 +20,9 @@ git commit -m "%msg%"
 
 echo [3/3] Mengunggah ke GitHub (git push)...
 git push origin main
-if %errorlevel% neq 0 (
-    echo.
-    echo [PETUNJUK] Jika remote origin belum diatur, jalankan perintah:
-    echo git remote add origin https://github.com/titinrusmawati32-byte/NAMA_REPO_ANDA.git
-    echo git push -u origin main
-)
 
 echo.
 echo ========================================================
-echo  Proses Selesai!
+echo  Proses Selesai! Cek di: https://github.com/titinrusmawati32-byte/surathebat
 echo ========================================================
 pause
