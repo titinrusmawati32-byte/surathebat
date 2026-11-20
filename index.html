@@ -476,6 +476,121 @@
         </button>
       </div>
     </header>
+    <!-- WRAPPER UTAMA: SIDEBAR KIRI + KONTEN UTAMA -->
+    <div id="app-workspace" class="flex-1 flex overflow-hidden min-h-0">
+      
+      
+    <!-- =====================================================================
+         SIDEBAR NAVIGASI UTAMA (MODERN ELEGAN - SLATE 900)
+         ===================================================================== -->
+    <aside id="main-sidebar" class="w-64 bg-slate-900 text-slate-300 flex flex-col justify-between transition-all duration-300 shrink-0 border-r border-slate-800 shadow-xl z-20">
+      
+      <!-- Bagian Atas: Brand Sekolah -->
+      <div class="flex-1 flex flex-col min-h-0">
+        <div class="p-4 border-b border-slate-800 flex items-center gap-3 bg-slate-950/50">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-400 to-amber-600 flex items-center justify-center text-white font-black shadow-md shadow-amber-500/20 shrink-0 text-sm tracking-wider">
+            04
+          </div>
+          <div id="sidebar-brand-text" class="sidebar-label overflow-hidden whitespace-nowrap min-w-0 transition-opacity duration-200">
+            <h1 class="font-black text-white text-xs sm:text-sm tracking-tight leading-tight truncate">SDN SUMBEREJO 04</h1>
+            <p class="text-[10px] text-amber-400 font-semibold tracking-wider uppercase truncate">Persuratan & Tata Usaha</p>
+          </div>
+        </div>
+
+        <!-- Menu Navigasi Scrollable -->
+        <div class="p-3 space-y-1 overflow-y-auto flex-1 no-scrollbar">
+          <div class="sidebar-label px-3 py-1.5 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+            Menu Utama
+          </div>
+
+          <button type="button" id="sidebar-nav-dashboard"
+            class="sidebar-menu-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition text-slate-300 hover:bg-slate-800 hover:text-white"
+            title="Dashboard Utama">
+            <i data-lucide="layout-dashboard" class="w-4 h-4 shrink-0 text-indigo-400"></i>
+            <span class="sidebar-label truncate">Dashboard Utama</span>
+          </button>
+
+          <button type="button" id="sidebar-nav-siswa"
+            class="sidebar-menu-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition bg-indigo-600 text-white shadow-md shadow-indigo-600/30"
+            title="Surat Tugas & Aktif Siswa">
+            <i data-lucide="graduation-cap" class="w-4 h-4 shrink-0"></i>
+            <span class="sidebar-label flex-1 text-left truncate">Surat Siswa</span>
+            <span class="sidebar-label text-[10px] bg-indigo-500/60 px-1.5 py-0.5 rounded text-white font-mono shrink-0">Aktif</span>
+          </button>
+
+          <button type="button" id="sidebar-nav-bosp"
+            class="sidebar-menu-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition text-slate-300 hover:bg-slate-800 hover:text-white"
+            title="Lampiran BPU LPJ BOSP (Honor Pelatih dari Excel)">
+            <i data-lucide="wallet" class="w-4 h-4 shrink-0 text-emerald-400"></i>
+            <span class="sidebar-label flex-1 text-left truncate">LPJ BOSP</span>
+            <span class="sidebar-label text-[10px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded font-mono shrink-0">Excel</span>
+          </button>
+
+          <button type="button" id="sidebar-nav-gtk"
+            class="sidebar-menu-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition text-slate-300 hover:bg-slate-800 hover:text-white"
+            title="Surat Tugas Kepegawaian GTK">
+            <i data-lucide="briefcase" class="w-4 h-4 shrink-0 text-blue-400"></i>
+            <span class="sidebar-label flex-1 text-left truncate">Surat GTK</span>
+            <span class="sidebar-label text-[10px] bg-blue-500/20 text-blue-400 px-1.5 py-0.5 rounded font-mono shrink-0">Dinas</span>
+          </button>
+
+          <div class="sidebar-label pt-3 px-3 py-1.5 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+            Konfigurasi & Arsip
+          </div>
+
+          <button type="button" id="sidebar-nav-kop"
+            class="sidebar-menu-btn w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium transition text-slate-400 hover:bg-slate-800 hover:text-white"
+            title="Kop Surat, Logo & Tanda Tangan">
+            <i data-lucide="image" class="w-4 h-4 shrink-0 text-amber-400"></i>
+            <span class="sidebar-label truncate">Kop, Logo & TTD</span>
+          </button>
+
+          <button type="button" id="sidebar-nav-riwayat"
+            class="sidebar-menu-btn w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium transition text-slate-400 hover:bg-slate-800 hover:text-white"
+            title="Riwayat Cetak Dokumen">
+            <i data-lucide="history" class="w-4 h-4 shrink-0 text-purple-400"></i>
+            <span class="sidebar-label truncate">Riwayat Surat</span>
+          </button>
+
+          <div class="sidebar-label pt-3 px-3 py-1.5 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+            Format Kustom
+          </div>
+
+          <button type="button" id="sidebar-nav-tambah-format"
+            class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 shadow-md shadow-amber-500/20"
+            title="Tambah Format Surat Baru (Word .docx + Excel .xlsx)">
+            <i data-lucide="sparkles" class="w-4 h-4 shrink-0 text-slate-950"></i>
+            <span class="sidebar-label flex-1 text-left truncate">+ Buat Surat Baru</span>
+          </button>
+
+          <!-- Daftar Template Kustom yang Ditambahkan User -->
+          <div id="sidebar-custom-templates-container" class="space-y-1 pt-1"></div>
+        </div>
+      </div>
+
+      <!-- Bagian Bawah: Sinkronisasi & Tombol Collapse -->
+      <div class="p-3 border-t border-slate-800 bg-slate-950/40 space-y-2">
+        <div class="sidebar-label flex items-center gap-2.5 px-3 py-2 rounded-xl bg-slate-800/60 border border-slate-700/60 text-xs">
+          <div class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></div>
+          <div class="overflow-hidden min-w-0">
+            <div class="font-semibold text-slate-200 text-[11px] truncate">Google Sheets Sync</div>
+            <div class="text-[9px] text-slate-400 truncate">Terhubung • GAS WebApp</div>
+          </div>
+        </div>
+
+        <button type="button" id="btn-toggle-sidebar-collapse"
+          class="w-full py-1.5 px-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-[11px] font-semibold flex items-center justify-center gap-2 transition"
+          title="Ciutkan atau Lebarkan Sidebar untuk Memperbesar Pratinjau Kertas A4">
+          <i data-lucide="panel-left-close" id="icon-sidebar-collapse" class="w-4 h-4"></i>
+          <span class="sidebar-label">Ciutkan Menu</span>
+        </button>
+      </div>
+    </aside>
+
+
+      <!-- AREA KONTEN (DASHBOARD ATAU SURAT DOKUMEN) -->
+      <div id="main-content-area" class="flex-1 flex flex-col min-w-0 overflow-hidden relative">
+        
 
     <!-- DASHBOARD UTAMA OVERLAY (PERSURATAN TERPADU) -->
     <div id="dashboard-view" class="hidden flex-1 overflow-y-auto bg-slate-50/70 p-4 sm:p-6 lg:p-8">
@@ -1333,6 +1448,10 @@
       </section>
 
     </main>
+      </div>
+
+    </div>
+
 
     <!-- =====================================================================
          MODAL TAMBAH SISWA MANUAL
@@ -3311,6 +3430,102 @@
   <div class="WordSection1">
     ${pagesWordHtml}
   </div>
+
+    <!-- =====================================================================
+         MODAL BUAT FORMAT SURAT BARU (WORD .DOCX + EXCEL .XLSX)
+         ===================================================================== -->
+    <div id="modal-new-template" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+      <div id="backdrop-new-template" class="absolute inset-0 bg-slate-950/60 backdrop-blur-sm"></div>
+      <div class="relative bg-white rounded-2xl shadow-2xl max-w-xl w-full p-6 space-y-4 max-h-[90vh] flex flex-col z-10 border border-slate-200">
+        
+        <!-- Header Modal -->
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center">
+              <i data-lucide="file-plus" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-slate-900">Buat Format Surat Baru</h3>
+              <p class="text-[11px] text-slate-500">Kombinasi Template Contoh Word (.docx) & Data Excel (.xlsx)</p>
+            </div>
+          </div>
+          <button type="button" id="btn-close-modal-new-template" class="p-1 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- Body Modal (Scrollable) -->
+        <div class="overflow-y-auto flex-1 space-y-4 text-xs pr-1">
+          
+          <!-- Step 1: Nama Surat -->
+          <div>
+            <label class="block font-bold text-slate-800 mb-1">Nama Jenis Surat</label>
+            <input type="text" id="input-new-tpl-title" placeholder="Contoh: Surat Rekomendasi Siswa / SK Pembina"
+              class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-xs">
+          </div>
+
+          <!-- Step 2: Upload Template Word (.docx) -->
+          <div class="p-3.5 border border-indigo-200 bg-indigo-50/50 rounded-xl space-y-2">
+            <div class="flex items-center justify-between">
+              <label class="font-bold text-indigo-950 flex items-center gap-1.5">
+                <i data-lucide="file-text" class="w-4 h-4 text-indigo-600"></i>
+                1. Unggah Template Contoh Word (.docx)
+              </label>
+              <span class="text-[10px] text-indigo-700 font-semibold">Wajib Format Contoh</span>
+            </div>
+            <p class="text-[11px] text-indigo-900/80 leading-relaxed">
+              Kirimkan file Word (.docx) resmi yang biasa digunakan sekolah Anda. Sistem akan membaca format naskah, kop, dan kalimatnya.
+            </p>
+            <input type="file" id="input-new-tpl-word" accept=".docx,.doc,.txt"
+              class="w-full text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer">
+            <div id="new-tpl-word-status" class="hidden text-[11px] font-semibold text-emerald-700 bg-emerald-50 p-2 rounded-lg border border-emerald-200">
+              ✓ Berhasil membaca file Word: <span id="new-tpl-word-filename" class="font-bold"></span>
+            </div>
+          </div>
+
+          <!-- Step 3: Upload Data Excel (.xlsx) -->
+          <div class="p-3.5 border border-emerald-200 bg-emerald-50/50 rounded-xl space-y-2">
+            <div class="flex items-center justify-between">
+              <label class="font-bold text-emerald-950 flex items-center gap-1.5">
+                <i data-lucide="file-spreadsheet" class="w-4 h-4 text-emerald-600"></i>
+                2. Unggah Data Excel (.xlsx)
+              </label>
+              <span class="text-[10px] text-emerald-700 font-semibold">Tabel Penerima / Isian</span>
+            </div>
+            <p class="text-[11px] text-emerald-900/80 leading-relaxed">
+              Unggah file Excel yang berisi daftar nama, NISN, atau rincian yang nantinya tinggal Anda klik/centang untuk dicetak.
+            </p>
+            <input type="file" id="input-new-tpl-excel" accept=".xlsx,.xls,.csv"
+              class="w-full text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-600 file:text-white hover:file:bg-emerald-700 cursor-pointer">
+            <div id="new-tpl-excel-status" class="hidden text-[11px] font-semibold text-emerald-700 bg-emerald-50 p-2 rounded-lg border border-emerald-200">
+              ✓ Berhasil membaca Excel: <span id="new-tpl-excel-details" class="font-bold"></span>
+            </div>
+          </div>
+
+          <!-- Keterangan Tambahan -->
+          <div>
+            <label class="block font-bold text-slate-800 mb-1">Catatan Tambahan / Pejabat TTD</label>
+            <input type="text" id="input-new-tpl-ttd" value="Kepala SD Negeri Sumberejo 04"
+              class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs">
+          </div>
+
+        </div>
+
+        <!-- Footer Modal -->
+        <div class="flex items-center justify-end gap-2 border-t border-slate-100 pt-3">
+          <button type="button" id="btn-cancel-modal-new-template"
+            class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg transition">
+            Batal
+          </button>
+          <button type="button" id="btn-save-new-template"
+            class="px-5 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-md shadow-indigo-600/30 transition flex items-center gap-1.5">
+            <i data-lucide="check" class="w-3.5 h-3.5"></i>
+            <span>Simpan Format & Gunakan</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
 </body>
 </html>`;
 
@@ -3892,14 +4107,13 @@
         $('app-main').classList.toggle('hidden', isDash);
         $('app-main').classList.toggle('flex', !isDash);
 
-        // Update Nav Tabs Toolbar Kanan
+        // Update Nav Tabs Toolbar Atas (jika ada)
         const mapNav = {
           dashboard: $('nav-btn-dashboard'),
           siswa: $('nav-btn-siswa'),
           bosp: $('nav-btn-bosp'),
           gtk: $('nav-btn-gtk')
         };
-
         Object.keys(mapNav).forEach(k => {
           const btn = mapNav[k];
           if (!btn) return;
@@ -3907,6 +4121,26 @@
           btn.className = active
             ? 'px-2.5 py-1.5 rounded-lg font-bold transition flex items-center gap-1 bg-white text-indigo-700 shadow-sm border border-slate-200'
             : 'px-2.5 py-1.5 rounded-lg font-bold transition flex items-center gap-1 text-slate-600 hover:text-slate-900';
+        });
+
+        // Update Sidebar Nav Styling
+        const mapSidebar = {
+          dashboard: $('sidebar-nav-dashboard'),
+          siswa: $('sidebar-nav-siswa'),
+          bosp: $('sidebar-nav-bosp'),
+          gtk: $('sidebar-nav-gtk'),
+          kop: $('sidebar-nav-kop'),
+          riwayat: $('sidebar-nav-riwayat')
+        };
+        Object.keys(mapSidebar).forEach(k => {
+          const btn = mapSidebar[k];
+          if (!btn) return;
+          const active = k === modName;
+          if (active) {
+            btn.className = 'sidebar-menu-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition bg-indigo-600 text-white shadow-md shadow-indigo-600/30';
+          } else {
+            btn.className = 'sidebar-menu-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition text-slate-300 hover:bg-slate-800 hover:text-white';
+          }
         });
 
         if (modName === 'siswa') {
@@ -3932,6 +4166,16 @@
           state.docType = 'gtk_tugas';
           switchMainTab('gtk');
           renderPreview();
+        } else if (modName === 'kop') {
+          $('app-header-title').textContent = 'Pengaturan Kop, Logo & Tanda Tangan';
+          $('app-header-subtitle').textContent = 'Kustomisasi Aset Resmi SDN Sumberejo 04';
+          switchMainTab('kop');
+          renderPreview();
+        } else if (modName === 'riwayat') {
+          $('app-header-title').textContent = 'Riwayat Surat Keluar';
+          $('app-header-subtitle').textContent = 'Daftar Arsip Surat yang Pernah Dicetak';
+          switchMainTab('riwayat');
+          renderHistoryList();
         } else if (modName === 'dashboard') {
           $('app-header-title').textContent = 'Dashboard Administrasi Persuratan';
           $('app-header-subtitle').textContent = 'SD Negeri Sumberejo 04 • Sistem Tata Usaha Terpadu';
@@ -4075,6 +4319,109 @@
       // =====================================================================
       // EVENT BINDINGS
       // =====================================================================
+      
+      // =====================================================================
+      // LOGIKA SIDEBAR & TEMPLATE KUSTOM (WORD + EXCEL)
+      // =====================================================================
+      let isSidebarCollapsed = false;
+      function toggleSidebarCollapse() {
+        isSidebarCollapsed = !isSidebarCollapsed;
+        const sb = $('main-sidebar');
+        const icon = $('icon-sidebar-collapse');
+        if (!sb) return;
+        
+        sb.classList.toggle('w-64', !isSidebarCollapsed);
+        sb.classList.toggle('w-16', isSidebarCollapsed);
+        
+        document.querySelectorAll('.sidebar-label').forEach(el => {
+          el.classList.toggle('hidden', isSidebarCollapsed);
+        });
+
+        if (icon) {
+          icon.setAttribute('data-lucide', isSidebarCollapsed ? 'panel-left-open' : 'panel-left-close');
+          safeRefreshIcons();
+        }
+
+        setTimeout(() => {
+          applyPreviewScale();
+        }, 150);
+      }
+
+      const KEY_CUSTOM_TPL = 'sdns04_custom_templates_v1';
+      let customTemplates = [];
+      let pendingTemplateDocx = null;
+      let pendingTemplateExcel = null;
+
+      function loadCustomTemplates() {
+        try {
+          const raw = localStorage.getItem(KEY_CUSTOM_TPL);
+          customTemplates = raw ? JSON.parse(raw) : [];
+        } catch (e) {
+          customTemplates = [];
+        }
+        renderCustomTemplatesSidebar();
+      }
+
+      function saveCustomTemplates() {
+        try {
+          localStorage.setItem(KEY_CUSTOM_TPL, JSON.stringify(customTemplates));
+        } catch (e) {
+          console.warn('Storage error:', e);
+        }
+      }
+
+      function renderCustomTemplatesSidebar() {
+        const container = $('sidebar-custom-templates-container');
+        if (!container) return;
+        if (!customTemplates || customTemplates.length === 0) {
+          container.innerHTML = '';
+          return;
+        }
+
+        container.innerHTML = customTemplates.map((tpl) => `
+          <button type="button" data-custom-id="${tpl.id}"
+            class="btn-open-custom-tpl sidebar-menu-btn w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium transition text-amber-300 hover:bg-slate-800 hover:text-white"
+            title="${escapeHtml(tpl.title)}">
+            <i data-lucide="file-check-2" class="w-4 h-4 shrink-0 text-amber-400"></i>
+            <span class="sidebar-label flex-1 text-left truncate">${escapeHtml(tpl.title)}</span>
+            <span class="sidebar-label text-[9px] bg-amber-500/20 text-amber-300 px-1 py-0.5 rounded font-mono shrink-0">Custom</span>
+          </button>
+        `).join('');
+
+        container.querySelectorAll('.btn-open-custom-tpl').forEach(btn => {
+          btn.addEventListener('click', () => openCustomTemplate(btn.dataset.customId));
+        });
+
+        safeRefreshIcons(container);
+      }
+
+      function openNewTemplateModal() {
+        pendingTemplateDocx = null;
+        pendingTemplateExcel = null;
+        $('input-new-tpl-title').value = '';
+        $('input-new-tpl-word').value = '';
+        $('input-new-tpl-excel').value = '';
+        $('new-tpl-word-status').classList.add('hidden');
+        $('new-tpl-excel-status').classList.add('hidden');
+        $('modal-new-template').classList.remove('hidden');
+        $('modal-new-template').classList.add('flex');
+        safeRefreshIcons($('modal-new-template'));
+      }
+
+      function closeNewTemplateModal() {
+        $('modal-new-template').classList.add('hidden');
+        $('modal-new-template').classList.remove('flex');
+      }
+
+      function openCustomTemplate(id) {
+        const found = customTemplates.find(t => t.id === id);
+        if (!found) return;
+        showToast(`Membuka format '${found.title}'...`);
+        setAppModule('siswa');
+        $('app-header-title').textContent = found.title;
+        $('app-header-subtitle').textContent = 'Format Kustom Template Word (.docx) & Data Excel • SDN Sumberejo 04';
+      }
+
       function bindEvents() {
         // Switcher Surat Aktif vs Surat Tugas
         $('select-doc-type').addEventListener('change', (e) => {
@@ -4382,6 +4729,104 @@
           });
         });
 
+        
+        // Sidebar Navigasi Utama
+        if ($('sidebar-nav-dashboard')) $('sidebar-nav-dashboard').addEventListener('click', () => setAppModule('dashboard'));
+        if ($('sidebar-nav-siswa')) $('sidebar-nav-siswa').addEventListener('click', () => setAppModule('siswa'));
+        if ($('sidebar-nav-bosp')) $('sidebar-nav-bosp').addEventListener('click', () => setAppModule('bosp'));
+        if ($('sidebar-nav-gtk')) $('sidebar-nav-gtk').addEventListener('click', () => setAppModule('gtk'));
+        if ($('sidebar-nav-kop')) $('sidebar-nav-kop').addEventListener('click', () => setAppModule('kop'));
+        if ($('sidebar-nav-riwayat')) $('sidebar-nav-riwayat').addEventListener('click', () => setAppModule('riwayat'));
+        
+        // Collapse Sidebar Toggle
+        if ($('btn-toggle-sidebar-collapse')) $('btn-toggle-sidebar-collapse').addEventListener('click', toggleSidebarCollapse);
+
+        // Modal Format Surat Baru (Word + Excel)
+        if ($('sidebar-nav-tambah-format')) $('sidebar-nav-tambah-format').addEventListener('click', openNewTemplateModal);
+        if ($('btn-close-modal-new-template')) $('btn-close-modal-new-template').addEventListener('click', closeNewTemplateModal);
+        if ($('btn-cancel-modal-new-template')) $('btn-cancel-modal-new-template').addEventListener('click', closeNewTemplateModal);
+        if ($('backdrop-new-template')) $('backdrop-new-template').addEventListener('click', closeNewTemplateModal);
+
+        if ($('input-new-tpl-word')) {
+          $('input-new-tpl-word').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            try {
+              if (typeof JSZip !== 'undefined') {
+                const zip = await JSZip.loadAsync(file);
+                const docXml = await (zip.file('word/document.xml') ? zip.file('word/document.xml').async('text') : Promise.resolve(''));
+                const textSample = docXml ? docXml.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 100) : '';
+                pendingTemplateDocx = { name: file.name, size: file.size, sample: textSample };
+              } else {
+                pendingTemplateDocx = { name: file.name, size: file.size, sample: '' };
+              }
+              $('new-tpl-word-filename').textContent = `${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+              $('new-tpl-word-status').classList.remove('hidden');
+              if (!$('input-new-tpl-title').value.trim()) {
+                $('input-new-tpl-title').value = file.name.replace(/\.[^/.]+$/, '').replace(/_/g, ' ');
+              }
+              showToast(`Template Word '${file.name}' terbaca rapi.`);
+            } catch (err) {
+              console.error(err);
+              showToast('Gagal memproses file Word.', 'error');
+            }
+          });
+        }
+
+        if ($('input-new-tpl-excel')) {
+          $('input-new-tpl-excel').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (evt) => {
+              try {
+                const data = new Uint8Array(evt.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const sheetName = workbook.SheetNames[0];
+                const rows = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { header: 1 });
+                const headers = rows[0] || [];
+                pendingTemplateExcel = {
+                  name: file.name,
+                  headers,
+                  rowCount: Math.max(0, rows.length - 1)
+                };
+                $('new-tpl-excel-details').textContent = `${file.name} • ${pendingTemplateExcel.rowCount} baris data (${headers.slice(0, 4).join(', ')}...)`;
+                $('new-tpl-excel-status').classList.remove('hidden');
+                showToast(`Data Excel '${file.name}' siap digunakan.`);
+              } catch (err) {
+                console.error(err);
+                showToast('Gagal membaca file Excel.', 'error');
+              }
+            };
+            reader.readAsArrayBuffer(file);
+          });
+        }
+
+        if ($('btn-save-new-template')) {
+          $('btn-save-new-template').addEventListener('click', () => {
+            const title = $('input-new-tpl-title').value.trim();
+            if (!title) {
+              showToast('Harap masukkan nama jenis surat.', 'warning');
+              $('input-new-tpl-title').focus();
+              return;
+            }
+            const newTpl = {
+              id: 'custom_' + Date.now(),
+              title,
+              ttd: $('input-new-tpl-ttd').value.trim() || 'Kepala SD Negeri Sumberejo 04',
+              docxName: pendingTemplateDocx ? pendingTemplateDocx.name : 'Template Word',
+              excelName: pendingTemplateExcel ? pendingTemplateExcel.name : 'Data Excel',
+              createdAt: getTodayISO()
+            };
+            customTemplates.push(newTpl);
+            saveCustomTemplates();
+            renderCustomTemplatesSidebar();
+            closeNewTemplateModal();
+            showToast(`Format '${title}' berhasil disimpan di Sidebar!`);
+            openCustomTemplate(newTpl.id);
+          });
+        }
+
         // Riwayat & Cetak
         $('btn-clear-all-history').addEventListener('click', () => {
           openConfirm('Hapus Semua Riwayat?', 'Seluruh riwayat surat akan dihapus permanen.', () => {
@@ -4545,6 +4990,7 @@
         populateBpuBulanFilter();
         renderBpuPickerList();
         populateGtkDropdown();
+        loadCustomTemplates();
 
         // Inisialisasi input GTK form awal
         if (gtkDatabase[3]) {
