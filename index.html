@@ -624,6 +624,23 @@
                   </span>
                 </label>
               </div>
+
+              <!-- Pilihan Mode Cetak Multi-Halaman per Cabang Lomba -->
+              <div class="mt-3 p-2.5 rounded-xl border border-indigo-200 bg-indigo-50/70 space-y-1.5">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold text-indigo-900 flex items-center gap-1.5">
+                    <i data-lucide="layers" class="w-3.5 h-3.5 text-indigo-600"></i>
+                    <span>Mode Multi-Halaman (Banyak Lomba)</span>
+                  </span>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input id="toggle-split-cabang" type="checkbox" class="sr-only peer" checked />
+                    <div class="w-8 h-4 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-indigo-600"></div>
+                  </label>
+                </div>
+                <p class="text-[10.5px] text-indigo-800 leading-relaxed">
+                  <strong>Aktif:</strong> Otomatis memisahkan surat jadi 1 lembar per cabang lomba (nomor surat berurutan). Jika dinonaktifkan, seluruh siswa digabung dalam 1 surat.
+                </p>
+              </div>
             </div>
 
             <!-- Daftar Siswa yang Masuk ke Surat Saat Ini -->
@@ -990,14 +1007,12 @@
 
         <!-- Wadah Scroll Pratinjau Kertas A4 -->
         <div id="preview-scroll-container" class="flex-1 overflow-auto p-4 sm:p-6 flex justify-center items-start">
-          <div id="preview-scale-wrapper" class="flex justify-center">
+          <div id="preview-scale-wrapper" class="flex flex-col items-center">
 
-            <!-- LEMBAR A4 PRATINJAU -->
-            <article id="a4-document" class="a4-paper shadow-2xl ring-1 ring-slate-900/15" style="padding: 2cm 2cm 2cm 2cm;">
-              <div id="preview-letter-mount" class="letter-inner-content">
-                <!-- Konten surat diisi oleh buildLetterMarkup() -->
-              </div>
-            </article>
+            <!-- WADAH MULTI-LEMBAR A4 PRATINJAU -->
+            <div id="preview-multi-pages" class="flex flex-col items-center gap-6">
+              <!-- Konten lembar surat diisi dinamis oleh renderPreview() -->
+            </div>
 
           </div>
         </div>
@@ -1197,7 +1212,8 @@
         toggles: {
           showStempel: true,
           showTtd: true,
-          showQr: false
+          showQr: false,
+          splitCabangMultiPages: true
         },
         formatOptions: {
           kelasMode: 'romawi',  // 'romawi' | 'rombel'
@@ -1813,9 +1829,45 @@
       }
 
       // =====================================================================
+      // HELPER NOMOR SURAT & PENGELOMPOKAN MULTI-HALAMAN CABANG LOMBA
+      // =====================================================================
+      function computeNomorSuratIndex(baseNomor, indexOffset = 0) {
+        if (!baseNomor) return '-';
+        if (indexOffset === 0) return baseNomor;
+        const match = baseNomor.match(/^(.*?\/\s*)(\d+)(\s*\/.*)$/);
+        if (!match) return baseNomor;
+        const prefix = match[1];
+        const numStr = match[2];
+        const suffix = match[3];
+        const newNum = parseInt(numStr, 10) + indexOffset;
+        const padded = String(newNum).padStart(numStr.length, '0');
+        return `${prefix}${padded}${suffix}`;
+      }
+
+      function getGroupedStudentsByCabang() {
+        if (!state.selectedStudents || state.selectedStudents.length === 0) {
+          return [{ cabang: 'Semua Lomba', students: [] }];
+        }
+        if (!state.toggles.splitCabangMultiPages) {
+          return [{ cabang: 'Semua Lomba', students: state.selectedStudents }];
+        }
+        const map = new Map();
+        state.selectedStudents.forEach((s) => {
+          const c = (s.cabang || 'Lomba').trim();
+          if (!map.has(c)) map.set(c, []);
+          map.get(c).push(s);
+        });
+        const groups = [];
+        map.forEach((students, cabang) => {
+          groups.push({ cabang, students });
+        });
+        return groups;
+      }
+
+      // =====================================================================
       // ENGINE PEMBANGUN MARKUP SURAT RESMI (DIGUNAKAN OLEH PREVIEW & PRINT)
       // =====================================================================
-      function buildLetterMarkup() {
+      function buildSinglePageMarkup(students, pageIndex = 0, totalPages = 1) {
         const bodyFontPt = state.page.fontSize || 12;
         const tableFontPt = bodyFontPt <= 10.5 ? 9.5 : (bodyFontPt === 11 ? 10 : 11);
         const cellPadding = bodyFontPt <= 10.5 ? '3px 5px' : '4px 6px';
@@ -1824,14 +1876,14 @@
         const hasKanan = Boolean(state.assets.logoKanan);
         const showStempel = state.toggles.showStempel && Boolean(state.assets.stempel);
         const showTtd = state.toggles.showTtd && Boolean(state.assets.ttd);
-        const showQr = state.toggles.showQr && Boolean(cachedQrDataUrl);
 
         const isTugas = state.docType === 'tugas';
+        const pageNomorSurat = computeNomorSuratIndex(state.surat.nomor, pageIndex);
 
         // Baris Tabel Siswa
-        const siswaRowsHtml = state.selectedStudents.length === 0
+        const siswaRowsHtml = (!students || students.length === 0)
           ? `<tr><td colspan="6" style="text-align: center; color: #64748b; padding: 12px; font-style: italic;">Belum ada peserta dipilih. Klik nama siswa di panel kiri.</td></tr>`
-          : state.selectedStudents.map((s, idx) => `
+          : students.map((s, idx) => `
             <tr>
               <td style="text-align: center; padding: ${cellPadding};">${idx + 1}</td>
               <td style="text-align: left; padding: ${cellPadding};">${escapeHtml(formatNamaSiswa(s.nama))}</td>
@@ -1882,8 +1934,10 @@
             </div>
           `;
 
+        const pageBreakStyle = pageIndex < totalPages - 1 ? 'page-break-after: always; break-after: page;' : '';
+
         return `
-          <div class="print-letter-root" style="font-family: 'Times New Roman', Times, Georgia, serif; color: #000000; font-size: ${bodyFontPt}pt; line-height: 1.38;">
+          <div class="print-letter-root" style="font-family: 'Times New Roman', Times, Georgia, serif; color: #000000; font-size: ${bodyFontPt}pt; line-height: 1.38; ${pageBreakStyle}">
 
             <!-- 1. KOP SURAT 3 KOLOM RESMI KEDINASAN -->
             <table class="kop-table-official">
@@ -1916,7 +1970,7 @@
             <!-- 2. JUDUL & NOMOR SURAT -->
             <div style="text-align: center; margin-top: 8px; margin-bottom: 10px;">
               <div style="font-size: 13pt; font-weight: 700; text-decoration: underline; letter-spacing: 0.5px;">${escapeHtml(state.surat.judul)}</div>
-              <div style="font-size: ${bodyFontPt}pt; margin-top: 1.5px;">Nomor : ${escapeHtml(state.surat.nomor)}</div>
+              <div style="font-size: ${bodyFontPt}pt; margin-top: 1.5px;">Nomor : ${escapeHtml(pageNomorSurat)}</div>
             </div>
 
             <!-- 3. PEMBUKA & BIODATA -->
@@ -1969,38 +2023,56 @@
         `;
       }
 
+      function buildLetterMarkup() {
+        const groups = getGroupedStudentsByCabang();
+        return groups.map((g, idx) => buildSinglePageMarkup(g.students, idx, groups.length)).join('');
+      }
+
       // =====================================================================
       // METERAN KETERISIAN HALAMAN A4 (FIT-TO-PAGE GAUGE)
       // =====================================================================
       function updatePageFitIndicator() {
-        const inner = $('preview-letter-mount');
         const badge = $('page-fit-badge');
         const text = $('page-fit-text');
-        if (!inner || !badge || !text) return;
+        if (!badge || !text) return;
 
-        // 1 cm = 37.7953 px (96 DPI CSS). Tinggi A4 = 29.7cm (~1122.5px)
-        const pxPerCm = 37.7952756;
-        const availHeightPx = (29.7 - state.page.marginTop - state.page.marginBottom) * pxPerCm;
-        const actualHeightPx = inner.scrollHeight;
-        const ratio = actualHeightPx / availHeightPx;
-        const percent = Math.round(ratio * 100);
+        const groups = getGroupedStudentsByCabang();
+        const totalPages = groups.length;
 
-        if (ratio <= 1.0) {
+        if (totalPages > 1) {
+          badge.className = 'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-indigo-100 text-indigo-800 border border-indigo-200';
+          badge.querySelector('span:first-child').className = 'w-2 h-2 rounded-full bg-indigo-600';
+          text.textContent = `Multi-Halaman: ${totalPages} Lembar Surat (${groups.map(g => g.cabang).join(', ')})`;
+        } else {
           badge.className = 'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200';
           badge.querySelector('span:first-child').className = 'w-2 h-2 rounded-full bg-emerald-500';
-          text.textContent = `Muat Tepat 1 Halaman (${percent}% terisi)`;
-        } else {
-          const estPages = Math.ceil(ratio);
-          badge.className = 'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800 border border-amber-300';
-          badge.querySelector('span:first-child').className = 'w-2 h-2 rounded-full bg-amber-500 animate-pulse';
-          text.textContent = `Tumpah ${percent}% (Estimasi ${estPages} Hal) — Klik "Pas 1 Halaman"`;
+          text.textContent = `Muat 1 Halaman A4 (${groups[0].students.length} Siswa)`;
         }
       }
 
       async function renderPreview() {
         updateDynamicPageStyle();
-        await refreshDocQrCode();
-        $('preview-letter-mount').innerHTML = buildLetterMarkup();
+        const groups = getGroupedStudentsByCabang();
+        const { marginTop, marginRight, marginBottom, marginLeft, fontSize, showMarginGuide } = state.page;
+        const container = $('preview-multi-pages');
+
+        if (container) {
+          container.innerHTML = groups.map((g, idx) => `
+            <div class="flex flex-col items-center">
+              <div class="text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wide flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
+                <span>Halaman ${idx + 1} dari ${groups.length} — Cabang: ${escapeHtml(g.cabang)}</span>
+              </div>
+              <article class="a4-document-page a4-paper shadow-2xl ring-1 ring-slate-900/15 ${showMarginGuide ? 'show-margin-guide' : ''}"
+                style="padding: ${marginTop}cm ${marginRight}cm ${marginBottom}cm ${marginLeft}cm; font-size: ${fontSize}pt;">
+                <div class="letter-inner-content">
+                  ${buildSinglePageMarkup(g.students, idx, groups.length)}
+                </div>
+              </article>
+            </div>
+          `).join('');
+        }
+
         requestAnimationFrame(() => {
           applyPreviewScale();
           updatePageFitIndicator();
@@ -2022,9 +2094,10 @@
           const noUrut = noUrutMatch ? noUrutMatch[1] : 'Surat';
           const tglClean = (state.surat.tanggal || getTodayISO()).replace(/[^0-9-]/g, '');
           const prefix = state.docType === 'tugas' ? 'Surat_Tugas_Pembina' : 'Surat_Aktif_Lomba';
-          document.title = `${prefix}_SDN_Sumberejo_04_${noUrut}_${tglClean}`;
+          const groups = getGroupedStudentsByCabang();
+          document.title = `${prefix}_SDN_Sumberejo_04_${noUrut}_${tglClean}_${groups.length}Hal`;
 
-          showToast('Membuka dialog cetak... Format A4 otomatis pas dan tidak terpotong.', 'info', 4000);
+          showToast(`Membuka dialog cetak... Dokumen siap (${groups.length} halaman untuk ${groups.length} cabang lomba).`, 'info', 4500);
 
           setTimeout(() => {
             window.print();
@@ -2198,6 +2271,7 @@
           }
 
           const isTugas = state.docType === 'tugas';
+          const groups = getGroupedStudentsByCabang();
 
           const middleWordHtml = isTugas
             ? `
@@ -2244,18 +2318,93 @@
               </p>
             `;
 
-          const rowsWordHtml = state.selectedStudents.length === 0
-            ? `<tr><td colspan="6" style="border:1pt solid #000000; padding:6pt; text-align:center; font-style:italic;">Belum ada data peserta</td></tr>`
-            : state.selectedStudents.map((s, idx) => `
-              <tr>
-                <td style="border:1pt solid #000000; padding:3.5pt 4.5pt; text-align:center; vertical-align:middle;">${idx + 1}</td>
-                <td style="border:1pt solid #000000; padding:3.5pt 4.5pt; text-align:left; vertical-align:middle;">${escapeHtml(formatNamaSiswa(s.nama))}</td>
-                <td style="border:1pt solid #000000; padding:3.5pt 4.5pt; text-align:center; vertical-align:middle;">${escapeHtml(s.cabang || '-')}</td>
-                <td style="border:1pt solid #000000; padding:3.5pt 4.5pt; text-align:center; vertical-align:middle;">${escapeHtml(formatKelasSiswa(s))}</td>
-                <td style="border:1pt solid #000000; padding:3.5pt 4.5pt; text-align:center; vertical-align:middle;">${escapeHtml(s.nisn || '-')}</td>
-                <td style="border:1pt solid #000000; padding:3.5pt 4.5pt; text-align:left; vertical-align:middle;">${escapeHtml(formatTTLSiswa(s))}</td>
-              </tr>
-            `).join('');
+          const buildWordPageHtml = (students, pageIdx) => {
+            const pageNomor = computeNomorSuratIndex(state.surat.nomor, pageIdx);
+            const rowsHtml = (!students || students.length === 0)
+              ? `<tr><td colspan="6" style="border:1pt solid #000000; padding:6pt; text-align:center; font-style:italic;">Belum ada data peserta</td></tr>`
+              : students.map((s, idx) => `
+                <tr>
+                  <td style="border:1pt solid #000000; padding:3.5pt 4.5pt; text-align:center; vertical-align:middle;">${idx + 1}</td>
+                  <td style="border:1pt solid #000000; padding:3.5pt 4.5pt; text-align:left; vertical-align:middle;">${escapeHtml(formatNamaSiswa(s.nama))}</td>
+                  <td style="border:1pt solid #000000; padding:3.5pt 4.5pt; text-align:center; vertical-align:middle;">${escapeHtml(s.cabang || '-')}</td>
+                  <td style="border:1pt solid #000000; padding:3.5pt 4.5pt; text-align:center; vertical-align:middle;">${escapeHtml(formatKelasSiswa(s))}</td>
+                  <td style="border:1pt solid #000000; padding:3.5pt 4.5pt; text-align:center; vertical-align:middle;">${escapeHtml(s.nisn || '-')}</td>
+                  <td style="border:1pt solid #000000; padding:3.5pt 4.5pt; text-align:left; vertical-align:middle;">${escapeHtml(formatTTLSiswa(s))}</td>
+                </tr>
+              `).join('');
+
+            return `
+              ${pageIdx > 0 ? '<br clear="all" style="mso-special-character:line-break; page-break-before:always;" />' : ''}
+
+              <!-- 1. KOP SURAT 3 KOLOM SIMETRIS -->
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%; border-collapse:collapse;">
+                <tr>
+                  <td width="14%" align="center" valign="middle" style="padding:0;">${logoKiriHtml}</td>
+                  <td width="72%" align="center" valign="middle" style="padding:0 4pt; line-height:1.15;">
+                    <p style="font-size:13.5pt; font-weight:bold; text-align:center;">${escapeHtml(state.kop.baris1)}</p>
+                    <p style="font-size:15.5pt; font-weight:bold; text-align:center;">${escapeHtml(state.kop.baris2)}</p>
+                    <p style="font-size:10pt; text-align:center;">${escapeHtml(state.kop.baris3)}</p>
+                    <p style="font-size:10pt; text-align:center;">${escapeHtml(state.kop.baris4)}</p>
+                    <p style="font-size:9.5pt; font-style:italic; text-align:center;">${escapeHtml(state.kop.baris5)}</p>
+                  </td>
+                  <td width="14%" align="center" valign="middle" style="padding:0;">${logoKananHtml}</td>
+                </tr>
+              </table>
+
+              <!-- Garis Ganda Resmi Tanpa Celah Kosong di Word -->
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%; margin-top:3pt; margin-bottom:10pt;">
+                <tr><td style="border-top:2.5pt solid #000000; border-bottom:0.75pt solid #000000; height:2pt; font-size:1pt; line-height:1pt;">&nbsp;</td></tr>
+              </table>
+
+              <!-- 2. JUDUL & NOMOR SURAT -->
+              <p style="text-align:center; font-size:13pt; font-weight:bold; text-decoration:underline; margin-top:2pt; margin-bottom:2pt;">
+                ${escapeHtml(state.surat.judul).replace(/ /g, '&nbsp;')}
+              </p>
+              <p style="text-align:center; font-size:${fontSize}pt; margin-bottom:10pt;">
+                Nomor : ${escapeHtml(pageNomor)}
+              </p>
+
+              <!-- 3. PEMBUKA & BIODATA -->
+              ${middleWordHtml}
+
+              <!-- 4. TABEL DAFTAR PESERTA -->
+              <table width="100%" cellpadding="0" cellspacing="0" border="1"
+                style="width:100%; border-collapse:collapse; border:1pt solid #000000; font-size:${tableFontPt}pt; margin-bottom:8pt;">
+                <thead>
+                  <tr>
+                    <th width="5%" style="border:1pt solid #000000; padding:3.5pt 4pt; text-align:center; font-weight:bold;">No</th>
+                    <th width="28%" style="border:1pt solid #000000; padding:3.5pt 4pt; text-align:center; font-weight:bold;">Nama</th>
+                    <th width="16%" style="border:1pt solid #000000; padding:3.5pt 4pt; text-align:center; font-weight:bold;">Cabang Lomba</th>
+                    <th width="12%" style="border:1pt solid #000000; padding:3.5pt 4pt; text-align:center; font-weight:bold;">Kelas</th>
+                    <th width="15%" style="border:1pt solid #000000; padding:3.5pt 4pt; text-align:center; font-weight:bold;">NISN</th>
+                    <th width="24%" style="border:1pt solid #000000; padding:3.5pt 4pt; text-align:center; font-weight:bold;">Tempat Tanggal Lahir</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${rowsHtml}
+                </tbody>
+              </table>
+
+              <!-- 5. PENUTUP -->
+              ${closingWordHtml}
+
+              <!-- 6. BLOK TANDA TANGAN (SISI KANAN) -->
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%; margin-top:14pt; page-break-inside:avoid;">
+                <tr>
+                  <td width="55%">&nbsp;</td>
+                  <td width="45%" align="left" valign="top" style="font-size:${fontSize}pt; line-height:1.35;">
+                    <p>${escapeHtml(state.surat.kota)}, ${escapeHtml(formatTanggalIndo(state.surat.tanggal))}</p>
+                    <p>${escapeHtml(state.ks.jabatan)}</p>
+                    ${sigAreaHtml}
+                    <p style="font-weight:bold; text-decoration:underline;">${escapeHtml(state.ks.nama)}</p>
+                    <p>${state.ks.nip ? 'NIP. ' + escapeHtml(state.ks.nip) : ''}</p>
+                  </td>
+                </tr>
+              </table>
+            `;
+          };
+
+          const pagesWordHtml = groups.map((g, idx) => buildWordPageHtml(g.students, idx)).join('');
 
           const docWordXml = `
 <html xmlns:o="urn:schemas-microsoft-com:office:office"
@@ -2310,73 +2459,7 @@
 </head>
 <body>
   <div class="WordSection1">
-
-    <!-- 1. KOP SURAT 3 KOLOM SIMETRIS -->
-    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%; border-collapse:collapse;">
-      <tr>
-        <td width="14%" align="center" valign="middle" style="padding:0;">${logoKiriHtml}</td>
-        <td width="72%" align="center" valign="middle" style="padding:0 4pt; line-height:1.15;">
-          <p style="font-size:13.5pt; font-weight:bold; text-align:center;">${escapeHtml(state.kop.baris1)}</p>
-          <p style="font-size:15.5pt; font-weight:bold; text-align:center;">${escapeHtml(state.kop.baris2)}</p>
-          <p style="font-size:10pt; text-align:center;">${escapeHtml(state.kop.baris3)}</p>
-          <p style="font-size:10pt; text-align:center;">${escapeHtml(state.kop.baris4)}</p>
-          <p style="font-size:9.5pt; font-style:italic; text-align:center;">${escapeHtml(state.kop.baris5)}</p>
-        </td>
-        <td width="14%" align="center" valign="middle" style="padding:0;">${logoKananHtml}</td>
-      </tr>
-    </table>
-
-    <!-- Garis Ganda Resmi Tanpa Celah Kosong di Word -->
-    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%; margin-top:3pt; margin-bottom:10pt;">
-      <tr><td style="border-top:2.5pt solid #000000; border-bottom:0.75pt solid #000000; height:2pt; font-size:1pt; line-height:1pt;">&nbsp;</td></tr>
-    </table>
-
-    <!-- 2. JUDUL & NOMOR SURAT -->
-    <p style="text-align:center; font-size:13pt; font-weight:bold; text-decoration:underline; margin-top:2pt; margin-bottom:2pt;">
-      ${escapeHtml(state.surat.judul).replace(/ /g, '&nbsp;')}
-    </p>
-    <p style="text-align:center; font-size:${fontSize}pt; margin-bottom:10pt;">
-      Nomor : ${escapeHtml(state.surat.nomor)}
-    </p>
-
-    <!-- 3. PEMBUKA & BIODATA -->
-    ${middleWordHtml}
-
-    <!-- 4. TABEL DAFTAR PESERTA -->
-    <table width="100%" cellpadding="0" cellspacing="0" border="1"
-      style="width:100%; border-collapse:collapse; border:1pt solid #000000; font-size:${tableFontPt}pt; margin-bottom:8pt;">
-      <thead>
-        <tr>
-          <th width="5%" style="border:1pt solid #000000; padding:3.5pt 4pt; text-align:center; font-weight:bold;">No</th>
-          <th width="28%" style="border:1pt solid #000000; padding:3.5pt 4pt; text-align:center; font-weight:bold;">Nama</th>
-          <th width="16%" style="border:1pt solid #000000; padding:3.5pt 4pt; text-align:center; font-weight:bold;">Cabang Lomba</th>
-          <th width="12%" style="border:1pt solid #000000; padding:3.5pt 4pt; text-align:center; font-weight:bold;">Kelas</th>
-          <th width="15%" style="border:1pt solid #000000; padding:3.5pt 4pt; text-align:center; font-weight:bold;">NISN</th>
-          <th width="24%" style="border:1pt solid #000000; padding:3.5pt 4pt; text-align:center; font-weight:bold;">Tempat Tanggal Lahir</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${rowsWordHtml}
-      </tbody>
-    </table>
-
-    <!-- 5. PENUTUP -->
-    ${closingWordHtml}
-
-    <!-- 6. BLOK TANDA TANGAN (SISI KANAN) -->
-    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%; margin-top:14pt; page-break-inside:avoid;">
-      <tr>
-        <td width="55%">&nbsp;</td>
-        <td width="45%" align="left" valign="top" style="font-size:${fontSize}pt; line-height:1.35;">
-          <p>${escapeHtml(state.surat.kota)}, ${escapeHtml(formatTanggalIndo(state.surat.tanggal))}</p>
-          <p>${escapeHtml(state.ks.jabatan)}</p>
-          ${sigAreaHtml}
-          <p style="font-weight:bold; text-decoration:underline;">${escapeHtml(state.ks.nama)}</p>
-          <p>${state.ks.nip ? 'NIP. ' + escapeHtml(state.ks.nip) : ''}</p>
-        </td>
-      </tr>
-    </table>
-
+    ${pagesWordHtml}
   </div>
 </body>
 </html>`;
@@ -2922,6 +3005,7 @@
         $('toggle-show-stempel').checked = state.toggles.showStempel;
         $('toggle-show-ttd').checked = state.toggles.showTtd;
         if ($('toggle-show-qr')) $('toggle-show-qr').checked = Boolean(state.toggles.showQr);
+        if ($('toggle-split-cabang')) $('toggle-split-cabang').checked = Boolean(state.toggles.splitCabangMultiPages);
 
         $('kop-baris-1').value = state.kop.baris1;
         $('kop-baris-2').value = state.kop.baris2;
@@ -2936,20 +3020,24 @@
       // =====================================================================
       function applyPreviewScale() {
         const container = $('preview-scroll-container');
-        const doc = $('a4-document');
         const wrapper = $('preview-scale-wrapper');
-        if (!container || !doc || !wrapper || container.clientWidth === 0) return;
+        const pages = document.querySelectorAll('.a4-document-page');
+        if (!container || !wrapper || container.clientWidth === 0) return;
 
-        const a4W = doc.offsetWidth || 794;
-        const a4H = doc.offsetHeight || 1123;
-        const availW = Math.max(container.clientWidth - 36, 260);
+        const firstPage = pages[0];
+        const a4W = firstPage ? (firstPage.offsetWidth || 794) : 794;
+        const availW = Math.max(container.clientWidth - 48, 260);
 
         const scale = currentZoomMode === 'auto' ? Math.min(1, availW / a4W) : currentZoomMode;
         $('zoom-percent').textContent = `${Math.round(scale * 100)}%`;
 
-        doc.style.transform = `scale(${scale})`;
-        wrapper.style.width = `${a4W * scale}px`;
-        wrapper.style.height = `${a4H * scale}px`;
+        pages.forEach((p) => {
+          p.style.transform = `scale(${scale})`;
+          p.style.transformOrigin = 'top center';
+          // Sesuaikan margin wrapper akibat skala css
+          p.parentElement.style.width = `${a4W * scale}px`;
+          p.parentElement.style.height = `${(p.offsetHeight || 1123) * scale}px`;
+        });
       }
 
       function switchMainTab(tabName) {
@@ -3235,6 +3323,9 @@
         $('toggle-show-ttd').addEventListener('change', (e) => { state.toggles.showTtd = e.target.checked; renderPreview(); });
         if ($('toggle-show-qr')) {
           $('toggle-show-qr').addEventListener('change', (e) => { state.toggles.showQr = e.target.checked; renderPreview(); });
+        }
+        if ($('toggle-split-cabang')) {
+          $('toggle-split-cabang').addEventListener('change', (e) => { state.toggles.splitCabangMultiPages = e.target.checked; renderPreview(); });
         }
 
         // Tab Kop & Aset
