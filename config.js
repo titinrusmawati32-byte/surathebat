@@ -15,7 +15,7 @@
 
 const APP_CONFIG = {
   // Ganti teks di bawah ini dengan URL Web App Google Apps Script Anda:
-  GAS_WEBAPP_URL: "https://script.google.com/macros/s/AKfycbz_GANTI_DENGAN_URL_WEB_APP_ANDA/exec",
+  GAS_WEBAPP_URL: "https://script.google.com/macros/s/AKfycbx1n3i_wycsch8hxfLcPiTaM0HS-ro_o5ojvXtSR3MMuERcianXs6iKKUcLwSLsLA6h/exec",
 
   // Identitas Satuan Pendidikan
   NAMA_SEKOLAH: "SD NEGERI SUMBEREJO 04",
